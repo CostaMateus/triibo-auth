@@ -46,6 +46,9 @@ class Triibo_Auth
 			add_action( "admin_init", 					 [ $this, "register_and_build_fields" ]     );
 
 			add_filter( "plugin_action_links_" . plugin_basename( __FILE__ ), [ $this, "plugin_action_links" ] );
+
+			self::includes();
+			self::initClasses();
         }
 		else
 		{
@@ -63,6 +66,26 @@ class Triibo_Auth
 		// If the single instance hasn't been set, set it now.
 		if ( null === self::$instance ) self::$instance = new self;
 		return self::$instance;
+	}
+
+	/**
+	 * Includes.
+	 */
+	private static function includes()
+    {
+		require_once( dirname( __FILE__ ) . "/includes/controllers/version1/class-triibo-auth-rest-api.php" );
+
+		// require_once( dirname( __FILE__ ) . "/includes/class-triibo-auth-app.php"      );
+		// require_once( dirname( __FILE__ ) . "/includes/class-triibo-auth-checkout.php" );
+		// require_once( dirname( __FILE__ ) . "/includes/class-triibo-auth-login.php"    );
+    }
+
+	/**
+	 * Init classes
+	 */
+	private static function initClasses()
+	{
+		add_action( "plugins_loaded", [ "Triibo_Auth_Rest_Api", "get_instance" ], 222 );
 	}
 
 	/**
@@ -341,4 +364,4 @@ class Triibo_Auth
 
 }
 
-add_action( "plugins_loaded", array( "Triibo_Auth", "get_instance" ), 222 );
+add_action( "plugins_loaded", [ "Triibo_Auth", "get_instance" ], 222 );
