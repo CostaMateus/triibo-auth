@@ -73,7 +73,7 @@ class Triibo_Auth
 	 */
 	private static function includes()
     {
-		require_once( dirname( __FILE__ ) . "/includes/controllers/version1/class-triibo-auth-rest-api.php" );
+		require_once( dirname( __FILE__ ) . "/includes/rest-api/class-triibo-auth-rest-api.php" );
 
 		// require_once( dirname( __FILE__ ) . "/includes/class-triibo-auth-app.php"      );
 		// require_once( dirname( __FILE__ ) . "/includes/class-triibo-auth-checkout.php" );
