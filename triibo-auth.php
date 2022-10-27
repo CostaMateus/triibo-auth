@@ -85,7 +85,7 @@ class Triibo_Auth
 	 */
 	private static function initClasses()
 	{
-		add_action( "plugins_loaded", [ "Triibo_Auth_Rest_Api", "get_instance" ], 222 );
+		new Triibo_Auth_Rest_Api();
 	}
 
 	/**

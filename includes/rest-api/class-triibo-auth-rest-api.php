@@ -15,31 +15,11 @@ defined( 'ABSPATH' ) || exit;
 class Triibo_Auth_Rest_Api
 {
 	/**
-	 * Instance of this class.
-	 *
-	 * @var object
-	 */
-	protected static $instance = null;
-
-	/**
-	 * Return an instance of this class.
-	 *
-	 * @return object A single instance of this class.
-	 */
-	public static function get_instance()
-    {
-		// If the single instance hasn't been set, set it now.
-		if ( null === self::$instance ) self::$instance = new self;
-		return self::$instance;
-	}
-
-	/**
 	 * Initialize the plugin public actions.
 	 */
     public function __construct()
 	{
         self::includes();
-
         add_action( "rest_api_init", [ $this, "register_rest_routes" ] );
     }
 
