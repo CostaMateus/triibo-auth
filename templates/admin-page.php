@@ -11,8 +11,7 @@
 ?>
 
 <style>
-	.form-table tr:nth-child( 1 ) th, .form-table tr:nth-child( 1 ) td { padding-top:0!important; padding-bottom:5px !important; }
-	.form-table tr:nth-child( 2 ) th, .form-table tr:nth-child( 2 ) td { padding-top:0!important; }
+	.form-table tr:nth-child( 1 ) th, .form-table tr:nth-child( 1 ) td { padding-top:0!important; }
 </style>
 
 <div class="wrap">
@@ -28,3 +27,17 @@
 		?>
 	</form>
 </div>
+
+<script>
+	( function ( $ ) {
+		"use strict";
+
+		$( document ).ready( function() {
+			let el1 = $( "#triibo_auth_checkout_status" ).parent().parent().parent().parent().prev().prev();
+			let el2 = $( "#triibo_auth_app_status"      ).parent().parent().parent().parent().prev().prev();
+			el1.css( "border-top", "1px solid #CCC" ).css( "padding-top", "2rem" );
+			el2.css( "border-top", "1px solid #CCC" ).css( "padding-top", "2rem" );
+		} );
+
+	} )( jQuery );
+</script>

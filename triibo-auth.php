@@ -41,14 +41,14 @@ class Triibo_Auth
 			wp_enqueue_style(  self::DOMAIN, dirname( __FILE__ ) . "/assets/css/admin.css", [],           self::VERSION, "all" );
 			wp_enqueue_script( self::DOMAIN, dirname( __FILE__ ) . "/assets/js/admin.js",   [ "jquery" ], self::VERSION, false );
 
+			add_action( "admin_init", 					 [ $this, "register_and_build_fields" ]     );
 			add_action( "admin_menu",                    [ $this, "add_submenu_page"          ], 11 );
 			add_action( "triibo_api_service_add_button", [ $this, "add_btn"                   ], 11 );
-			add_action( "admin_init", 					 [ $this, "register_and_build_fields" ]     );
 
 			add_filter( "plugin_action_links_" . plugin_basename( __FILE__ ), [ $this, "plugin_action_links" ] );
 
 			self::includes();
-			self::initClasses();
+			self::init_classes();
         }
 		else
 		{
@@ -83,7 +83,7 @@ class Triibo_Auth
 	/**
 	 * Init classes
 	 */
-	private static function initClasses()
+	private static function init_classes()
 	{
 		new Triibo_Auth_Rest_Api();
 	}
@@ -169,11 +169,6 @@ class Triibo_Auth
 					"title" => "Ativar / Desativar",
 					"label" => "Ativar recurso",
 					"value" => true,
-				],[
-					"key"   => "login_env",
-					"title" => "Homologação",
-					"label" => "Habilitar homologação",
-					"value" => true,
 				],
 			],
 			"checkout" => [
@@ -182,11 +177,6 @@ class Triibo_Auth
 					"title" => "Ativar / Desativar",
 					"label" => "Ativar recurso",
 					"value" => true,
-				],[
-					"key"   => "checkout_env",
-					"title" => "Homologação",
-					"label" => "Habilitar homologação",
-					"value" => true,
 				],
 			],
 			"app"      => [
@@ -194,11 +184,6 @@ class Triibo_Auth
 					"key"   => "app_status",
 					"title" => "Ativar / Desativar",
 					"label" => "Ativar recurso",
-					"value" => true,
-				],[
-					"key"   => "app_env",
-					"title" => "Homologação",
-					"label" => "Habilitar homologação",
 					"value" => true,
 				],
 			]
