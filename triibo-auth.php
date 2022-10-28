@@ -41,9 +41,10 @@ class Triibo_Auth
 			wp_enqueue_style(  self::DOMAIN, dirname( __FILE__ ) . "/assets/css/admin.css", [],           self::VERSION, "all" );
 			wp_enqueue_script( self::DOMAIN, dirname( __FILE__ ) . "/assets/js/admin.js",   [ "jquery" ], self::VERSION, false );
 
-			add_action( "admin_init", 					 [ $this, "register_and_build_fields" ]     );
-			add_action( "admin_menu",                    [ $this, "add_submenu_page"          ], 11 );
-			add_action( "triibo_api_service_add_button", [ $this, "add_btn"                   ], 11 );
+			add_action( "admin_init", 					       [ $this, "register_and_build_fields" ]     );
+			add_action( "admin_menu",                          [ $this, "add_submenu_page"          ], 11 );
+			add_action( "triibo_api_service_add_button",       [ $this, "add_btn"                   ], 11 );
+			add_action( "triibo_api_service_list_plugin_gate", [ $this, "add_info_dependency"       ],    );
 
 			add_filter( "plugin_action_links_" . plugin_basename( __FILE__ ), [ $this, "plugin_action_links" ] );
 
@@ -148,6 +149,11 @@ class Triibo_Auth
 		$link = "<a href='{$url}' >{$text}</a>";
 
 		echo "<p>Triibo Auth | {$link}</p>";
+	}
+
+	public function add_info_dependency()
+	{
+		echo "<p> - Triibo Auth</p>";
 	}
 
 	/**
