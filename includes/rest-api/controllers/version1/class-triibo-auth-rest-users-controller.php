@@ -38,15 +38,61 @@ class Triibo_Auth_Rest_Users_Controller extends WP_REST_Controller
 	 *
 	 * @var array
 	 */
-	protected $request = [];
+	protected $request   = [];
 
-	protected $id      = "triibo_auth_app";
+	/**
+	 * ID of resource.
+	 *
+	 * @var string
+	 */
+	protected $id        = Triibo_Auth::DOMAIN . "_app";
 
+	/**
+	 * API Gateway.
+	 *
+	 * @var Triibo_Api_Gateway
+	 */
+	protected $gate;
+
+	/**
+	 * API Node.
+	 *
+	 * @var Triibo_Api_Node
+	 */
+	protected $node;
+
+	/**
+	 * WC Logger.
+	 *
+	 * @var wc_get_logger|WC_Logger
+	 */
 	protected $log;
 
 	public function __construct()
 	{
-		$this->log = ( function_exists( "wc_get_logger" ) ) ? wc_get_logger() : new WC_Logger();
+		$this->log  = ( function_exists( "wc_get_logger" ) ) ? wc_get_logger() : new WC_Logger();
+		$this->gate = new Triibo_Api_Gateway();
+		$this->node = new Triibo_Api_Node();
+	}
+
+    /**
+     * Returns the Triibo_Auth_App status
+     * TRUE  for active.
+     * FALSE for inactive.
+     *
+     * @since   1.0.0
+     *
+     * @return boolean
+     */
+	public function status()
+	{
+        $status = get_option( Triibo_Auth::DOMAIN . "_app_status" );
+		return $status == "on" ? true : false;
+	}
+	public function env()
+	{
+        $status = get_option( Triibo_Auth::DOMAIN . "" );
+		return $status == "on" ? true : false;
 	}
 
 	/**
@@ -60,26 +106,31 @@ class Triibo_Auth_Rest_Users_Controller extends WP_REST_Controller
 			[
 				[
 					"methods"             => WP_REST_Server::READABLE, // WP_REST_Server::EDITABLE, // POST, PUT, PATCH
-					"callback"            => [ $this, "get_item"                   ],
-					"permission_callback" => [ $this, "get_item_permissions_check" ],
+					"callback"            => [ $this, "process_login" ],
+					"permission_callback" => "__return_true",
 					"args"                => $this->get_collection_params(),
 				],
 			]
 		);
 	}
 
-	public function get_item_permissions_check( $request )
-	{
-		return true;
-	}
-
-	public function get_item( $request )
+	public function process_login( $request )
 	{
 		$url = $request->get_param( "url" ) ?: null;
-		$tkn = $request->get_param( "mkt" ) ?: null;
 
-		if ( strpos( home_url(), "dev-" ) === FALSE )
+		if ( !$this->status() )
 		{
+			wp_clear_auth_cookie();
+			self::redirect( $url );
+		}
+
+		/**
+		 * Gate === false === prod
+		 * Node === false === prod
+		 */
+		if ( $this->gate->env() === false && $this->node->env() === false )
+		{
+			$token  = $request->get_param( "mkt" ) ?: null;
 			$bearer = $request->get_header( "authorization" );
 
 			/**
@@ -88,8 +139,8 @@ class Triibo_Auth_Rest_Users_Controller extends WP_REST_Controller
 			 *
 			 * ausencia dos dois é problema
 			 */
-			if ( ! $bearer && ! $tkn ) self::redirect( $url );
-			if ( ! $this->validate_token( $bearer, $tkn ) ) self::redirect( $url );
+			if ( !$bearer && ! $token                      ) self::redirect( $url );
+			if ( !$this->validate_token( $bearer, $token ) ) self::redirect( $url );
 		}
 
 		$cellphone = $request->get_param( "cellphone" ) ?: null;
@@ -247,62 +298,20 @@ class Triibo_Auth_Rest_Users_Controller extends WP_REST_Controller
 		self::redirect( $url );
 	}
 
-	private static function get_env( $mkt = null )
-	{
-		if ( $mkt )
-			return ( ( strpos( home_url(), "dev-" ) !== FALSE ) ? "dev-" : "" );
-		else
-			return ( ( strpos( home_url(), "dev-" ) !== FALSE ) ? "-hml" : "" );
-	}
-
-	private static function get_url()
-	{
-		return "https://" . self::get_env( true ) . "marketplace.triibo.com.br";
-	}
-
-	private static function get_api_url()
-	{
-		return "https://api" . self::get_env() . ".triibo.com.br";
-	}
-
-	private static function is_prod()
-	{
-		return ( empty( self::get_env() ) ) ? true : false;
-	}
-
 	private function validate_token( string $bearer, string $tkn = null )
 	{
-		$bearer  = ( ! $bearer && $tkn ) ? base64_decode( $tkn ) : $bearer;
+		$bearer   = ( ! $bearer && $tkn ) ? base64_decode( $tkn ) : $bearer;
+		$response = $this->node->validate_token( $bearer );
 
-		$ch      = curl_init();
-
-		$api_key = ( self::is_prod() ) ? "xp8bqzil-b15e-da2v-3jcm-25pniix0y859" : "652e0505-f010-48a4-a9a5-ce12783777ea";
-
-		$headers = [
-			"Origin: " . self::get_url(),
-			"Authorization: $bearer",
-			"Content-type: application/json",
-			"x-api-key: $api_key"
-		];
-
-		curl_setopt_array( $ch, [
-			CURLOPT_URL            => self::get_api_url() . "/auth/marketplace",
-			CURLOPT_RETURNTRANSFER => TRUE,
-			CURLOPT_ENCODING       => "",
-			CURLOPT_MAXREDIRS      => 10,
-			CURLOPT_TIMEOUT        => 60,
-			CURLOPT_SSL_VERIFYPEER => FALSE ,
-			CURLOPT_HTTP_VERSION   => CURL_HTTP_VERSION_1_1,
-			CURLOPT_CUSTOMREQUEST  => "POST",
-			CURLOPT_HTTPHEADER     => $headers
-        ] );
-
-        $resp = curl_exec( $ch );
-        curl_close( $ch );
-
-        $resp = json_decode( $resp, TRUE );
-
-		return ( ! $resp[ "success" ] ) ? false : true;
+		if ( $response[ "success" ] && $response[ "data" ][ "success" ] )
+		{
+			return true;
+		}
+		else
+		{
+			$this->log->add( $this->id, json_encode( $response ) );
+			return false;
+		}
 	}
 
 }
