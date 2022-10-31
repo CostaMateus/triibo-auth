@@ -170,8 +170,6 @@ class Triibo_Auth_Rest_Users_Controller extends WP_REST_Controller
 				// passo 4
 				$user_id = email_exists( $email );
 
-				$this->log->add( $this->id, "Redirect cellphone: +$cellphone" );
-
 				// passo 5 ( passo_comum )
 				self::make_login( $user_id, $url );
 			}
@@ -188,9 +186,9 @@ class Triibo_Auth_Rest_Users_Controller extends WP_REST_Controller
 					update_user_meta( $user_id, "triiboId_phone", "+$cellphone" );
 
 					// passo 10 ( passo_comum )
-					TAA_TRIIBO_Firebase::update_user_triibo( $cellphone, $email, "ADD" );
-
-					$this->log->add( $this->id, "Redirect cellphone: +$cellphone" );
+					$response = $this->gate->update_user_mkt( $cellphone, $email, "ADD" );
+					if ( !$response[ "success" ] || !$response[ "data" ][ "success" ] )
+						$this->log->add( $this->id, json_encode( $response ) );
 
 					self::make_login( $user_id, $url );
 				}
