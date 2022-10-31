@@ -259,7 +259,7 @@ class Triibo_Auth_Rest_Users_Controller extends WP_REST_Controller
 		}
 		else
 		{
-			$url  = home_url();
+			$url = home_url();
 		}
 
 		wp_safe_redirect( esc_url_raw( $url ) );
@@ -278,13 +278,10 @@ class Triibo_Auth_Rest_Users_Controller extends WP_REST_Controller
         if ( wp_mail( $to, $subject, $body, $headers ) )
 		{
 			set_transient( "_taa_triibo_code", $validCode, 300 );
-
 			return true;
 		}
-		else
-		{
-			return false;
-		}
+
+		return false;
     }
 
 	private static function make_login( int $user_id, string $url )
@@ -301,15 +298,10 @@ class Triibo_Auth_Rest_Users_Controller extends WP_REST_Controller
 		$bearer   = ( ! $bearer && $tkn ) ? base64_decode( $tkn ) : $bearer;
 		$response = $this->node->validate_token( $bearer );
 
-		if ( $response[ "success" ] && $response[ "data" ][ "success" ] )
-		{
-			return true;
-		}
-		else
-		{
-			$this->log->add( $this->id, json_encode( $response ) );
-			return false;
-		}
+		if ( $response[ "success" ] && $response[ "data" ][ "success" ] ) return true;
+
+		$this->log->add( $this->id, json_encode( $response ) );
+		return false;
 	}
 
 }
