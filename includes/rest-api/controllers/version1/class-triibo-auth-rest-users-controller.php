@@ -1,11 +1,10 @@
 <?php
-
 /**
  * REST API Users controller
  *
  * Handles requests to the /users endpoint.
  *
- * @package Taa_Triibo_Rest_Api/Users
+ * @package Triibo_Auth
  * @since   1.0.0
  * @version 1.1.0
  */
@@ -22,52 +21,64 @@ class Triibo_Auth_Rest_Users_Controller extends WP_REST_Controller
 	/**
 	 * Endpoint namespace.
 	 *
-	 * @var string
+	 * @since   1.0.0
+	 * @var 	string
 	 */
 	protected $namespace = "triibo-rest/v1";
 
 	/**
 	 * Route base.
 	 *
-	 * @var string
+	 * @since   1.0.0
+	 * @var 	string
 	 */
 	protected $rest_base = "users";
 
 	/**
 	 * Stores the request.
 	 *
-	 * @var array
+	 * @since   1.0.0
+	 * @var 	array
 	 */
 	protected $request   = [];
 
 	/**
 	 * ID of resource.
 	 *
-	 * @var string
+	 * @since   1.0.0
+	 * @var 	string
 	 */
 	protected $id        = Triibo_Auth::DOMAIN . "_app";
 
 	/**
 	 * API Gateway.
 	 *
-	 * @var Triibo_Api_Gateway
+	 * @since   1.0.0
+	 * @var 	Triibo_Api_Gateway
 	 */
 	protected $gate;
 
 	/**
 	 * API Node.
 	 *
-	 * @var Triibo_Api_Node
+	 * @since   1.0.0
+	 * @var 	Triibo_Api_Node
 	 */
 	protected $node;
 
 	/**
 	 * WC Logger.
 	 *
-	 * @var wc_get_logger|WC_Logger
+	 * @since   1.0.0
+	 * @var 	wc_get_logger|WC_Logger
 	 */
 	protected $log;
 
+	/**
+	 * Construct
+	 *
+	 * @since   1.0.0
+	 */
 	public function __construct()
 	{
 		$this->log  = ( function_exists( "wc_get_logger" ) ) ? wc_get_logger() : new WC_Logger();
@@ -81,8 +92,7 @@ class Triibo_Auth_Rest_Users_Controller extends WP_REST_Controller
      * FALSE for inactive.
      *
      * @since   1.0.0
-     *
-     * @return boolean
+     * @return 	boolean
      */
 	public function status()
 	{
@@ -92,6 +102,9 @@ class Triibo_Auth_Rest_Users_Controller extends WP_REST_Controller
 
 	/**
 	 * Register the routes for users.
+	 *
+	 * @since   1.0.0
+	 * @return 	void
 	 */
 	public function register_routes()
 	{
@@ -109,6 +122,13 @@ class Triibo_Auth_Rest_Users_Controller extends WP_REST_Controller
 		);
 	}
 
+	/**
+	 * Process login for user
+	 *
+	 * @since   1.0.0
+	 * @param 	WP_REST_Request $request
+	 * @return 	void
+	 */
 	public function process_login( $request )
 	{
 		$url = $request->get_param( "url" ) ?: null;
@@ -120,8 +140,8 @@ class Triibo_Auth_Rest_Users_Controller extends WP_REST_Controller
 		}
 
 		/**
-		 * Gate === false === prod
-		 * Node === false === prod
+		 * Gate: false === prod
+		 * Node: false === prod
 		 */
 		if ( $this->gate->env() === false && $this->node->env() === false )
 		{
@@ -147,8 +167,8 @@ class Triibo_Auth_Rest_Users_Controller extends WP_REST_Controller
 		$params    = null;
 
 		// celular e email ausentes na request
-		// redireciona para $url ou para "/", caso $url null
-		if ( ! $cellphone && ! $data ) self::redirect( $url );
+		// redireciona para $url ou para "/", caso $url == null
+		if ( !$cellphone && !$data ) self::redirect( $url );
 
 		// passo 2
 		if ( $data )
@@ -188,25 +208,28 @@ class Triibo_Auth_Rest_Users_Controller extends WP_REST_Controller
 					self::make_login( $user_id, $url );
 				}
 				// passo 8
-				else if ( $user_id && ! $verified )
+				else if ( $user_id && !$verified )
 				{
 					// passo 11
-					$params = self::send_email_code( $email ) ? "taac=code&email=$email" : null;
+					$params = self::send_email_code( $email ) ? "taac=code&email={$email}" : null;
+
 					// passo 12
 					self::redirect( $url, $params );
 				}
 				// passo 16
-				else if ( ! $user_id && $verified )
+				else if ( !$user_id && $verified )
 				{
 					// passo 17
-					$params = "taac=newacc&email=$email";
+					$params = "taac=newacc&email={$email}";
+
 					self::redirect( $url, $params );
 				}
 				// passo 16
-				else // ( ! $user_id && ! $verified )
+				else // ( !$user_id && !$verified )
 				{
 					// passo 21
-					$params = self::send_email_code( $email ) ? "taac=code&email=$email" : null;
+					$params = self::send_email_code( $email ) ? "taac=code&email={$email}" : null;
+
 					self::redirect( $url, $params );
 				}
 			}
@@ -219,7 +242,7 @@ class Triibo_Auth_Rest_Users_Controller extends WP_REST_Controller
 				"meta_value" => "+$cellphone"
 			] );
 
-			if ( ! empty( $user ) )
+			if ( !empty( $user ) )
 			{
 				// passo 26
 				$user   = reset( $user );
@@ -227,22 +250,33 @@ class Triibo_Auth_Rest_Users_Controller extends WP_REST_Controller
 
 				// passo 27
 				$params = "taac=acc&email=$email";
+
 				self::redirect( $url, $params );
 			}
 			else
 			{
 				// passo 29
 				$params = "taac=newacc";
+
 				self::redirect( $url, $params );
 			}
 		}
 		else
 		{
 			wp_clear_auth_cookie();
+
 			self::redirect( $url );
 		}
 	}
 
+	/**
+	 * Redirect user
+	 *
+	 * @since   1.0.0
+	 * @param 	string|null $url
+	 * @param 	string $params
+	 * @return 	void
+	 */
 	private static function redirect( string $url = null, string $params = null )
 	{
 		if ( $url )
@@ -261,6 +295,13 @@ class Triibo_Auth_Rest_Users_Controller extends WP_REST_Controller
 		exit();
 	}
 
+	/**
+	 * Send code by email
+	 *
+	 * @since   1.0.0
+	 * @param 	string $email
+	 * @return 	void
+	 */
 	private static function send_email_code( string $email )
     {
         $validCode = str_pad( mt_rand( 0, 999999 ), 6, "0", STR_PAD_LEFT );
@@ -279,6 +320,14 @@ class Triibo_Auth_Rest_Users_Controller extends WP_REST_Controller
 		return false;
     }
 
+	/**
+	 * Make login for user
+	 *
+	 * @since   1.0.0
+	 * @param 	integer $user_id
+	 * @param 	string 	$url
+	 * @return 	void
+	 */
 	private static function make_login( int $user_id, string $url )
 	{
 		clean_user_cache( $user_id );
@@ -288,15 +337,23 @@ class Triibo_Auth_Rest_Users_Controller extends WP_REST_Controller
 		self::redirect( $url );
 	}
 
+	/**
+	 * Validates the token
+	 *
+	 * @since   1.0.0
+	 * @param 	string $bearer
+	 * @param 	string $tkn
+	 * @return 	void
+	 */
 	private function validate_token( string $bearer, string $tkn = null )
 	{
-		$bearer   = ( ! $bearer && $tkn ) ? base64_decode( $tkn ) : $bearer;
+		$bearer   = ( !$bearer && $tkn ) ? base64_decode( $tkn ) : $bearer;
 		$response = $this->node->validate_token( $bearer );
 
 		if ( $response[ "success" ] && $response[ "data" ][ "success" ] ) return true;
 
 		$this->log->add( $this->id, json_encode( $response ) );
+
 		return false;
 	}
-
 }
