@@ -2,10 +2,9 @@
 /**
  * Initialize this version of the REST API.
  *
- * @since      1.0.0
- * @package    Triibo_Auth
- * @subpackage Triibo_Auth/includes/rest-api
- * @author     Mateus Costa <mateus@costamateus.com.br>
+ * @author  Mateus Costa <mateus@costamateus.com.br>
+ * @package Triibo_Auth/Classes
+ * @version 1.0.0
  */
 defined( 'ABSPATH' ) || exit;
 

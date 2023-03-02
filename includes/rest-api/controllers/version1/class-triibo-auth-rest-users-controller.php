@@ -1,20 +1,16 @@
 <?php
 /**
  * REST API Users controller
- *
  * Handles requests to the /users endpoint.
  *
- * @package Triibo_Auth
- * @since   1.0.0
- * @version 1.1.0
+ * @author  Mateus Costa <mateus@costamateus.com.br>
+ * @package Triibo_Auth/Classes
+ * @version 1.0.0
  */
-
 defined( "ABSPATH" ) || exit;
 
 /**
  * REST API Users controller class.
- *
- * @package Triibo\RestApi
  */
 class Triibo_Auth_Rest_Users_Controller extends WP_REST_Controller
 {

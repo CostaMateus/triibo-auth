@@ -1,14 +1,13 @@
 <?php
 /**
  * The file that defines the plugin class Triibo Auth App
- *
  * A class definition that includes attributes and functions used in the admin area.
  *
- * @since      1.0.0
- * @package    Triibo_Auth
- * @subpackage Triibo_Auth/includes
- * @author     Mateus Costa <mateus@costamateus.com.br>
+ * @author  Mateus Costa <mateus@costamateus.com.br>
+ * @package Triibo_Auth/Classes
+ * @version 1.0.0
  */
+defined( "ABSPATH" ) || exit;
 
 /**
  * The plugin class Triibo Auth App.
@@ -21,17 +20,25 @@ class Triibo_Auth_App
 	/**
 	 * API Gateway.
 	 *
-	 * @var Triibo_Api_Gateway
+	 * @since 	1.0.0
+	 * @var     Triibo_Api_Gateway
 	 */
 	protected $gate;
 
 	/**
 	 * WC Logger.
 	 *
-	 * @var wc_get_logger|WC_Logger
+	 * @since 	1.0.0
+	 * @var     wc_get_logger|WC_Logger
 	 */
 	protected $log;
 
+    /**
+     * Construct
+     *
+	 * @since 	1.0.0
+	 * @return 	void
+     */
     public function __construct()
     {
 		$this->log  = ( function_exists( "wc_get_logger" ) ) ? wc_get_logger() : new WC_Logger();
@@ -47,6 +54,12 @@ class Triibo_Auth_App
         add_action( "wp_ajax_nopriv_taa_validate_account", [ $this, "validate_account" ] );
     }
 
+    /**
+     * Validate code sent by sms/email
+     *
+     * @since   1.0.0
+     * @return  void
+     */
     public function validate_code()
     {
         $result    = [
@@ -79,7 +92,7 @@ class Triibo_Auth_App
 					// passo 14 ( passo_comum )
                     $response = $this->gate->update_user_mkt( $cellphone, $email, "UPDATE" );
 					if ( !$response[ "success" ] || !$response[ "data" ][ "success" ] )
-						$this->log->add( $this->id, json_encode( $response ) );
+						$this->log->add( Triibo_Auth::DOMAIN, json_encode( $response ) );
 
                     self::make_login( $user_id );
 
@@ -120,6 +133,12 @@ class Triibo_Auth_App
         die();
     }
 
+    /**
+     * Validate account, if it exists connect, if not create
+     *
+     * @since   1.0.0
+     * @return  void
+     */
     public function new_account()
     {
         $result    = [
@@ -145,7 +164,7 @@ class Triibo_Auth_App
 
                 $response = $this->gate->update_user_mkt( $cellphone, $email, "CREATE" );
                 if ( !$response[ "success" ] || !$response[ "data" ][ "success" ] )
-                    $this->log->add( $this->id, json_encode( $response ) );
+                    $this->log->add( Triibo_Auth::DOMAIN, json_encode( $response ) );
 
                 self::make_login( $user->ID );
 
@@ -195,7 +214,7 @@ class Triibo_Auth_App
                 // passo 20 ( passo_comum )
                 $response = $this->gate->update_user_mkt( $cellphone, $email, "UPDATE" );
                 if ( !$response[ "success" ] || !$response[ "data" ][ "success" ] )
-                    $this->log->add( $this->id, json_encode( $response ) );
+                    $this->log->add( Triibo_Auth::DOMAIN, json_encode( $response ) );
 
                 self::make_login( $user_id );
 
@@ -219,6 +238,12 @@ class Triibo_Auth_App
         die();
     }
 
+    /**
+     * validate account, if it exists connect
+     *
+     * @since   1.0.0
+     * @return  void
+     */
     public function validate_account()
     {
         $result    = [
@@ -250,7 +275,7 @@ class Triibo_Auth_App
                 // passo 28 ( passo_comum )
                 $response = $this->gate->update_user_mkt( $cellphone, $email, "CREATE" );
                 if ( !$response[ "success" ] || !$response[ "data" ][ "success" ] )
-                    $this->log->add( $this->id, json_encode( $response ) );
+                    $this->log->add( Triibo_Auth::DOMAIN, json_encode( $response ) );
 
                 self::make_login( $user->ID );
 
@@ -274,6 +299,13 @@ class Triibo_Auth_App
         die();
     }
 
+    /**
+     * Log in to the account
+     *
+     * @since   1.0.0
+     * @param   integer $user_id
+     * @return  void
+     */
 	private static function make_login( int $user_id )
 	{
 		clean_user_cache( $user_id );
