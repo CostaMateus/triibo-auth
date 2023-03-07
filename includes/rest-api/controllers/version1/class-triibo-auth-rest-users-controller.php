@@ -261,7 +261,7 @@ class Triibo_Auth_Rest_Users_Controller extends WP_REST_Controller
      */
 	private function status()
 	{
-        $status = get_option( Triibo_Auth::DOMAIN . "_app_status" );
+        $status = get_option( TRIIBO_AUTH_ID . "_app_status" );
 		return $status == "on" ? true : false;
 	}
 
