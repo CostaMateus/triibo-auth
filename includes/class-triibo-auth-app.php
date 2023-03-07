@@ -1,7 +1,6 @@
 <?php
 /**
- * The file that defines the plugin class Triibo Auth App
- * A class definition that includes attributes and functions used in the admin area.
+ * The file that defines the plugin class Triibo-Auth-App
  *
  * @author  Mateus Costa <mateus@costamateus.com.br>
  * @package Triibo_Auth/Classes
@@ -9,12 +8,6 @@
  */
 defined( "ABSPATH" ) || exit;
 
-/**
- * The plugin class Triibo Auth App.
- *
- * This is used to define admin-specific hooks.
- * Also maintains the unique identifier of this plugin as well as the current version of the plugin.
- */
 class Triibo_Auth_App
 {
 	/**
@@ -37,7 +30,6 @@ class Triibo_Auth_App
      * Construct
      *
 	 * @since 	1.0.0
-	 * @return 	void
      */
     public function __construct()
     {
@@ -253,12 +245,12 @@ class Triibo_Auth_App
         ];
 
         $email     = $_POST[ "email" ];
-        $pass      = $_POST[ "pass" ];
+        $pass      = $_POST[ "pass"  ];
 
         $cellphone = get_transient( "_taa_triibo_cellphone" );
         delete_transient( "_taa_triibo_cellphone" );
 
-        $user = get_user_by( "email", $email );
+        $user      = get_user_by( "email", $email );
 
         if ( ! $user )
         {
