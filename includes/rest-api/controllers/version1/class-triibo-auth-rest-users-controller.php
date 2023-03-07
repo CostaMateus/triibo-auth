@@ -41,7 +41,7 @@ class Triibo_Auth_Rest_Users_Controller extends WP_REST_Controller
 	 * @since   1.0.0
 	 * @var 	string
 	 */
-	protected $id        = Triibo_Auth::DOMAIN . "_app";
+	protected $id        = TRIIBO_AUTH_APP;
 
 	/**
 	 * API Gateway.
@@ -182,7 +182,7 @@ class Triibo_Auth_Rest_Users_Controller extends WP_REST_Controller
 					// passo 10 ( passo_comum )
 					$response = $this->gate->update_user_mkt( $cellphone, $email, "ADD" );
 					if ( !$response[ "success" ] || !$response[ "data" ][ "success" ] )
-						$this->log->add( $this->id, json_encode( $response ) );
+						$this->log( json_encode( $response ) );
 
 					$this->make_login( $user_id, $url );
 				}
@@ -348,8 +348,20 @@ class Triibo_Auth_Rest_Users_Controller extends WP_REST_Controller
 
 		if ( $response[ "success" ] && $response[ "data" ][ "success" ] ) return true;
 
-		$this->log->add( $this->id, json_encode( $response ) );
+		$this->log( json_encode( $response ) );
 
 		return false;
 	}
+
+    /**
+     * Register log
+     *
+     * @since   1.0.0
+     * @param   string $message
+     * @return  void
+     */
+    private function log( string $message )
+    {
+        $this->log( $this->id, $message );
+    }
 }

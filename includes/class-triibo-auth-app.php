@@ -10,6 +10,14 @@ defined( "ABSPATH" ) || exit;
 
 class Triibo_Auth_App
 {
+    /**
+     * Undocumented variable
+     *
+     * @since   1.0.0
+     * @var     string
+     */
+    protected $id = TRIIBO_AUTH_APP;
+
 	/**
 	 * API Gateway.
 	 *
@@ -84,7 +92,7 @@ class Triibo_Auth_App
 					// passo 14 ( passo_comum )
                     $response = $this->gate->update_user_mkt( $cellphone, $email, "UPDATE" );
 					if ( !$response[ "success" ] || !$response[ "data" ][ "success" ] )
-						$this->log->add( Triibo_Auth::DOMAIN, json_encode( $response ) );
+						$this->log( json_encode( $response ) );
 
                     self::make_login( $user_id );
 
@@ -156,7 +164,7 @@ class Triibo_Auth_App
 
                 $response = $this->gate->update_user_mkt( $cellphone, $email, "CREATE" );
                 if ( !$response[ "success" ] || !$response[ "data" ][ "success" ] )
-                    $this->log->add( Triibo_Auth::DOMAIN, json_encode( $response ) );
+                    $this->log( json_encode( $response ) );
 
                 self::make_login( $user->ID );
 
@@ -206,7 +214,7 @@ class Triibo_Auth_App
                 // passo 20 ( passo_comum )
                 $response = $this->gate->update_user_mkt( $cellphone, $email, "UPDATE" );
                 if ( !$response[ "success" ] || !$response[ "data" ][ "success" ] )
-                    $this->log->add( Triibo_Auth::DOMAIN, json_encode( $response ) );
+                    $this->log( json_encode( $response ) );
 
                 self::make_login( $user_id );
 
@@ -267,7 +275,7 @@ class Triibo_Auth_App
                 // passo 28 ( passo_comum )
                 $response = $this->gate->update_user_mkt( $cellphone, $email, "CREATE" );
                 if ( !$response[ "success" ] || !$response[ "data" ][ "success" ] )
-                    $this->log->add( Triibo_Auth::DOMAIN, json_encode( $response ) );
+                    $this->log( json_encode( $response ) );
 
                 self::make_login( $user->ID );
 
@@ -305,4 +313,16 @@ class Triibo_Auth_App
 		wp_set_current_user( $user_id );
 		wp_set_auth_cookie( $user_id, true );
 	}
+
+    /**
+     * Register log
+     *
+     * @since   1.0.0
+     * @param   string $message
+     * @return  void
+     */
+    private function log( string $message )
+    {
+        $this->log( $this->id, $message );
+    }
 }
