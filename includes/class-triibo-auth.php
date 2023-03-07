@@ -451,19 +451,19 @@ class Triibo_Auth
 	 */
 	public function add_parts_taa()
 	{
-		require_once( dirname( __FILE__ ) . "/includes/modals/taa/new-account.php"      );
-		require_once( dirname( __FILE__ ) . "/includes/modals/taa/new-password.php"     );
-		require_once( dirname( __FILE__ ) . "/includes/modals/taa/validate-account.php" );
-		require_once( dirname( __FILE__ ) . "/includes/modals/taa/validate-code.php"    );
+		require_once( dirname( TRIIBO_AUTH_PLUGIN_FILE ) . "/includes/modals/taa/new-account.php"      );
+		require_once( dirname( TRIIBO_AUTH_PLUGIN_FILE ) . "/includes/modals/taa/new-password.php"     );
+		require_once( dirname( TRIIBO_AUTH_PLUGIN_FILE ) . "/includes/modals/taa/validate-account.php" );
+		require_once( dirname( TRIIBO_AUTH_PLUGIN_FILE ) . "/includes/modals/taa/validate-code.php"    );
 
 		$js_path  = "assets/js/frontend/taa-script.js";
 		$css_path = "assets/css/frontend/taa-style.css";
 
-		$js_ver   = date( "ymd-His", filemtime( plugin_dir_path( __FILE__ ) . $js_path  ) );
-		$css_ver  = date( "ymd-His", filemtime( plugin_dir_path( __FILE__ ) . $css_path ) );
+		$js_ver   = date( "ymd-His", filemtime( plugin_dir_path( TRIIBO_AUTH_PLUGIN_FILE ) . $js_path  ) );
+		$css_ver  = date( "ymd-His", filemtime( plugin_dir_path( TRIIBO_AUTH_PLUGIN_FILE ) . $css_path ) );
 
-		wp_enqueue_script( "taa_script", plugins_url( $js_path,  __FILE__ ), [ "jquery" ], $js_ver,  false );
-		wp_enqueue_style ( "taa_css",    plugins_url( $css_path, __FILE__ ), false,        $css_ver, "all" );
+		wp_enqueue_script( "taa_script", plugins_url( $js_path,  TRIIBO_AUTH_PLUGIN_FILE ), [ "jquery" ], $js_ver,  false );
+		wp_enqueue_style ( "taa_css",    plugins_url( $css_path, TRIIBO_AUTH_PLUGIN_FILE ), false,        $css_ver, "all" );
 
 		$this->localize_script( "taa_script" );
 	}
