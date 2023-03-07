@@ -46,70 +46,27 @@
         }
     } );
 
+    window.addEventListener( "click", function ( e ) {
 
-    window.taaSubmitValCode = function ()
-    {
-        window.taaDisableBtns();
-
-        $( taa_evc ).addClass( "taa-d-none" );
-        $( "#taa-code" ).removeClass( "taa-error-border" );
-
-        const code  = $( "#taa-code" ).val();
-        const email = $( "#taa-email" ).val();
-
-        if ( code != "" && code.length == 6 )
+        switch ( e.target.id )
         {
-            $.ajax( {
-                url : "/wp-admin/admin-ajax.php",
-                type: "POST",
-                data: {
-                    action : "taa_validate_code",
-                    code   : code,
-                    email  : email
-                },
-                success: function( data ) {
+            case "taa-btn-form-new-account":
+                e.preventDefault();
+                window.taaSubmitNewAccount();
+            break;
 
-                    let result = JSON.parse( data );
+            case "taa-btn-form-validate-account":
+                e.preventDefault();
+                window.taaSubmitValAccount();
+            break;
 
-                    if ( result.error )
-                    {
-                        window.taaEnableBtns();
-
-                        $( taa_evc ).removeClass( "taa-d-none" ).html( result.message );
-                        $( "#taa-code" ).addClass( "taa-error-border" );
-                    }
-                    else
-                    {
-                        switch ( result.code )
-                        {
-                            case 2000:
-                                window.taaRefresh();
-                            break;
-
-                            case 2001:
-                                $( taa_mvc ).addClass( "taa-d-none" );
-                                window.taaEnableBtns();
-                                $( taa_mna ).removeClass( "taa-d-none" );
-                                $( "#taa-new-acc-email" ).val( email );
-                            break;
-                        }
-                    }
-                },
-                error: function( err ) {
-                    window.taaAjaxError( err );
-                }
-            } );
-        }
-        else
-        {
-            window.taaEnableBtns();
-
-            let errorMsg = ( code == "" ) ? "Insira o código recebido" : "O código tem 6 dígitos" ;
-            $( taa_evc ).removeClass( "taa-d-none" ).html( errorMsg );
-            $( "#taa-code" ).addClass( "taa-error-border" );
+            case "taa-btn-form-validate-code":
+                e.preventDefault();
+                window.taaSubmitValCode();
+            break;
         }
 
-    }
+    }, false );
 
     window.taaSubmitNewAccount = function ()
     {
@@ -137,7 +94,7 @@
         else
         {
             $.ajax( {
-                url : "/wp-admin/admin-ajax.php",
+                url : taa_script_obj.ajaxurl,
                 type: "POST",
                 data: {
                     action : "taa_new_account",
@@ -195,7 +152,7 @@
         else
         {
             $.ajax( {
-                url : "/wp-admin/admin-ajax.php",
+                url : taa_script_obj.ajaxurl,
                 type: "POST",
                 data: {
                     action : "taa_validate_account",
@@ -226,34 +183,72 @@
         }
     }
 
+    window.taaSubmitValCode    = function ()
+    {
+        window.taaDisableBtns();
 
-    window.addEventListener( "click", function ( e ) {
+        $( taa_evc ).addClass( "taa-d-none" );
+        $( "#taa-code" ).removeClass( "taa-error-border" );
 
-        switch ( e.target.id )
+        const code  = $( "#taa-code" ).val();
+        const email = $( "#taa-email" ).val();
+
+        if ( code != "" && code.length == 6 )
         {
-            case "taa-btn-form-new-account":
-                e.preventDefault();
-                window.taaSubmitNewAccount();
-            break;
+            $.ajax( {
+                url : taa_script_obj.ajaxurl,
+                type: "POST",
+                data: {
+                    action : "taa_validate_code",
+                    code   : code,
+                    email  : email
+                },
+                success: function( data ) {
 
-            case "taa-btn-form-validate-account":
-                e.preventDefault();
-                window.taaSubmitValAccount();
-            break;
+                    let result = JSON.parse( data );
 
-            case "taa-btn-form-validate-code":
-                e.preventDefault();
-                window.taaSubmitValCode();
-            break;
+                    if ( result.error )
+                    {
+                        window.taaEnableBtns();
+
+                        $( taa_evc ).removeClass( "taa-d-none" ).html( result.message );
+                        $( "#taa-code" ).addClass( "taa-error-border" );
+                    }
+                    else
+                    {
+                        switch ( result.code )
+                        {
+                            case 2000:
+                                window.taaRefresh();
+                            break;
+
+                            case 2001:
+                                $( taa_mvc ).addClass( "taa-d-none" );
+                                window.taaEnableBtns();
+                                $( taa_mna ).removeClass( "taa-d-none" );
+                                $( "#taa-new-acc-email" ).val( email );
+                            break;
+                        }
+                    }
+                },
+                error: function( err ) {
+                    window.taaAjaxError( err );
+                }
+            } );
         }
+        else
+        {
+            window.taaEnableBtns();
 
-    }, false );
-
-
-
+            let errorMsg = ( code == "" ) ? "Insira o código recebido" : "O código tem 6 dígitos" ;
+            $( taa_evc ).removeClass( "taa-d-none" ).html( errorMsg );
+            $( "#taa-code" ).addClass( "taa-error-border" );
+        }
+    }
 
 
     // ==================================
+
 
     window.taaCloseModal = function ( e )
     {
