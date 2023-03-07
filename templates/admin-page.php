@@ -21,8 +21,8 @@
 
 	<form method="POST" action="options.php">
 		<?php
-			settings_fields( "triibo_auth_settings" );
-			do_settings_sections( "triibo_auth_settings" );
+			settings_fields( TRIIBO_AUTH_ID . "_settings" );
+			do_settings_sections( TRIIBO_AUTH_ID . "_settings" );
 			submit_button();
 		?>
 	</form>
@@ -32,9 +32,11 @@
 	( function ( $ ) {
 		"use strict";
 
+		let prefix = "<?=TRIIBO_AUTH_ID;?>";
+
 		$( document ).ready( function() {
-			let el1 = $( "#triibo_auth_checkout_status" ).parent().parent().parent().parent().prev().prev();
-			let el2 = $( "#triibo_auth_app_status"      ).parent().parent().parent().parent().prev().prev();
+			let el1 = $( `#${prefix}_checkout_status` ).parent().parent().parent().parent().prev().prev();
+			let el2 = $( `#${prefix}_login_status`    ).parent().parent().parent().parent().prev().prev();
 			el1.css( "border-top", "1px solid #CCC" ).css( "padding-top", "2rem" );
 			el2.css( "border-top", "1px solid #CCC" ).css( "padding-top", "2rem" );
 		} );
