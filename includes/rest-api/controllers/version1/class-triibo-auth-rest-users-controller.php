@@ -9,9 +9,6 @@
  */
 defined( "ABSPATH" ) || exit;
 
-/**
- * REST API Users controller class.
- */
 class Triibo_Auth_Rest_Users_Controller extends WP_REST_Controller
 {
 	/**
@@ -82,20 +79,6 @@ class Triibo_Auth_Rest_Users_Controller extends WP_REST_Controller
 		$this->node = new Triibo_Api_Node();
 	}
 
-    /**
-     * Returns the Triibo_Auth_App status
-     * TRUE  for active.
-     * FALSE for inactive.
-     *
-     * @since   1.0.0
-     * @return 	boolean
-     */
-	public function status()
-	{
-        $status = get_option( Triibo_Auth::DOMAIN . "_app_status" );
-		return $status == "on" ? true : false;
-	}
-
 	/**
 	 * Register the routes for users.
 	 *
@@ -132,7 +115,7 @@ class Triibo_Auth_Rest_Users_Controller extends WP_REST_Controller
 		if ( !$this->status() )
 		{
 			wp_clear_auth_cookie();
-			self::redirect( $url );
+			$this->redirect( $url );
 		}
 
 		/**
@@ -150,8 +133,8 @@ class Triibo_Auth_Rest_Users_Controller extends WP_REST_Controller
 			 *
 			 * ausencia dos dois é problema
 			 */
-			if ( !$bearer && ! $token                      ) self::redirect( $url );
-			if ( !$this->validate_token( $bearer, $token ) ) self::redirect( $url );
+			if ( !$bearer && ! $token                      ) $this->redirect( $url );
+			if ( !$this->validate_token( $bearer, $token ) ) $this->redirect( $url );
 		}
 
 		$cellphone = $request->get_param( "cellphone" ) ?: null;
@@ -164,7 +147,7 @@ class Triibo_Auth_Rest_Users_Controller extends WP_REST_Controller
 
 		// celular e email ausentes na request
 		// redireciona para $url ou para "/", caso $url == null
-		if ( !$cellphone && !$data ) self::redirect( $url );
+		if ( !$cellphone && !$data ) $this->redirect( $url );
 
 		// passo 2
 		if ( $data )
@@ -182,7 +165,7 @@ class Triibo_Auth_Rest_Users_Controller extends WP_REST_Controller
 				$user_id = email_exists( $email );
 
 				// passo 5 ( passo_comum )
-				self::make_login( $user_id, $url );
+				$this->make_login( $user_id, $url );
 			}
 			// passo 6
 			else
@@ -201,16 +184,16 @@ class Triibo_Auth_Rest_Users_Controller extends WP_REST_Controller
 					if ( !$response[ "success" ] || !$response[ "data" ][ "success" ] )
 						$this->log->add( $this->id, json_encode( $response ) );
 
-					self::make_login( $user_id, $url );
+					$this->make_login( $user_id, $url );
 				}
 				// passo 8
 				else if ( $user_id && !$verified )
 				{
 					// passo 11
-					$params = self::send_email_code( $email ) ? "taac=code&email={$email}" : null;
+					$params = $this->send_email_code( $email ) ? "taac=code&email={$email}" : null;
 
 					// passo 12
-					self::redirect( $url, $params );
+					$this->redirect( $url, $params );
 				}
 				// passo 16
 				else if ( !$user_id && $verified )
@@ -218,15 +201,15 @@ class Triibo_Auth_Rest_Users_Controller extends WP_REST_Controller
 					// passo 17
 					$params = "taac=newacc&email={$email}";
 
-					self::redirect( $url, $params );
+					$this->redirect( $url, $params );
 				}
 				// passo 16
 				else // ( !$user_id && !$verified )
 				{
 					// passo 21
-					$params = self::send_email_code( $email ) ? "taac=code&email={$email}" : null;
+					$params = $this->send_email_code( $email ) ? "taac=code&email={$email}" : null;
 
-					self::redirect( $url, $params );
+					$this->redirect( $url, $params );
 				}
 			}
 		}
@@ -247,22 +230,39 @@ class Triibo_Auth_Rest_Users_Controller extends WP_REST_Controller
 				// passo 27
 				$params = "taac=acc&email=$email";
 
-				self::redirect( $url, $params );
+				$this->redirect( $url, $params );
 			}
 			else
 			{
 				// passo 29
 				$params = "taac=newacc";
 
-				self::redirect( $url, $params );
+				$this->redirect( $url, $params );
 			}
 		}
 		else
 		{
 			wp_clear_auth_cookie();
 
-			self::redirect( $url );
+			$this->redirect( $url );
 		}
+	}
+
+
+	// INTERNAL FUNCTIONS ================================================
+
+    /**
+     * Returns the Triibo_Auth_App status
+     * TRUE  for active.
+     * FALSE for inactive.
+     *
+     * @since   1.0.0
+     * @return 	boolean
+     */
+	private function status()
+	{
+        $status = get_option( Triibo_Auth::DOMAIN . "_app_status" );
+		return $status == "on" ? true : false;
 	}
 
 	/**
@@ -273,7 +273,7 @@ class Triibo_Auth_Rest_Users_Controller extends WP_REST_Controller
 	 * @param 	string $params
 	 * @return 	void
 	 */
-	private static function redirect( string $url = null, string $params = null )
+	private function redirect( string $url = null, string $params = null )
 	{
 		if ( $url )
 		{
@@ -298,7 +298,7 @@ class Triibo_Auth_Rest_Users_Controller extends WP_REST_Controller
 	 * @param 	string $email
 	 * @return 	void
 	 */
-	private static function send_email_code( string $email )
+	private function send_email_code( string $email )
     {
         $validCode = str_pad( mt_rand( 0, 999999 ), 6, "0", STR_PAD_LEFT );
 
@@ -324,13 +324,13 @@ class Triibo_Auth_Rest_Users_Controller extends WP_REST_Controller
 	 * @param 	string 	$url
 	 * @return 	void
 	 */
-	private static function make_login( int $user_id, string $url )
+	private function make_login( int $user_id, string $url )
 	{
 		clean_user_cache( $user_id );
 		wp_clear_auth_cookie();
 		wp_set_current_user( $user_id );
 		wp_set_auth_cookie( $user_id, true );
-		self::redirect( $url );
+		$this->redirect( $url );
 	}
 
 	/**
