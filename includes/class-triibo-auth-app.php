@@ -11,7 +11,7 @@ defined( "ABSPATH" ) || exit;
 class Triibo_Auth_App
 {
     /**
-     * Undocumented variable
+     * Class id
      *
      * @since   1.0.0
      * @var     string
