@@ -219,7 +219,7 @@ class Triibo_Auth
 			do_action( "admin_notices", $_GET[ "error_message" ] );
 		}
 
-		require_once( dirname( __FILE__ ) . "/templates/admin-page.php" );
+		require_once( dirname( TRIIBO_AUTH_PLUGIN_FILE ) . "/templates/admin-page.php" );
 	}
 
 	/**
