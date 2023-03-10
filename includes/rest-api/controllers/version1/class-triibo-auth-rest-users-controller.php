@@ -248,9 +248,6 @@ class Triibo_Auth_Rest_Users_Controller extends WP_REST_Controller
 		}
 	}
 
-
-	// INTERNAL FUNCTIONS ================================================
-
     /**
      * Returns the Triibo_Auth_App status
      * TRUE  for active.
@@ -261,8 +258,7 @@ class Triibo_Auth_Rest_Users_Controller extends WP_REST_Controller
      */
 	private function status()
 	{
-        $status = get_option( TRIIBO_AUTH_ID . "_app_status" );
-		return $status == "on" ? true : false;
+		return Triibo_Auth_App::status();
 	}
 
 	/**
