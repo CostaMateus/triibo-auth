@@ -59,6 +59,20 @@ class Triibo_Auth_App
     }
 
     /**
+     * Returns the Triibo_Auth_App status
+     * TRUE  for active.
+     * FALSE for inactive.
+     *
+     * @since   1.0.0
+     * @return 	boolean
+     */
+    public static function status()
+	{
+        $status = get_option( TRIIBO_AUTH_ID . "_app_status" );
+		return $status == "on" ? true : false;
+	}
+
+    /**
      * Required modals
      *
      * @since   1.0.0
