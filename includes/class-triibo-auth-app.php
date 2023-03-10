@@ -42,7 +42,11 @@ class Triibo_Auth_App
     public function __construct()
     {
 		$this->log  = ( function_exists( "wc_get_logger" ) ) ? wc_get_logger() : new WC_Logger();
+
 		$this->gate = new Triibo_Api_Gateway();
+
+		add_action( "wp_footer",                           [ $this, "add_modals"       ] );
+		add_action( "wp_footer",                           [ $this, "add_script"       ] );
 
         add_action( "wp_ajax_taa_validate_code",           [ $this, "validate_code"    ] );
         add_action( "wp_ajax_nopriv_taa_validate_code",    [ $this, "validate_code"    ] );
@@ -52,6 +56,34 @@ class Triibo_Auth_App
 
         add_action( "wp_ajax_taa_validate_account",        [ $this, "validate_account" ] );
         add_action( "wp_ajax_nopriv_taa_validate_account", [ $this, "validate_account" ] );
+    }
+
+    /**
+     * Required modals
+     *
+     * @since   1.0.0
+     * @return  void
+     */
+    public function add_modals()
+    {
+		require_once( dirname( TRIIBO_AUTH_PLUGIN_FILE ) . "/includes/modals/taa/new-account.php"      );
+		require_once( dirname( TRIIBO_AUTH_PLUGIN_FILE ) . "/includes/modals/taa/new-password.php"     );
+		require_once( dirname( TRIIBO_AUTH_PLUGIN_FILE ) . "/includes/modals/taa/validate-account.php" );
+		require_once( dirname( TRIIBO_AUTH_PLUGIN_FILE ) . "/includes/modals/taa/validate-code.php"    );
+    }
+
+    /**
+     * Required js
+     *
+     * @since   1.0.0
+     * @return  void
+     */
+    public function add_script()
+    {
+		$js_path = "assets/js/frontend/taa-script.js";
+		$js_ver  = date( "ymd-His", filemtime( plugin_dir_path( TRIIBO_AUTH_PLUGIN_FILE ) . $js_path  ) );
+		wp_enqueue_script( "taa_script", plugins_url( $js_path, TRIIBO_AUTH_PLUGIN_FILE ), [ "jquery" ], $js_ver,  false );
+		wp_localize_script( "taa_script", "taa_script_obj", [ "ajaxurl" => admin_url( "admin-ajax.php" ) ] );
     }
 
     /**
