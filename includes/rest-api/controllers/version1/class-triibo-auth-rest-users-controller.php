@@ -297,20 +297,9 @@ class Triibo_Auth_Rest_Users_Controller extends WP_REST_Controller
 	 */
 	private function send_email_code( string $email )
     {
-        $validCode = str_pad( mt_rand( 0, 999999 ), 6, "0", STR_PAD_LEFT );
+        $response = Triibo_Auth::send_code_by_email( $email );
 
-        $to      = $email;
-        $subject = "Seu código de ativação";
-        $body    = "<html lang='pt-br'><body><p>Seu código de ativação do Marketplace Triibo é:</p><p style='font-size:18px;'><b>$validCode</b></p><p style='font-size:12px;margin:0'>Não compartilhe esse código com ninguém.</p></body></html>";
-        $headers = [ "Content-Type: text/html; charset=UTF-8","From: Marketplace Triibo <equipemarketplace@triibo.com.br>" ];
-
-        if ( wp_mail( $to, $subject, $body, $headers ) )
-		{
-			set_transient( "_taa_triibo_code", $validCode, 300 );
-			return true;
-		}
-
-		return false;
+		return ( $response[ "success" ]) ? true : false ;
     }
 
 	/**
