@@ -45,17 +45,20 @@ class Triibo_Auth_App
 
 		$this->gate = new Triibo_Api_Gateway();
 
-		add_action( "wp_footer",                           [ $this, "add_modals"       ] );
-		add_action( "wp_footer",                           [ $this, "add_script"       ] );
+		add_action( "wp_footer",                            [ $this, "add_modals"        ] );
+		add_action( "wp_footer",                            [ $this, "add_script"        ] );
 
-        add_action( "wp_ajax_taa_validate_code",           [ $this, "validate_code"    ] );
-        add_action( "wp_ajax_nopriv_taa_validate_code",    [ $this, "validate_code"    ] );
+        add_action( "wp_ajax_taa_validate_code",            [ $this, "validate_code"     ] );
+        add_action( "wp_ajax_nopriv_taa_validate_code",     [ $this, "validate_code"     ] );
 
-        add_action( "wp_ajax_taa_new_account",             [ $this, "new_account"      ] );
-        add_action( "wp_ajax_nopriv_taa_new_account",      [ $this, "new_account"      ] );
+        add_action( "wp_ajax_taa_new_account",              [ $this, "new_account"       ] );
+        add_action( "wp_ajax_nopriv_taa_new_account",       [ $this, "new_account"       ] );
 
-        add_action( "wp_ajax_taa_validate_account",        [ $this, "validate_account" ] );
-        add_action( "wp_ajax_nopriv_taa_validate_account", [ $this, "validate_account" ] );
+        add_action( "wp_ajax_taa_validate_account",         [ $this, "validate_account"  ] );
+        add_action( "wp_ajax_nopriv_taa_validate_account",  [ $this, "validate_account"  ] );
+
+        add_action( "wp_ajax_taa_resend_email_code",        [ $this, "resend_email_code" ] );
+        add_action( "wp_ajax_nopriv_taa_resend_email_code", [ $this, "resend_email_code" ] );
     }
 
     /**
@@ -84,6 +87,8 @@ class Triibo_Auth_App
 		require_once( dirname( TRIIBO_AUTH_PLUGIN_FILE ) . "/includes/modals/taa/new-password.php"     );
 		require_once( dirname( TRIIBO_AUTH_PLUGIN_FILE ) . "/includes/modals/taa/validate-account.php" );
 		require_once( dirname( TRIIBO_AUTH_PLUGIN_FILE ) . "/includes/modals/taa/validate-code.php"    );
+
+		wp_localize_script( "taa_script", "taa_script_obj", [ "ajaxurl"  => admin_url( "admin-ajax.php" ) ] );
     }
 
     /**
@@ -117,8 +122,8 @@ class Triibo_Auth_App
         $code      = $_POST[ "code"  ];
         $email     = $_POST[ "email" ];
 
-        $sent_code = get_transient( "_taa_triibo_code" );
-        delete_transient( "_taa_triibo_code" );
+        $sent_code = get_transient( "_ta_global_code" );
+        delete_transient( "_ta_global_code" );
 
         if ( $sent_code )
         {
@@ -342,6 +347,23 @@ class Triibo_Auth_App
         }
 
         echo json_encode( $result );
+        die();
+    }
+
+    /**
+     * Resend code by email
+     *
+     * @since   1.0.0
+     * @return  void
+     */
+    public function resend_email_code()
+    {
+        $response = Triibo_Auth::send_code_by_email( $_POST[ "email" ] );
+
+        if ( !$response[ "success" ] )
+            $this->log( json_encode( $response ) );
+
+        echo json_encode( $response );
         die();
     }
 
