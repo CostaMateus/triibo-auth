@@ -17,6 +17,10 @@
     let taa_eva = document.getElementById( "taa-error-validate-acc"        );
     let taa_evc = document.getElementById( "taa-error-validate-code"       );
 
+    let taa_cd         = 0;
+    let taa_intervalId = null;
+    let taa_ajaxurl    = taa_script_obj.ajaxurl;
+
     $( document ).ready( function() {
 
         const queryString = window.location.search;
@@ -34,6 +38,9 @@
                 break;
 
                 case "code":
+                    taa_cd         = 5;
+                    taa_intervalId = setInterval( taaCountdown, 1000 );
+                    $( "#taa-resend-count" ).removeClass( "ta-d-none" );
                     $( taa_mvc ).removeClass( "ta-d-none" );
                     $( "#taa-email" ).val( email );
                 break;
@@ -52,25 +59,40 @@
         {
             case "taa-btn-form-new-account":
                 e.preventDefault();
-                window.taaSubmitNewAccount();
+                taaSubmitNewAccount();
             break;
 
             case "taa-btn-form-validate-account":
                 e.preventDefault();
-                window.taaSubmitValAccount();
+                taaSubmitValAccount();
             break;
 
             case "taa-btn-form-validate-code":
                 e.preventDefault();
-                window.taaSubmitValCode();
+                taaSubmitValCode();
             break;
         }
 
     }, false );
 
+    window.taaCountdown = function()
+    {
+        if ( taa_cd == 0 )
+        {
+            clearInterval( taa_intervalId );
+            $( "#taa-resend-count" ).addClass( "ta-d-none" ).html( "Reenviar código em 40" );
+            $( "#taa-resend-code"  ).removeClass( "ta-d-none" );
+        }
+        else
+        {
+            $( "#taa-resend-count" ).html( `Reenviar código em ${taa_cd}` );
+            taa_cd -= 1;
+        }
+    }
+
     window.taaSubmitNewAccount = function ()
     {
-        window.taaDisableBtns();
+        taaDisableBtns();
 
         $( taa_ena ).addClass( "ta-d-none" );
         $( "#taa-new-acc-email" ).removeClass( "ta-error-border" );
@@ -81,13 +103,13 @@
 
         if ( email == "" )
         {
-            window.taaEnableBtns();
+            taaEnableBtns();
             $( taa_ena ).removeClass( "ta-d-none" ).html( "Informe um e-mail válido" );
             $( "#taa-new-acc-email" ).addClass( "ta-error-border" );
         }
         else if ( pass1 == "" )
         {
-            window.taaEnableBtns();
+            taaEnableBtns();
             $( taa_ena ).removeClass( "ta-d-none" ).html( "Informe uma senha" );
             $( "#taa-new-acc-pass1" ).addClass( "ta-error-border" );
         }
@@ -107,7 +129,7 @@
 
                     if ( result.error )
                     {
-                        window.taaEnableBtns();
+                        taaEnableBtns();
 
                         $( taa_ena ).removeClass( "ta-d-none" ).html( result.message );
                         $( "#taa-code" ).addClass( "ta-error-border" );
@@ -116,11 +138,11 @@
                     }
                     else
                     {
-                        window.taaRefresh();
+                        taaRefresh();
                     }
                 },
                 error: function( err ) {
-                    window.taaAjaxError( err );
+                    taaAjaxError( err );
                 }
             } );
         }
@@ -128,7 +150,7 @@
 
     window.taaSubmitValAccount = function ()
     {
-        window.taaDisableBtns();
+        taaDisableBtns();
 
         $( taa_eva ).addClass( "ta-d-none" );
         $( "#taa-validate-acc-email" ).removeClass( "ta-error-border" );
@@ -139,13 +161,13 @@
 
         if ( email == "" )
         {
-            window.taaEnableBtns();
+            taaEnableBtns();
             $( taa_eva ).removeClass( "ta-d-none" ).html( "Informe um e-mail válido" );
             $( "#taa-validate-acc-email" ).addClass( "ta-error-border" );
         }
         else if ( pass == "" )
         {
-            window.taaEnableBtns();
+            taaEnableBtns();
             $( taa_eva ).removeClass( "ta-d-none" ).html( "Informe uma senha" );
             $( "#taa-validate-acc-pass" ).addClass( "ta-error-border" );
         }
@@ -165,7 +187,7 @@
 
                     if ( result.error )
                     {
-                        window.taaEnableBtns();
+                        taaEnableBtns();
 
                         $( taa_eva ).removeClass( "ta-d-none" ).html( "E-mail e/ou senha incorreta" );
                         $( "#taa-validate-acc-email" ).addClass( "ta-error-border" );
@@ -173,11 +195,11 @@
                     }
                     else
                     {
-                        window.taaRefresh();
+                        taaRefresh();
                     }
                 },
                 error: function( err ) {
-                    window.taaAjaxError( err );
+                    taaAjaxError( err );
                 }
             } );
         }
@@ -185,7 +207,7 @@
 
     window.taaSubmitValCode    = function ()
     {
-        window.taaDisableBtns();
+        taaDisableBtns();
 
         $( taa_evc ).addClass( "ta-d-none" );
         $( "#taa-code" ).removeClass( "ta-error-border" );
@@ -209,7 +231,7 @@
 
                     if ( result.error )
                     {
-                        window.taaEnableBtns();
+                        taaEnableBtns();
 
                         $( taa_evc ).removeClass( "ta-d-none" ).html( result.message );
                         $( "#taa-code" ).addClass( "ta-error-border" );
@@ -219,12 +241,12 @@
                         switch ( result.code )
                         {
                             case 2000:
-                                window.taaRefresh();
+                                taaRefresh();
                             break;
 
                             case 2001:
                                 $( taa_mvc ).addClass( "ta-d-none" );
-                                window.taaEnableBtns();
+                                taaEnableBtns();
                                 $( taa_mna ).removeClass( "ta-d-none" );
                                 $( "#taa-new-acc-email" ).val( email );
                             break;
@@ -232,18 +254,64 @@
                     }
                 },
                 error: function( err ) {
-                    window.taaAjaxError( err );
+                    taaAjaxError( err );
                 }
             } );
         }
         else
         {
-            window.taaEnableBtns();
+            taaEnableBtns();
 
             let errorMsg = ( code == "" ) ? "Insira o código recebido" : "O código tem 6 dígitos" ;
             $( taa_evc ).removeClass( "ta-d-none" ).html( errorMsg );
             $( "#taa-code" ).addClass( "ta-error-border" );
         }
+    }
+
+    window.taaResendCodeEmail  = function ()
+    {
+        taaDisableBtns();
+
+        $( taa_evc            ).addClass( "ta-d-none" );
+        $( "#taa-resend-code" ).addClass( "ta-d-none" );
+        $( "#taa-code"        ).removeClass( "ta-error-border" );
+
+        let taa_email = $( "#taa-email" ).val();
+
+        $.ajax( {
+            url  : taa_ajaxurl,
+            type : "POST",
+            data : {
+                action : "taa_resend_email_code",
+                email  : taa_email
+            },
+            success: function( data ) {
+                let result = JSON.parse( data );
+
+                taaEnableBtns();
+
+                if ( !result.success )
+                {
+                    $( taa_evc ).removeClass( "ta-d-none" ).html( result.error.message );
+                }
+                else
+                {
+                    $( "#taa-code" ).focus();
+                    $( "#taa-resent-code"  ).removeClass( "ta-d-none" );
+
+                    taa_cd         = 40;
+                    taa_intervalId = setInterval( taaCountdown, 1000 );
+                    $( "#taa-resend-count" ).removeClass( "ta-d-none" );
+
+                    setTimeout( function() {
+                        $( "#taa-resent-code" ).addClass( "ta-d-none" );
+                    }, 3000 );
+                }
+            },
+            error: function( err ) {
+                taaAjaxError( err );
+            }
+        } );
     }
 
     window.taaCloseModal = function ( e )
@@ -269,7 +337,7 @@
     window.taaAjaxError = function ( err )
     {
         console.log( err );
-        window.taaRefresh();
+        taaRefresh();
     }
 
     window.taaRefresh = function ()
