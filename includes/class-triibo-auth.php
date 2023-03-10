@@ -443,6 +443,56 @@ class Triibo_Auth
 	}
 
 	/**
+	 * Send code by email
+	 *
+	 * @since 	1.0.0
+	 * @param 	string $email
+	 * @return 	array
+	 */
+	public static function send_code_by_email( string $email )
+	{
+        $validCode = str_pad( mt_rand( 0, 999999 ), 6, "0", STR_PAD_LEFT );
+
+        set_transient( "_triibo_code", $validCode );
+
+        $to        = $email;
+        $subject   = "Seu código de ativação";
+        $body      = "<html lang='pt-br'>
+			<body>
+				<p>Seu código de ativação do Marketplace Triibo é:</p>
+				<p style='font-size:18px;'><b>$validCode</b></p>
+				<p style='font-size:12px;margin:0'>Não compartilhe esse código com ninguém.</p>
+			</body>
+		</html>";
+
+        $headers   = array( "Content-Type: text/html; charset=UTF-8","From: Marketplace Triibo <equipemarketplace@triibo.com.br>" );
+        $sent      = wp_mail( $to, $subject, $body, $headers );
+
+        if ( $sent )
+        {
+			set_transient( "_ta_global_code", $validCode, 300 );
+
+            return [
+				"success" => true,
+				"data"    => [
+					"message" => "Código reenviado",
+                    "code"    => 200,
+                ],
+            ];
+        }
+        else
+        {
+            return [
+                "success" => false,
+                "error"   => [
+                    "message" => "Falha ao reenviar do código por e-mail",
+                    "code"    => 500,
+                ],
+            ];
+        }
+	}
+
+	/**
 	 * Includes global css
 	 *
 	 * @since 	1.0.0
@@ -452,6 +502,6 @@ class Triibo_Auth
 	{
 		$css_path = "assets/css/frontend/style.css";
 		$css_ver  = date( "ymd-His", filemtime( plugin_dir_path( TRIIBO_AUTH_PLUGIN_FILE ) . $css_path ) );
-		wp_enqueue_style ( "taa_css", plugins_url( $css_path, TRIIBO_AUTH_PLUGIN_FILE ), false, $css_ver, "all" );
+		wp_enqueue_style ( "ta_global_css", plugins_url( $css_path, TRIIBO_AUTH_PLUGIN_FILE ), false, $css_ver, "all" );
 	}
 }
