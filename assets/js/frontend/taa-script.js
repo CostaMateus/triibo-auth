@@ -3,7 +3,7 @@
     "use strict";
 
     let taa_mna = document.getElementById( "taa-modal-new-account"         );
-    let taa_mnp = document.getElementById( "taa-modal-new-password"        );
+    // let taa_mnp = document.getElementById( "taa-modal-new-password"        );
     let taa_mva = document.getElementById( "taa-modal-validate-account"    );
     let taa_mvc = document.getElementById( "taa-modal-validate-code"       );
 
@@ -13,7 +13,7 @@
     let taa_bvc = document.getElementById( "taa-btn-form-validate-code"    );
 
     let taa_ena = document.getElementById( "taa-error-new-acc"             );
-    let taa_enp = document.getElementById( "taa-error-new-pass"            );
+    // let taa_enp = document.getElementById( "taa-error-new-pass"            );
     let taa_eva = document.getElementById( "taa-error-validate-acc"        );
     let taa_evc = document.getElementById( "taa-error-validate-code"       );
 
@@ -29,17 +29,17 @@
             switch ( code )
             {
                 case "acc":
-                    $( taa_mva ).removeClass( "taa-d-none" );
+                    $( taa_mva ).removeClass( "ta-d-none" );
                     $( "#taa-validate-acc-email" ).val( email );
                 break;
 
                 case "code":
-                    $( taa_mvc ).removeClass( "taa-d-none" );
+                    $( taa_mvc ).removeClass( "ta-d-none" );
                     $( "#taa-email" ).val( email );
                 break;
 
                 case "newacc":
-                    $( taa_mna ).removeClass( "taa-d-none" );
+                    $( taa_mna ).removeClass( "ta-d-none" );
                     if ( email ) $( "#taa-new-acc-email" ).val( email );
                 break;
             }
@@ -72,9 +72,9 @@
     {
         window.taaDisableBtns();
 
-        $( taa_ena ).addClass( "taa-d-none" );
-        $( "#taa-new-acc-email" ).removeClass( "taa-error-border" );
-        $( "#taa-new-acc-pass1" ).removeClass( "taa-error-border" );
+        $( taa_ena ).addClass( "ta-d-none" );
+        $( "#taa-new-acc-email" ).removeClass( "ta-error-border" );
+        $( "#taa-new-acc-pass1" ).removeClass( "ta-error-border" );
 
         const email = $( "#taa-new-acc-email" ).val();
         const pass1 = $( "#taa-new-acc-pass1" ).val();
@@ -82,14 +82,14 @@
         if ( email == "" )
         {
             window.taaEnableBtns();
-            $( taa_ena ).removeClass( "taa-d-none" ).html( "Informe um e-mail válido" );
-            $( "#taa-new-acc-email" ).addClass( "taa-error-border" );
+            $( taa_ena ).removeClass( "ta-d-none" ).html( "Informe um e-mail válido" );
+            $( "#taa-new-acc-email" ).addClass( "ta-error-border" );
         }
         else if ( pass1 == "" )
         {
             window.taaEnableBtns();
-            $( taa_ena ).removeClass( "taa-d-none" ).html( "Informe uma senha" );
-            $( "#taa-new-acc-pass1" ).addClass( "taa-error-border" );
+            $( taa_ena ).removeClass( "ta-d-none" ).html( "Informe uma senha" );
+            $( "#taa-new-acc-pass1" ).addClass( "ta-error-border" );
         }
         else
         {
@@ -109,10 +109,10 @@
                     {
                         window.taaEnableBtns();
 
-                        $( taa_ena ).removeClass( "taa-d-none" ).html( result.message );
-                        $( "#taa-code" ).addClass( "taa-error-border" );
-                        $( "#taa-new-acc-email" ).addClass( "taa-error-border" );
-                        $( "#taa-new-acc-pass1" ).addClass( "taa-error-border" );
+                        $( taa_ena ).removeClass( "ta-d-none" ).html( result.message );
+                        $( "#taa-code" ).addClass( "ta-error-border" );
+                        $( "#taa-new-acc-email" ).addClass( "ta-error-border" );
+                        $( "#taa-new-acc-pass1" ).addClass( "ta-error-border" );
                     }
                     else
                     {
@@ -130,9 +130,9 @@
     {
         window.taaDisableBtns();
 
-        $( taa_eva ).addClass( "taa-d-none" );
-        $( "#taa-validate-acc-email" ).removeClass( "taa-error-border" );
-        $( "#taa-validate-acc-pass"  ).removeClass( "taa-error-border" );
+        $( taa_eva ).addClass( "ta-d-none" );
+        $( "#taa-validate-acc-email" ).removeClass( "ta-error-border" );
+        $( "#taa-validate-acc-pass"  ).removeClass( "ta-error-border" );
 
         const email = $( "#taa-validate-acc-email" ).val();
         const pass  = $( "#taa-validate-acc-pass"  ).val();
@@ -140,14 +140,14 @@
         if ( email == "" )
         {
             window.taaEnableBtns();
-            $( taa_eva ).removeClass( "taa-d-none" ).html( "Informe um e-mail válido" );
-            $( "#taa-validate-acc-email" ).addClass( "taa-error-border" );
+            $( taa_eva ).removeClass( "ta-d-none" ).html( "Informe um e-mail válido" );
+            $( "#taa-validate-acc-email" ).addClass( "ta-error-border" );
         }
         else if ( pass == "" )
         {
             window.taaEnableBtns();
-            $( taa_eva ).removeClass( "taa-d-none" ).html( "Informe uma senha" );
-            $( "#taa-validate-acc-pass" ).addClass( "taa-error-border" );
+            $( taa_eva ).removeClass( "ta-d-none" ).html( "Informe uma senha" );
+            $( "#taa-validate-acc-pass" ).addClass( "ta-error-border" );
         }
         else
         {
@@ -167,9 +167,9 @@
                     {
                         window.taaEnableBtns();
 
-                        $( taa_eva ).removeClass( "taa-d-none" ).html( "E-mail e/ou senha incorreta" );
-                        $( "#taa-validate-acc-email" ).addClass( "taa-error-border" );
-                        $( "#taa-validate-acc-pass"  ).addClass( "taa-error-border" );
+                        $( taa_eva ).removeClass( "ta-d-none" ).html( "E-mail e/ou senha incorreta" );
+                        $( "#taa-validate-acc-email" ).addClass( "ta-error-border" );
+                        $( "#taa-validate-acc-pass"  ).addClass( "ta-error-border" );
                     }
                     else
                     {
@@ -187,8 +187,8 @@
     {
         window.taaDisableBtns();
 
-        $( taa_evc ).addClass( "taa-d-none" );
-        $( "#taa-code" ).removeClass( "taa-error-border" );
+        $( taa_evc ).addClass( "ta-d-none" );
+        $( "#taa-code" ).removeClass( "ta-error-border" );
 
         const code  = $( "#taa-code" ).val();
         const email = $( "#taa-email" ).val();
@@ -211,8 +211,8 @@
                     {
                         window.taaEnableBtns();
 
-                        $( taa_evc ).removeClass( "taa-d-none" ).html( result.message );
-                        $( "#taa-code" ).addClass( "taa-error-border" );
+                        $( taa_evc ).removeClass( "ta-d-none" ).html( result.message );
+                        $( "#taa-code" ).addClass( "ta-error-border" );
                     }
                     else
                     {
@@ -223,9 +223,9 @@
                             break;
 
                             case 2001:
-                                $( taa_mvc ).addClass( "taa-d-none" );
+                                $( taa_mvc ).addClass( "ta-d-none" );
                                 window.taaEnableBtns();
-                                $( taa_mna ).removeClass( "taa-d-none" );
+                                $( taa_mna ).removeClass( "ta-d-none" );
                                 $( "#taa-new-acc-email" ).val( email );
                             break;
                         }
@@ -241,32 +241,28 @@
             window.taaEnableBtns();
 
             let errorMsg = ( code == "" ) ? "Insira o código recebido" : "O código tem 6 dígitos" ;
-            $( taa_evc ).removeClass( "taa-d-none" ).html( errorMsg );
-            $( "#taa-code" ).addClass( "taa-error-border" );
+            $( taa_evc ).removeClass( "ta-d-none" ).html( errorMsg );
+            $( "#taa-code" ).addClass( "ta-error-border" );
         }
     }
-
-
-    // ==================================
-
 
     window.taaCloseModal = function ( e )
     {
         const id = e.id.replace( "close", "modal" );
-        $( `#${id}` ).addClass( "taa-d-none" );
+        $( `#${id}` ).addClass( "ta-d-none" );
     }
 
     window.taaDisableBtns = function ()
     {
         [ taa_bna, taa_bnp, taa_bva, taa_bvc ].forEach( ( e ) => {
-            $( e ).prop( "disabled", "disabled" ).find( "div" ).removeClass( "taa-d-none" );
+            $( e ).prop( "disabled", "disabled" ).find( "div" ).removeClass( "ta-d-none" );
         } );
     }
 
     window.taaEnableBtns = function ()
     {
         [ taa_bna, taa_bnp, taa_bva, taa_bvc ].forEach( ( e ) => {
-            $( e ).prop( "disabled", null ).find( "div" ).addClass( "taa-d-none" );
+            $( e ).prop( "disabled", null ).find( "div" ).addClass( "ta-d-none" );
         } );
     }
 
