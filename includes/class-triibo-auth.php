@@ -110,10 +110,8 @@ class Triibo_Auth
 		add_action( "admin_init", 					       [ $this, "register_and_build_fields" ]     );
 		add_action( "admin_menu",                          [ $this, "add_submenu_page"          ], 11 );
 		add_action( "triibo_api_service_add_button",       [ $this, "add_btn"                   ], 11 );
-		add_action( "triibo_api_service_list_plugin_gate", [ $this, "add_info_dependency"       ],    );
-		add_action( "wp_footer",                           [ $this, "add_parts_taa"             ],    );
-		// add_action( "wp_footer",                           [ $this, "add_parts_tal"             ],    );
-		// add_action( "wp_footer",                           [ $this, "add_parts_tac"             ],    );
+		add_action( "triibo_api_service_list_plugin_gate", [ $this, "add_info_dependency"       ]     );
+		add_action( "wp_footer",                           [ $this, "add_global_css"            ]     );
 	}
 
 	/**
@@ -137,8 +135,8 @@ class Triibo_Auth
     {
 		require_once( dirname( TRIIBO_AUTH_PLUGIN_FILE ) . "/includes/rest-api/class-triibo-auth-rest-api.php" );
 		require_once( dirname( TRIIBO_AUTH_PLUGIN_FILE ) . "/includes/class-triibo-auth-app.php"               );
-		// require_once( dirname( TRIIBO_AUTH_PLUGIN_FILE ) . "/includes/class-triibo-auth-checkout.php" );
-		// require_once( dirname( TRIIBO_AUTH_PLUGIN_FILE ) . "/includes/class-triibo-auth-login.php"    );
+		// require_once( dirname( TRIIBO_AUTH_PLUGIN_FILE ) . "/includes/class-triibo-auth-checkout.php"          );
+		// require_once( dirname( TRIIBO_AUTH_PLUGIN_FILE ) . "/includes/class-triibo-auth-login.php"             );
     }
 
 	/**
@@ -150,9 +148,10 @@ class Triibo_Auth
 	private function init_classes()
 	{
 		new Triibo_Auth_Rest_Api();
-		new Triibo_Auth_App();
-		// new Triibo_Auth_Checkout();
-		// new Triibo_Auth_Login();
+
+		if ( Triibo_Auth_App::status()      ) new Triibo_Auth_App();
+		// if ( Triibo_Auth_Checkout::status() ) new Triibo_Auth_Checkout();
+		// if ( Triibo_Auth_Login::status()    ) new Triibo_Auth_Login();
 	}
 
 	/**
@@ -444,43 +443,15 @@ class Triibo_Auth
 	}
 
 	/**
-	 * includes required modals, js and css from Triibo-Auth-App
+	 * Includes global css
 	 *
 	 * @since 	1.0.0
 	 * @return 	void
 	 */
-	public function add_parts_taa()
+	public function add_global_css()
 	{
-		require_once( dirname( TRIIBO_AUTH_PLUGIN_FILE ) . "/includes/modals/taa/new-account.php"      );
-		require_once( dirname( TRIIBO_AUTH_PLUGIN_FILE ) . "/includes/modals/taa/new-password.php"     );
-		require_once( dirname( TRIIBO_AUTH_PLUGIN_FILE ) . "/includes/modals/taa/validate-account.php" );
-		require_once( dirname( TRIIBO_AUTH_PLUGIN_FILE ) . "/includes/modals/taa/validate-code.php"    );
-
-		$js_path  = "assets/js/frontend/taa-script.js";
-		$css_path = "assets/css/frontend/taa-style.css";
-
-		$js_ver   = date( "ymd-His", filemtime( plugin_dir_path( TRIIBO_AUTH_PLUGIN_FILE ) . $js_path  ) );
+		$css_path = "assets/css/frontend/style.css";
 		$css_ver  = date( "ymd-His", filemtime( plugin_dir_path( TRIIBO_AUTH_PLUGIN_FILE ) . $css_path ) );
-
-		wp_enqueue_script( "taa_script", plugins_url( $js_path,  TRIIBO_AUTH_PLUGIN_FILE ), [ "jquery" ], $js_ver,  false );
-		wp_enqueue_style ( "taa_css",    plugins_url( $css_path, TRIIBO_AUTH_PLUGIN_FILE ), false,        $css_ver, "all" );
-
-		$this->localize_script( "taa_script" );
-	}
-
-	/**
-	 * Pass the ajax-url to the frontend
-	 *
-	 * @since 	1.0.0
-	 * @param 	string 	$script
-	 * @return 	void
-	 */
-	private function localize_script( $script )
-	{
-		wp_localize_script(
-			$script,
-			$script . "_obj",
-			[ "ajaxurl" => admin_url( "admin-ajax.php" ) ]
-		);
+		wp_enqueue_style ( "taa_css", plugins_url( $css_path, TRIIBO_AUTH_PLUGIN_FILE ), false, $css_ver, "all" );
 	}
 }
