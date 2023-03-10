@@ -115,6 +115,7 @@ class Triibo_Auth_Rest_Users_Controller extends WP_REST_Controller
 		if ( !$this->status() )
 		{
 			wp_clear_auth_cookie();
+			$this->log( "Redirecting only, disabled auth-app module." );
 			$this->redirect( $url );
 		}
 
