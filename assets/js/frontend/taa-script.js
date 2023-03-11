@@ -75,7 +75,7 @@
 
     }, false );
 
-    window.taaCountdown = function()
+    window.taaCountdown        = function()
     {
         if ( taa_cd == 0 )
         {
@@ -314,33 +314,33 @@
         } );
     }
 
-    window.taaCloseModal = function ( e )
+    window.taaCloseModal       = function ( e )
     {
         const id = e.id.replace( "close", "modal" );
         $( `#${id}` ).addClass( "ta-d-none" );
     }
 
-    window.taaDisableBtns = function ()
+    window.taaDisableBtns      = function ()
     {
         [ taa_bna, taa_bnp, taa_bva, taa_bvc ].forEach( ( e ) => {
             $( e ).prop( "disabled", "disabled" ).find( "div" ).removeClass( "ta-d-none" );
         } );
     }
 
-    window.taaEnableBtns = function ()
+    window.taaEnableBtns       = function ()
     {
         [ taa_bna, taa_bnp, taa_bva, taa_bvc ].forEach( ( e ) => {
             $( e ).prop( "disabled", null ).find( "div" ).addClass( "ta-d-none" );
         } );
     }
 
-    window.taaAjaxError = function ( err )
+    window.taaAjaxError        = function ( err )
     {
         console.log( err );
         taaRefresh();
     }
 
-    window.taaRefresh = function ()
+    window.taaRefresh          = function ()
     {
         let url = new URL( window.location.href );
         url.searchParams.delete( "taac"  );
