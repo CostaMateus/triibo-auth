@@ -38,7 +38,7 @@
                 break;
 
                 case "code":
-                    taa_cd         = 5;
+                    taa_cd         = 40;
                     taa_intervalId = setInterval( taaCountdown, 1000 );
                     $( "#taa-resend-count" ).removeClass( "ta-d-none" );
                     $( taa_mvc ).removeClass( "ta-d-none" );
