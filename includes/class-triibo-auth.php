@@ -135,8 +135,8 @@ class Triibo_Auth
     {
 		require_once( dirname( TRIIBO_AUTH_PLUGIN_FILE ) . "/includes/rest-api/class-triibo-auth-rest-api.php" );
 		require_once( dirname( TRIIBO_AUTH_PLUGIN_FILE ) . "/includes/class-triibo-auth-app.php"               );
+		require_once( dirname( TRIIBO_AUTH_PLUGIN_FILE ) . "/includes/class-triibo-auth-login.php"             );
 		// require_once( dirname( TRIIBO_AUTH_PLUGIN_FILE ) . "/includes/class-triibo-auth-checkout.php"          );
-		// require_once( dirname( TRIIBO_AUTH_PLUGIN_FILE ) . "/includes/class-triibo-auth-login.php"             );
     }
 
 	/**
@@ -150,8 +150,8 @@ class Triibo_Auth
 		new Triibo_Auth_Rest_Api();
 
 		if ( Triibo_Auth_App::status()      ) new Triibo_Auth_App();
+		if ( Triibo_Auth_Login::status()    ) new Triibo_Auth_Login();
 		// if ( Triibo_Auth_Checkout::status() ) new Triibo_Auth_Checkout();
-		// if ( Triibo_Auth_Login::status()    ) new Triibo_Auth_Login();
 	}
 
 	/**
