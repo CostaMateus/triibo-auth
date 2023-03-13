@@ -391,6 +391,6 @@ class Triibo_Auth_App
      */
     private function log( string $message )
     {
-        $this->log( $this->id, $message );
+        $this->log->add( $this->id, $message );
     }
 }
