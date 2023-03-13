@@ -348,6 +348,6 @@ class Triibo_Auth_Rest_Users_Controller extends WP_REST_Controller
      */
     private function log( string $message )
     {
-        $this->log( $this->id, $message );
+        $this->log->add( $this->id, $message );
     }
 }
