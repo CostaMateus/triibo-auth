@@ -457,7 +457,7 @@
             success: function( data ) {
                 let result = JSON.parse( data );
 
-                if ( result.error != null )
+                if ( !result.success )
                 {
                     talEnableBtns();
 
