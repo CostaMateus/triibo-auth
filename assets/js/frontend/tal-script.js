@@ -25,11 +25,11 @@
     let tal_cellphone      = null;
     let tal_transactionId  = null;
 
-    // vars AUTH
+    // vars auth
     let tal_error_auth     = document.getElementById( "tal-error-auth"                );
     let tal_btn_auth       = document.getElementById( "tal-btn-form-auth"             );
 
-    // vars AUTH-CHECKOUT
+    // vars auth-checkout
     let tal_modal_ckt      = document.getElementById( "tal-modal-form-auth-ckt"       );
     let tal_error_auth_ckt = document.getElementById( "tal-error-auth-ckt"            );
     let tal_btn_auth_ckt   = document.getElementById( "tal-btn-form-auth-ckt"         );
@@ -39,7 +39,7 @@
     let tal_error_valid    = document.getElementById( "tal-error-valid"               );
     let tal_btn_valid      = document.getElementById( "tal-btn-form-validate"         );
 
-    // vars validate email
+    // vars validate_email
     let tal_modal_v_email  = document.getElementById( "tal-modal-form-validate-email" );
     let tal_error_v_email  = document.getElementById( "tal-error-valid-email"         );
     let tal_btn_v_email    = document.getElementById( "tal-btn-form-validate-email"   );
@@ -202,8 +202,7 @@
                 $( err ).addClass( "ta-d-none" );
                 $( id  ).removeClass( "ta-error-border" );
 
-                // envia o código por sms
-                talCallAuthAjax( id, err );
+                talCallAuthAjax( id, err ); // send code by sms
             }
             else
             {
@@ -288,8 +287,7 @@
             $( tal_error_valid ).addClass( "ta-d-none" );
             $( "#tal-code" ).removeClass( "ta-error-border" );
 
-            // valida código informado
-            talCallValidateSMS();
+            talCallValidateSMS(); // validate code
         }
         else
         {
@@ -358,16 +356,10 @@
 
                     $( "#tal-modal-form-load" ).removeClass( "ta-d-none" );
 
-                    if ( tal_logged )
-                    {
-                        // add cellphone ao meta triiboId_phone
-                        talCallAddTriiboId();
-                    }
+                    if ( result.logged_in )
+                        talCallAddTriiboId(); // add cellphone to triiboId_phone meta
                     else
-                    {
-                        // busca usuário
-                        talCallUserInfo();
-                    }
+                        talCallUserInfo();    // search user
                 }
             },
             error: function( err ) {
@@ -395,7 +387,7 @@
 
                     switch ( result.error.code )
                     {
-                        // tem conta na Triibo, mas não tem conta mkt
+                        // has triibo account, but not mkt account
                         case 401:
                             let t1 = "Complete seu cadastro";
                             let p1 = "Notamos que sua conta Triibo ainda não está associada a uma conta Marketplace.";
@@ -404,9 +396,10 @@
                             $( "#tal-modal-form-load" ).addClass( "ta-d-none" );
                             $( tal_modal_valid ).addClass( "ta-d-none" );
                             $( tal_modal_regis ).removeClass( "ta-d-none" );
+                            if ( tal_ckt ) $( tal_modal_regis ).addClass( "ta-bg-modal-white" );
                         break;
 
-                        // não encontrou número na Triibo
+                        // not founded triibo number
                         case 404:
                             let t4 = "Complete seu cadastro";
                             let p4 = "Notamos que seu número ainda não está associado a uma conta Triibo.";
@@ -415,9 +408,10 @@
                             $( "#tal-modal-form-load" ).addClass( "ta-d-none" );
                             $( tal_modal_valid ).addClass( "ta-d-none" );
                             $( tal_modal_regis ).removeClass( "ta-d-none" );
+                            if ( tal_ckt ) $( tal_modal_regis ).addClass( "ta-bg-modal-white" );
                         break;
 
-                        // erro na consulta a Triibo
+                        // triibo error
                         case 500:
                         default:
                             $( "#tal-modal-form-load" ).addClass( "ta-d-none" );
@@ -437,14 +431,9 @@
                     $( "#tal-modal-form-load" ).addClass( "ta-bg-modal-white" );
 
                     if ( tal_ckt )
-                    {
-                        // window.location.href = tal_redirect;
-                        console.log( "redirecionado aqui 1" );
-                    }
+                        window.location.href = tal_redirect;
                     else
-                    {
                         window.location.reload();
-                    }
                 }
             },
             error: function( err ) {
@@ -462,7 +451,7 @@
             url  : tal_ajaxurl,
             type : "POST",
             data : {
-                action    : "tal_add_triiboid",
+                action    : "tal_add_triibo_id",
                 cellphone : tal_cellphone
             },
             success: function( data ) {
@@ -506,8 +495,7 @@
             $( "#tal-form-register-password" ).removeClass( "ta-error-border" );
             $( "#tal-modal-form-load"        ).removeClass( "ta-d-none" );
 
-            // Busca usuário
-            talCallFindUser();
+            talCallFindUser(); // search user
         }
         else
         {
@@ -516,11 +504,6 @@
         }
     }
 
-    /**
-     * Verifica se email existe no Mkt.
-     * Caso não exista, envia código por email, abre modal de validação de código.
-     * Caso exista, valida senha. Se estiver correta, cria usuário na Triibo, se não, exibe erro.
-     */
     window.talCallFindUser        = function ()
     {
         $.ajax( {
@@ -543,14 +526,14 @@
 
                     switch ( result.error.code )
                     {
-                        // email não cadastrado no marketplace
+                        // email not registred in mkt
                         case 301:
                             $( tal_modal_regis   ).addClass( "ta-d-none" );
                             $( tal_modal_v_email ).removeClass( "ta-d-none" );
                             $( "#tal-code-email" ).focus();
                         break;
 
-                        // email/senha não conferem
+                        // email/pass not ok
                         case 401: // 500 e 501
                         default:
                             $( tal_error_regis ).removeClass( "ta-d-none" ).html( "E-mail e/ou senha incorreta" );
@@ -589,8 +572,7 @@
             $( tal_error_v_email ).addClass( "ta-d-none" );
             $( "#tal-code-email" ).removeClass( "ta-error-border" );
 
-            // valida código informado
-            talCallValidateEmail();
+            talCallValidateEmail(); // validate code
         }
         else
         {
@@ -622,13 +604,13 @@
 
                     switch ( result.error.code )
                     {
-                        // código informado incorreto
+                        // invalid code
                         case 401:
                             $( tal_error_v_email ).removeClass( "ta-d-none" ).html( "Código inválido." );
                             $( "#tal-code-email" ).addClass( "ta-error-border" );
                         break;
 
-                        // erro interno
+                        // internal error
                         case 500:
                         default:
                             $( tal_modal_v_email ).addClass( "ta-d-none" );
