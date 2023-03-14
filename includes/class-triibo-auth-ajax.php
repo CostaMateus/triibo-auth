@@ -69,6 +69,8 @@ class Triibo_Auth_Ajax
         if ( !$response[ "success" ] || !$response[ "data" ][ "success" ] )
             $this->log( json_encode( $response ) );
 
+        $response[ "data" ][ "logged_in" ] = is_user_logged_in();
+
         echo json_encode( $response[ "data" ] );
         die();
     }
