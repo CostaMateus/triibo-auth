@@ -218,7 +218,12 @@ class Triibo_Auth
 		wp_enqueue_script( "tal_mask",   plugins_url( $mk_path,  TRIIBO_AUTH_PLUGIN_FILE ), [ "jquery" ], $mk_ver,  false );
 		wp_enqueue_script( "tal_script", plugins_url( $js_path,  TRIIBO_AUTH_PLUGIN_FILE ), [ "jquery" ], $js_ver,  true  );
 
-		wp_localize_script( "tal_script", "tal_script_obj", [ "ajaxurl"  => admin_url( "admin-ajax.php" ), ] );
+		$urls[ "ajaxurl" ] = admin_url( "admin-ajax.php" );
+
+		if ( Triibo_Auth_Checkout::status() )
+			$urls[ "redirect" ] = Triibo_Auth_Checkout::get_checkout_url();
+
+		wp_localize_script( "tal_script", "tal_script_obj", $urls );
     }
 
 	/**
