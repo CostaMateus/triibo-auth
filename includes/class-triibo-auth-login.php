@@ -36,8 +36,6 @@ class Triibo_Auth_Login extends Triibo_Auth_Ajax
         add_action( "wp_ajax_nopriv_tal_resend_email_code",   [ $this, "resend_email_code"      ]        );
         add_action( "wp_ajax_tal_find_user",                  [ $this, "find_user"              ]        );
         add_action( "wp_ajax_nopriv_tal_find_user",           [ $this, "find_user"              ]        );
-        add_action( "wp_ajax_tal_add_triibo_id",              [ $this, "add_triibo_id"          ]        );
-        add_action( "wp_ajax_nopriv_tal_add_triibo_id",       [ $this, "add_triibo_id"          ]        );
     }
 
     /**
