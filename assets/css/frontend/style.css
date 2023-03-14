@@ -34,7 +34,7 @@
 
 .ta-bg-modal,
 .ta-bg-modal-login,
-.ta-bg-modal-lbc {
+.ta-bg-modal-ckt {
     top: 0;
     left: 0;
     width: 100vw;
@@ -52,7 +52,7 @@
     background-color: rgba(0,0,0,0.7);
 }
 
-.ta-bg-modal-lbc,
+.ta-bg-modal-ckt,
 .ta-bg-modal-white {
     background-color: #EEE !important;
 }
