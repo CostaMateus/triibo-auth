@@ -320,15 +320,30 @@ class Triibo_Auth_Ajax
     }
 
     /**
-     * Cadastra usuário na Triibo
+     * Create user triibo
      *
-     * TODO
      * @since   1.0.0
      * @return  void
      */
     public function add_triibo_id()
     {
+        $cellphone = $_POST[ "cellphone" ];
+        $user      = wp_get_current_user();
 
+        $response  = $this->create_or_update_user_triibo( $cellphone, $user->user_email, $user->first_name, $user->nickname );
+
+        if ( !$response[ "success" ] || ( isset( $response[ "data" ] ) && !$response[ "data" ][ "success" ] ) )
+            $this->log( json_encode( $response ) );
+
+        $cellphone = "+" . preg_replace( "/\D/", "", $_POST["cellphone"] );
+        $uid       = isset( $response[ "uid" ] ) ? $response[ "uid" ] : null;
+
+        update_user_meta( $user->ID, "triiboId_phone", $cellphone );
+
+        if ( $uid ) update_user_meta( $user->ID, "_triibo_id", $uid );
+
+        echo json_encode( [ "success"  => true ] );
+        die();
     }
 
     /**
