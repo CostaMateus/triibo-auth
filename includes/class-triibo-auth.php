@@ -453,8 +453,6 @@ class Triibo_Auth
 	{
         $validCode = str_pad( mt_rand( 0, 999999 ), 6, "0", STR_PAD_LEFT );
 
-        set_transient( "_triibo_code", $validCode );
-
         $to        = $email;
         $subject   = "Seu código de ativação";
         $body      = "<html lang='pt-br'>
@@ -486,6 +484,7 @@ class Triibo_Auth
                 "success" => false,
                 "error"   => [
                     "message" => "Falha ao reenviar do código por e-mail",
+					"email"   => $email,
                     "code"    => 500,
                 ],
             ];
