@@ -61,6 +61,8 @@ class Triibo_Auth
 
 			$this->includes();
 			$this->init_classes();
+
+			$this->add_common();
         }
 		else
 		{
@@ -134,9 +136,10 @@ class Triibo_Auth
 	private function includes()
     {
 		require_once( dirname( TRIIBO_AUTH_PLUGIN_FILE ) . "/includes/rest-api/class-triibo-auth-rest-api.php" );
+		require_once( dirname( TRIIBO_AUTH_PLUGIN_FILE ) . "/includes/class-triibo-auth-ajax.php"              );
 		require_once( dirname( TRIIBO_AUTH_PLUGIN_FILE ) . "/includes/class-triibo-auth-app.php"               );
 		require_once( dirname( TRIIBO_AUTH_PLUGIN_FILE ) . "/includes/class-triibo-auth-login.php"             );
-		// require_once( dirname( TRIIBO_AUTH_PLUGIN_FILE ) . "/includes/class-triibo-auth-checkout.php"          );
+		require_once( dirname( TRIIBO_AUTH_PLUGIN_FILE ) . "/includes/class-triibo-auth-checkout.php"          );
     }
 
 	/**
@@ -151,8 +154,72 @@ class Triibo_Auth
 
 		if ( Triibo_Auth_App::status()      ) new Triibo_Auth_App();
 		if ( Triibo_Auth_Login::status()    ) new Triibo_Auth_Login();
-		// if ( Triibo_Auth_Checkout::status() ) new Triibo_Auth_Checkout();
+		if ( Triibo_Auth_Checkout::status() ) new Triibo_Auth_Checkout();
 	}
+
+	/**
+	 * Includes common code for Triibo-Auth-Login and Triibo-Auth-Checkout
+	 *
+	 * @since 	1.0.0
+	 * @return 	void
+	 */
+	private function add_common()
+	{
+		if ( Triibo_Auth_Login::status() || Triibo_Auth_Checkout::status() )
+		{
+			add_action( "wp_footer", [ $this, "add_modals"  ] );
+			add_action( "wp_footer", [ $this, "add_scripts" ] );
+		}
+
+		if ( Triibo_Auth_Checkout::status() )
+			add_action( "wp_footer", [ $this, "add_modal_checkout" ] );
+	}
+
+	/**
+	 * Include required modals Triibo-Auth-Login and Triibo-Auth-Checkout
+	 *
+	 * @since 	1.0.0
+	 * @return 	void
+	 */
+    public function add_modals()
+    {
+        require_once( dirname( TRIIBO_AUTH_PLUGIN_FILE ) . "/includes/modals/tal/load.php"           );
+        require_once( dirname( TRIIBO_AUTH_PLUGIN_FILE ) . "/includes/modals/tal/register.php"       );
+        require_once( dirname( TRIIBO_AUTH_PLUGIN_FILE ) . "/includes/modals/tal/validate.php"       );
+        require_once( dirname( TRIIBO_AUTH_PLUGIN_FILE ) . "/includes/modals/tal/validate-email.php" );
+    }
+
+	/**
+	 * Include required modals Triibo-Auth-Checkout
+	 *
+	 * @since 	1.0.0
+	 * @return 	void
+	 */
+	public function add_modal_checkout()
+	{
+        require_once( dirname( TRIIBO_AUTH_PLUGIN_FILE ) . "/includes/modals/tal/checkout.php"        );
+        require_once( dirname( TRIIBO_AUTH_PLUGIN_FILE ) . "/includes/modals/tal/has_query_param.php" );
+	}
+
+    /**
+     * Required js
+     *
+     * @since   1.0.0
+     * @return  void
+     */
+    public function add_scripts()
+    {
+		$mk_path = "assets/js/frontend/mask.min.js";
+		$js_path = "assets/js/frontend/tal-script.js";
+
+		$mk_ver  = date( "ymd-His", filemtime( plugin_dir_path( TRIIBO_AUTH_PLUGIN_FILE ) . $mk_path  ) );
+		$js_ver  = date( "ymd-His", filemtime( plugin_dir_path( TRIIBO_AUTH_PLUGIN_FILE ) . $js_path  ) );
+
+		wp_enqueue_script( "tal_mask",   plugins_url( $mk_path,  TRIIBO_AUTH_PLUGIN_FILE ), [ "jquery" ], $mk_ver,  false );
+		wp_enqueue_script( "tal_script", plugins_url( $js_path,  TRIIBO_AUTH_PLUGIN_FILE ), [ "jquery" ], $js_ver,  true  );
+
+		wp_localize_script( "tal_script", "tal_script_obj", [ "ajaxurl"  => admin_url( "admin-ajax.php" ), ] );
+    }
 
 	/**
 	 * Triibo-Api-Service missing notice.
@@ -160,7 +227,7 @@ class Triibo_Auth
 	 * @since 	1.0.0
 	 * @return 	void
 	 */
-	public static function triibo_api_services_missing_notice()
+	public function triibo_api_services_missing_notice()
 	{
 		require_once( dirname( __FILE__ ) . "/templates/notices/missing-triibo_api_services.php" );
 	}
@@ -172,7 +239,7 @@ class Triibo_Auth
 	 * @param 	array $links
 	 * @return 	array
 	 */
-	public static function plugin_action_links( array $links )
+	public function plugin_action_links( array $links )
     {
         $url            = esc_url( admin_url( "admin.php?page=" . TRIIBO_AUTH_ID . "-settings" ) );
         $text           = __( "Configurações", TRIIBO_AUTH_ID );
