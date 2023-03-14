@@ -9,8 +9,7 @@
     options = { onKeyPress: function( val, e, field, options ) {
         field.mask( maskBehavior.apply( {}, arguments ), options );
     } };
-    $( "#tal-cellphone-lbc"    ).mask( maskBehavior, options );
-    $( "#tal-cellphone-logged" ).mask( maskBehavior, options );
+    $( "#tal-cellphone-ckt"    ).mask( maskBehavior, options );
 
     let tal_genericError1  = "Ocorreu um erro, tente novamente.";
     let tal_genericError2  = "Algo deu errado, tente novamente.";
@@ -18,8 +17,7 @@
     // vars parametros ajax
     let tal_redirect       = tal_script_obj.redirect;
     let tal_ajaxurl        = tal_script_obj.ajaxurl;
-    let tal_lbc            = false;
-    let tal_logged         = false;
+    let tal_ckt            = false;
     let tal_code           = null;
     let tal_codeEmail      = null;
     let tal_email          = null;
@@ -31,15 +29,10 @@
     let tal_error_auth     = document.getElementById( "tal-error-auth"                );
     let tal_btn_auth       = document.getElementById( "tal-btn-form-auth"             );
 
-    // vars AUTH-LBC
-    let tal_modal_lbc      = document.getElementById( "tal-modal-form-auth-lbc"       );
-    let tal_error_auth_lbc = document.getElementById( "tal-error-auth-lbc"            );
-    let tal_btn_auth_lbc   = document.getElementById( "tal-btn-form-auth-lbc"         );
-
-    // vars AUTH-LOGGED
-    let tal_modal_logged   = document.getElementById( "tal-modal-form-auth-logged"    );
-    let tal_error_logged   = document.getElementById( "tal-error-auth-logged"         );
-    let tal_btn_logged     = document.getElementById( "tal-btn-form-auth-logged"      );
+    // vars AUTH-CHECKOUT
+    let tal_modal_ckt      = document.getElementById( "tal-modal-form-auth-ckt"       );
+    let tal_error_auth_ckt = document.getElementById( "tal-error-auth-ckt"            );
+    let tal_btn_auth_ckt   = document.getElementById( "tal-btn-form-auth-ckt"         );
 
     // vars validate
     let tal_modal_valid    = document.getElementById( "tal-modal-form-validate"       );
@@ -74,16 +67,10 @@
                 window.talSubmitAuth( "#tal-cellphone", tal_error_auth );
             break;
 
-            case "tal-btn-form-auth-lbc":
+            case "tal-btn-form-auth-ckt":
                 e.preventDefault();
-                tal_lbc = true;
-                window.talSubmitAuth( "#tal-cellphone-lbc", tal_error_auth_lbc );
-            break;
-
-            case "tal-btn-form-auth-logged":
-                e.preventDefault();
-                tal_logged = true;
-                window.talSubmitAuth( "#tal-cellphone-logged", tal_error_logged );
+                tal_ckt = true;
+                window.talSubmitAuth( "#tal-cellphone-ckt", tal_error_auth_ckt );
             break;
 
             case "tal-btn-form-validate":
@@ -128,18 +115,10 @@
     {
         $( "#tal-resend" ).addClass( "ta-d-none" );
 
-        if ( tal_lbc && !tal_logged )
-        {
-            $( tal_btn_auth_lbc ).click();
-        }
-        else if ( !tal_lbc && tal_logged )
-        {
-            $( tal_btn_logged ).click();
-        }
+        if ( tal_ckt )
+            $( tal_btn_auth_ckt ).click();
         else
-        {
-            $( tal_btn_auth ).click();
-        }
+            $( tal_btn_auth     ).click();
 
         talDisableBtns();
 
@@ -202,7 +181,7 @@
 
     window.talCloseModal          = function ()
     {
-        if ( !tal_lbc && !tal_logged )
+        if ( !tal_ckt )
         {
             talEnableBtns();
             talHideModals();
@@ -273,13 +252,15 @@
                 {
                     tal_transactionId = result.success.transactionId;
 
-                    if ( tal_lbc || tal_logged )
+                    if ( tal_ckt )
+                    {
                         $( tal_modal_valid ).addClass( "ta-bg-modal-white" );
+                        $( tal_modal_ckt   ).addClass( "ta-d-none" );
+                    }
                     else
+                    {
                         $( tal_modal_valid ).removeClass( "ta-bg-modal-white" );
-
-                    if ( tal_lbc    ) $( tal_modal_lbc    ).addClass( "ta-d-none" );
-                    if ( tal_logged ) $( tal_modal_logged ).addClass( "ta-d-none" );
+                    }
 
                     $( tal_modal_valid ).removeClass( "ta-d-none" );
                     $( "#tal-code" ).focus();
@@ -320,24 +301,8 @@
 
     window.talCallValidateSMS     = function ()
     {
-        let id  = null;
-        let err = null;
-
-        if ( tal_lbc && !tal_logged )
-        {
-            id  = "#tal-cellphone-lbc";
-            err = tal_error_auth_lbc;
-        }
-        else if ( !tal_lbc && tal_logged )
-        {
-            id  = "#tal-cellphone-logged";
-            err = tal_error_logged;
-        }
-        else
-        {
-            id  = "#tal-cellphone";
-            err = tal_error_auth;
-        }
+        let id  = ( tal_ckt ) ? "#tal-cellphone-ckt" : "#tal-cellphone";
+        let err = ( tal_ckt ) ? tal_error_auth_ckt   : tal_error_auth;
 
         $.ajax( {
             url  : tal_ajaxurl,
@@ -419,7 +384,7 @@
             data : {
                 action    : "tal_user_info",
                 cellphone : tal_cellphone,
-                lbc       : tal_lbc,
+                ckt       : tal_ckt,
             },
             success: function( data ) {
                 let result = JSON.parse( data );
@@ -458,7 +423,7 @@
                             $( "#tal-modal-form-load" ).addClass( "ta-d-none" );
                             $( tal_modal_valid ).addClass( "ta-d-none" );
 
-                            var err = ( tal_lbc ) ? tal_error_auth_lbc : tal_error_auth;
+                            var err = ( tal_ckt ) ? tal_error_auth_ckt : tal_error_auth;
 
                             $( err ).removeClass( "ta-d-none" ).html( tal_genericError1 );
                         break;
@@ -471,7 +436,7 @@
 
                     $( "#tal-modal-form-load" ).addClass( "ta-bg-modal-white" );
 
-                    if ( tal_lbc )
+                    if ( tal_ckt )
                     {
                         // window.location.href = tal_redirect;
                         console.log( "redirecionado aqui 1" );
@@ -601,7 +566,7 @@
                     talHideModals();
                     talDisableBtns();
 
-                    if ( tal_lbc )
+                    if ( tal_ckt )
                         window.location.href = tal_redirect;
                     else
                         window.location.reload();
@@ -678,7 +643,7 @@
                     talHideModals();
                     talDisableBtns();
 
-                    if ( tal_lbc )
+                    if ( tal_ckt )
                         window.location.href = tal_redirect;
                     else
                         window.location.reload();
@@ -693,8 +658,7 @@
     window.talDisableBtns         = function ()
     {
         $( tal_btn_auth     ).prop( "disabled", "disabled" ).find( "div" ).removeClass( "ta-d-none" );
-        $( tal_btn_auth_lbc ).prop( "disabled", "disabled" ).find( "div" ).removeClass( "ta-d-none" );
-        $( tal_btn_logged   ).prop( "disabled", "disabled" ).find( "div" ).removeClass( "ta-d-none" );
+        $( tal_btn_auth_ckt ).prop( "disabled", "disabled" ).find( "div" ).removeClass( "ta-d-none" );
 
         $( tal_btn_valid    ).prop( "disabled", "disabled" ).find( "div" ).removeClass( "ta-d-none" );
         $( tal_btn_v_email  ).prop( "disabled", "disabled" ).find( "div" ).removeClass( "ta-d-none" );
@@ -704,8 +668,7 @@
     window.talEnableBtns          = function ()
     {
         $( tal_btn_auth     ).prop( "disabled", null ).find( "div" ).addClass( "ta-d-none" );
-        $( tal_btn_auth_lbc ).prop( "disabled", null ).find( "div" ).addClass( "ta-d-none" );
-        $( tal_btn_logged   ).prop( "disabled", null ).find( "div" ).addClass( "ta-d-none" );
+        $( tal_btn_auth_ckt ).prop( "disabled", null ).find( "div" ).addClass( "ta-d-none" );
 
         $( tal_btn_valid    ).prop( "disabled", null ).find( "div" ).addClass( "ta-d-none" );
         $( tal_btn_v_email  ).prop( "disabled", null ).find( "div" ).addClass( "ta-d-none" );
@@ -714,8 +677,7 @@
 
     window.talHideModals          = function ()
     {
-        $( tal_modal_lbc     ).addClass( "ta-d-none" );
-        $( tal_modal_logged  ).addClass( "ta-d-none" );
+        $( tal_modal_ckt     ).addClass( "ta-d-none" );
         $( tal_modal_valid   ).addClass( "ta-d-none" );
         $( tal_modal_v_email ).addClass( "ta-d-none" );
         $( tal_modal_regis   ).addClass( "ta-d-none" );
@@ -724,8 +686,7 @@
     window.talHideErros           = function ()
     {
         $( tal_error_auth     ).addClass( "ta-d-none" ).html( "" );
-        $( tal_error_auth_lbc ).addClass( "ta-d-none" ).html( "" );
-        $( tal_error_logged   ).addClass( "ta-d-none" ).html( "" );
+        $( tal_error_auth_ckt ).addClass( "ta-d-none" ).html( "" );
         $( tal_error_valid    ).addClass( "ta-d-none" ).html( "" );
         $( tal_error_v_email  ).addClass( "ta-d-none" ).html( "" );
         $( tal_error_regis    ).addClass( "ta-d-none" ).html( "" );
@@ -738,18 +699,10 @@
         talEnableBtns();
         $( "#tal-modal-form-load" ).addClass( "ta-d-none" );
 
-        if ( tal_lbc && !tal_logged )
-        {
-            $( tal_error_auth_lbc ).removeClass( "ta-d-none" ).html( tal_genericError1 );
-        }
-        else if ( !tal_lbc && tal_logged )
-        {
-            $( tal_error_logged ).removeClass( "ta-d-none" ).html( tal_genericError1 );
-        }
+        if ( tal_ckt )
+            $( tal_error_auth_ckt ).removeClass( "ta-d-none" ).html( tal_genericError1 );
         else
-        {
-            $( tal_error_auth ).removeClass( "ta-d-none" ).html( tal_genericError1 );
-        }
+            $( tal_error_auth     ).removeClass( "ta-d-none" ).html( tal_genericError1 );
     }
 
     window.talSetRegistertexts    = function ( t, p )
