@@ -8,7 +8,7 @@
  */
 defined( "ABSPATH" ) || exit;
 
-class Triibo_Auth_Checkout
+class Triibo_Auth_Checkout extends Triibo_Auth_Ajax
 {
     /**
      * Redirect URL
@@ -16,7 +16,7 @@ class Triibo_Auth_Checkout
      * @since   1.0.0
      * @var     string
      */
-    protected static $_lbc_url      = null;
+    protected static $_ckt_url      = null;
 
     /**
      * Option 1 of disclaimer
@@ -41,25 +41,29 @@ class Triibo_Auth_Checkout
      */
 	public function __construct ()
     {
-        if ( $this->status() )
-        {
-            self::$_lbc_url = md5( "redirect_to_checkout" );
+		$this->log      = ( function_exists( "wc_get_logger" ) ) ? wc_get_logger() : new WC_Logger();
+		$this->gate     = new Triibo_Api_Gateway();
 
-            // valida se o redirect é checkout,
-            // valida se o usuário está logado e não tem triibo_id,
-            // valida se o usuário não está logado.
-            add_action( "template_redirect",                  [ $this, "redirect_to_account_page" ], 100 );
+        self::$_ckt_url = md5( "redirect_to_checkout" );
 
-            // redireciona para tela de chackout
-            add_filter( "woocommerce_registration_redirect",  [ $this, "redirect_to_checkout"     ], 100 );
-            add_filter( "woocommerce_login_redirect",         [ $this, "redirect_to_checkout"     ], 100 );
+        add_action( "template_redirect",                      [ $this, "redirect_to_account_page" ], 100 );
+        add_filter( "woocommerce_registration_redirect",      [ $this, "redirect_to_checkout"     ], 100 );
+        add_filter( "woocommerce_login_redirect",             [ $this, "redirect_to_checkout"     ], 100 );
 
-            // add modal na página minha conta - tela login
-            add_action( "wc_login_before_checkout_add_modal", [ $this, "modal_form_login"         ]      );
-
-            // add modal na página minha conta - tela dashboard
-            add_action( "woocommerce_account_content",        [ $this, "modal_myacc_dashboard"    ]      );
-        }
+        add_action( "wp_ajax_tal_auth_sms",                   [ $this, "auth_sms"                 ]      );
+        add_action( "wp_ajax_nopriv_tal_auth_sms",            [ $this, "auth_sms"                 ]      );
+        add_action( "wp_ajax_tal_validate_sms",               [ $this, "validate_sms"             ]      );
+        add_action( "wp_ajax_nopriv_tal_validate_sms",        [ $this, "validate_sms"             ]      );
+        add_action( "wp_ajax_tal_validate_code_email",        [ $this, "validate_code_email"      ]      );
+        add_action( "wp_ajax_nopriv_tal_validate_code_email", [ $this, "validate_code_email"      ]      );
+        add_action( "wp_ajax_tal_user_info",                  [ $this, "user_info"                ]      );
+        add_action( "wp_ajax_nopriv_tal_user_info",           [ $this, "user_info"                ]      );
+        add_action( "wp_ajax_tal_resend_email_code",          [ $this, "resend_email_code"        ]      );
+        add_action( "wp_ajax_nopriv_tal_resend_email_code",   [ $this, "resend_email_code"        ]      );
+        add_action( "wp_ajax_tal_find_user",                  [ $this, "find_user"                ]      );
+        add_action( "wp_ajax_nopriv_tal_find_user",           [ $this, "find_user"                ]      );
+        add_action( "wp_ajax_tal_add_triibo_id",              [ $this, "add_triibo_id"            ]      );
+        add_action( "wp_ajax_nopriv_tal_add_triibo_id",       [ $this, "add_triibo_id"            ]      );
     }
 
     /**
@@ -70,7 +74,7 @@ class Triibo_Auth_Checkout
      * @since   1.0.0
      * @return 	boolean
      */
-    private function status()
+    public static function status()
 	{
         $status = get_option( TRIIBO_AUTH_ID . "_checkout_status" );
 		return $status == "on" ? true : false;
@@ -80,12 +84,11 @@ class Triibo_Auth_Checkout
      * Get disclaimer of logged user or not
      *
      * @since   1.0.0
-     * @param   boolean $user_logged
      * @return  string
      */
-    public static function get_disclaimer( bool $user_logged = false )
+    public static function get_disclaimer()
     {
-        return ( !$user_logged ) ? self::$_disclaimer_1 : self::$_disclaimer_2;
+        return ( !is_user_logged_in() ) ? self::$_disclaimer_1 : self::$_disclaimer_2;
     }
 
     /**
@@ -96,18 +99,18 @@ class Triibo_Auth_Checkout
     public static function get_checkout_url()
     {
         global $woocommerce;
-        return $woocommerce->cart->get_checkout_url();
+        return $woocommerce->cart?->get_checkout_url();
     }
 
     /**
-     * Check if URL has lbc param
+     * Check if URL has ckt param
      *
      * @since   1.0.0
      * @return  boolean
      */
     public static function has_query_param()
     {
-		return isset( $_GET[ "lbc" ] ) && $_GET[ "lbc" ] === self::$_lbc_url;
+		return isset( $_GET[ "ckt" ] ) && $_GET[ "ckt" ] === self::$_ckt_url;
 	}
 
     /**
@@ -124,7 +127,10 @@ class Triibo_Auth_Checkout
 	}
 
     /**
-     * Redirect to account page
+     * Redirect to account page if:
+     * - redirect is to checkout
+     * - user is logged in and dont have triibo_id
+     * - user isnt logged in
      *
      * @since   1.0.0
      * @return  void
@@ -135,19 +141,19 @@ class Triibo_Auth_Checkout
         {
             if ( is_user_logged_in() )
             {
-                // user logado
+                // user logged in
                 $user_id   = get_current_user_id();
                 $triibo_id = get_user_meta( $user_id, "triiboId_phone", true );
 
                 if ( empty( $triibo_id ) )
                 {
-                    // user sem triibo_id
+                    // user without triibo_id
                     $this->safe_redirect();
                 }
             }
             else
             {
-                // user nao logado
+                // user not logged in
                 $this->safe_redirect();
             }
         }
@@ -160,7 +166,7 @@ class Triibo_Auth_Checkout
      * @param   string $redirect
      * @return  string
      */
-	public function redirect_to_checkout( $redirect )
+	public function redirect_to_checkout( string $redirect )
     {
 		return ( self::has_query_param() ) ? wc_get_checkout_url() : $redirect;
 	}
@@ -173,29 +179,7 @@ class Triibo_Auth_Checkout
      */
     private function safe_redirect()
     {
-        wp_safe_redirect( add_query_arg( "lbc", self::$_lbc_url, $this->get_login_page_url() ) );
+        wp_safe_redirect( add_query_arg( "ckt", self::$_ckt_url, $this->get_login_page_url() ) );
         die();
-    }
-
-    /**
-     * Require form login modal
-     *
-     * @since   1.0.0
-     * @return  void
-     */
-    public function modal_form_login()
-    {
-        require_once( plugin_dir_path( TRIIBO_AUTH_PLUGIN_FILE ) . "includes/modals/tal/form-login.php" );
-    }
-
-    /**
-     * Require my account dashboard modal
-     *
-     * @since   1.0.0
-     * @return  void
-     */
-    public function modal_myacc_dashboard()
-    {
-        require_once( plugin_dir_path( TRIIBO_AUTH_PLUGIN_FILE ) . "includes/modals/tal/myacc-dashboard.php" );
     }
 }
