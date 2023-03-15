@@ -23,10 +23,10 @@
 
     $( document ).ready( function() {
 
-        const queryString = window.location.search;
-        const urlParams   = new URLSearchParams( queryString );
-        const code        = urlParams.get( "taac"  );
-        const email       = urlParams.get( "email" );
+        let queryString = window.location.search;
+        let urlParams   = new URLSearchParams( queryString );
+        let code        = urlParams.get( "taac"  );
+        let email       = urlParams.get( "email" );
 
         if ( code !== null )
         {
@@ -54,7 +54,6 @@
     } );
 
     window.addEventListener( "click", function ( e ) {
-
         switch ( e.target.id )
         {
             case "taa-btn-form-new-account":
@@ -75,7 +74,7 @@
 
     }, false );
 
-    window.taaCountdown        = function()
+    window.taaCountdown        = function ()
     {
         if ( taa_cd == 0 )
         {
@@ -98,8 +97,8 @@
         $( "#taa-new-acc-email" ).removeClass( "ta-error-border" );
         $( "#taa-new-acc-pass1" ).removeClass( "ta-error-border" );
 
-        const email = $( "#taa-new-acc-email" ).val();
-        const pass1 = $( "#taa-new-acc-pass1" ).val();
+        let email = $( "#taa-new-acc-email" ).val();
+        let pass1 = $( "#taa-new-acc-pass1" ).val();
 
         if ( email == "" )
         {
@@ -156,8 +155,8 @@
         $( "#taa-validate-acc-email" ).removeClass( "ta-error-border" );
         $( "#taa-validate-acc-pass"  ).removeClass( "ta-error-border" );
 
-        const email = $( "#taa-validate-acc-email" ).val();
-        const pass  = $( "#taa-validate-acc-pass"  ).val();
+        let email = $( "#taa-validate-acc-email" ).val();
+        let pass  = $( "#taa-validate-acc-pass"  ).val();
 
         if ( email == "" )
         {
@@ -212,8 +211,8 @@
         $( taa_evc ).addClass( "ta-d-none" );
         $( "#taa-code" ).removeClass( "ta-error-border" );
 
-        const code  = $( "#taa-code" ).val();
-        const email = $( "#taa-email" ).val();
+        let code  = $( "#taa-code"  ).val();
+        let email = $( "#taa-email" ).val();
 
         if ( code != "" && code.length == 6 )
         {
@@ -316,7 +315,7 @@
 
     window.taaCloseModal       = function ( e )
     {
-        const id = e.id.replace( "close", "modal" );
+        let id = e.id.replace( "close", "modal" );
         $( `#${id}` ).addClass( "ta-d-none" );
     }
 
