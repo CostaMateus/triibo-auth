@@ -427,10 +427,10 @@ class Triibo_Auth_Ajax
      *
      * @since   1.0.0
      * @param   string      $field
-     * @param   int|string  $value
+     * @param   string|int  $value
      * @return  array
      */
-    private function login_by_triibo( string $field, int|string $value )
+    private function login_by_triibo( string $field, string $value )
     {
         $user = get_user_by( $field, $value );
 
