@@ -25,7 +25,7 @@
                     <!-- Error message -->
                     <p id="taa-error-new-acc" class="ta-bg-transp ta-text-center ta-text-danger ta-pt-8 ta-mb-0 ta-d-none" ></p>
                 </p>
-                <button id="taa-btn-form-new-account" type="submit" class="woocommerce-Button button ta-button ta-set-spin" >Criar <div class="ta-d-none ta-spin-load"></div></button>
+                <button id="taa-btn-form-new-account" type="submit" class="woocommerce-Button button ta-button ta-set-spin" >Entrar <div class="ta-d-none ta-spin-load"></div></button>
             </form>
         </div>
     </div>
