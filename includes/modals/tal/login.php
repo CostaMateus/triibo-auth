@@ -21,16 +21,3 @@
     <p class="ta-title-optin" >
         Entrar por rede social
     </p>
-
-    <script>
-        ( function ( $ ) {
-            "use strict";
-            var maskBehavior = function ( val ) {
-                return val.replace( /\D/g, "" ).length === 13 ? "+55 (00) 00000-0000" : "+55 (00) 0000-00009";
-            },
-            options = { onKeyPress: function( val, e, field, options ) {
-                field.mask( maskBehavior.apply( {}, arguments ), options );
-            } };
-            $( "#tal-cellphone" ).mask( maskBehavior, options );
-        } )( jQuery );
-    </script>

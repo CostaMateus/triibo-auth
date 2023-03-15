@@ -9,7 +9,8 @@
     options = { onKeyPress: function( val, e, field, options ) {
         field.mask( maskBehavior.apply( {}, arguments ), options );
     } };
-    $( "#tal-cellphone-ckt"    ).mask( maskBehavior, options );
+    $( "#tal-cellphone"     ).mask( maskBehavior, options );
+    $( "#tal-cellphone-ckt" ).mask( maskBehavior, options );
 
     let tal_genericError1  = "Ocorreu um erro, tente novamente.";
     let tal_genericError2  = "Algo deu errado, tente novamente.";
