@@ -37,6 +37,7 @@ class Triibo_Auth_Ajax
     /**
      * Send code by sms
      *
+     * @since   1.0.1 Log improvement
      * @since   1.0.0
      * @return  void
      */
@@ -46,7 +47,14 @@ class Triibo_Auth_Ajax
         $response  = $this->gate->auth_sms( $cellphone );
 
         if ( !$response[ "success" ] || !$response[ "data" ][ "success" ] )
+        {
+            $response[ "data_sent" ] = [
+                "function"  => "auth_sms",
+                "cellphone" => $cellphone
+            ];
+
             $this->log( json_encode( $response ) );
+        }
 
         echo json_encode( $response[ "data" ] );
         die();
@@ -55,6 +63,7 @@ class Triibo_Auth_Ajax
     /**
      * Validates code sent by sms
      *
+     * @since   1.0.1 Log improvement
      * @since   1.0.0
      * @return  void
      */
@@ -67,7 +76,16 @@ class Triibo_Auth_Ajax
         $response  = $this->gate->validate_sms( $code, $cellphone, $trans_id );
 
         if ( !$response[ "success" ] || !$response[ "data" ][ "success" ] )
+        {
+            $response[ "data_sent" ] = [
+                "function"      => "validate_sms",
+                "code"          => $code,
+                "cellphone"     => $cellphone,
+                "transactionId" => $trans_id,
+            ];
+
             $this->log( json_encode( $response ) );
+        }
 
         $response[ "data" ][ "logged_in" ] = is_user_logged_in();
 
@@ -78,6 +96,7 @@ class Triibo_Auth_Ajax
     /**
      * Validates code sent by email
      *
+     * @since   1.0.1 Log improvement
      * @since   1.0.0
      * @return  void
      */
@@ -98,7 +117,15 @@ class Triibo_Auth_Ajax
                 $response = $this->create_or_update_user_triibo( $cellphone, $email );
 
                 if ( !$response[ "success" ] || ( isset( $response[ "data" ] ) && !$response[ "data" ][ "success" ] ) )
+                {
+                    $response[ "data_sent" ] = [
+                        "function"  => "validate_code_email",
+                        "cellphone" => $cellphone,
+                        "email"     => $email,
+                    ];
+
                     $this->log( json_encode( $response ) );
+                }
 
                 $uid      = isset( $response[ "uid" ] ) ? $response[ "uid" ] : null;
 
@@ -133,6 +160,7 @@ class Triibo_Auth_Ajax
     /**
      * Resend code by email
      *
+     * @since   1.0.1 Log improvement
      * @since   1.0.0
      * @return  void
      */
@@ -142,7 +170,15 @@ class Triibo_Auth_Ajax
 
         $response = Triibo_Auth::send_code_by_email( $email );
 
-        if ( !$response[ "success" ] ) $this->log( json_encode( $response ) );
+        if ( !$response[ "success" ] )
+        {
+            $response[ "data_sent" ] = [
+                "function" => "resend_email_code",
+                "email"    => $email
+            ];
+
+            $this->log( json_encode( $response ) );
+        }
 
         echo json_encode( $response );
         die();
@@ -151,18 +187,27 @@ class Triibo_Auth_Ajax
     /**
      * Get user info triibo
      *
+     * @since   1.0.1 Log improvement
      * @since   1.0.0
      * @return  void
      */
     public function user_info()
     {
+        $error     = true;
         $checkout  = $_POST[ "ckt"       ];
         $cellphone = $_POST[ "cellphone" ];
 
         $response  = $this->gate->user_info( $cellphone );
 
         if ( !$response[ "success" ] || !$response[ "data" ][ "success" ] )
+        {
+            $response[ "data_sent" ] = [
+                "function" => "user_info 1",
+                "cellphone" => $cellphone
+            ];
+
             $this->log( json_encode( $response ) );
+        }
 
         $data      = $response[ "data" ];
 
@@ -176,8 +221,6 @@ class Triibo_Auth_Ajax
                     "code"    => 404,
                 ],
             ];
-
-            $this->log( json_encode( $result ) );
         }
         elseif ( !empty( $data[ "error" ] ) )
         {
@@ -188,8 +231,6 @@ class Triibo_Auth_Ajax
                     "code"    => 500,
                 ],
             ];
-
-            $this->log( json_encode( $result ) );
         }
         else
         {
@@ -223,6 +264,7 @@ class Triibo_Auth_Ajax
                     }
 
                     $result = $this->login_by_triibo( "id", $user_id );
+                    $error  = false;
                 }
                 else
                 {
@@ -233,8 +275,6 @@ class Triibo_Auth_Ajax
                             "code"    => 401,
                         ],
                     ];
-
-                    $this->log( json_encode( $result ) );
                 }
             }
             else
@@ -246,9 +286,19 @@ class Triibo_Auth_Ajax
                         "code"    => 401,
                     ],
                 ];
-
-                $this->log( json_encode( $result ) );
             }
+        }
+
+        if ( $error )
+        {
+            $log = $result;
+
+            $log[ "data_sent" ] = [
+                "function"  => "user_info 2",
+                "cellphone" => $cellphone
+            ];
+
+            $this->log( json_encode( $log ) );
         }
 
         echo json_encode( $result );
@@ -258,6 +308,7 @@ class Triibo_Auth_Ajax
     /**
      * Create user triibo
      *
+     * @since   1.0.1 Log improvement
      * @since   1.0.0
      * @return  void
      */
@@ -293,7 +344,15 @@ class Triibo_Auth_Ajax
                 $response  = $this->create_or_update_user_triibo( $cellphone, $email, $user->first_name, $user->nickname );
 
                 if ( !$response[ "success" ] || ( isset( $response[ "data" ] ) && !$response[ "data" ][ "success" ] ) )
+                {
+                    $response[ "data_sent" ] = [
+                        "function"  => "find_user",
+                        "cellphone" => $cellphone,
+                        "email"     => $email,
+                    ];
+
                     $this->log( json_encode( $response ) );
+                }
 
                 $cellphone = "+" . preg_replace( "/\D/", "", $cellphone );
 
@@ -322,6 +381,7 @@ class Triibo_Auth_Ajax
     /**
      * Create user triibo
      *
+     * @since   1.0.1 Log improvement
      * @since   1.0.0
      * @return  void
      */
@@ -333,7 +393,14 @@ class Triibo_Auth_Ajax
         $response  = $this->create_or_update_user_triibo( $cellphone, $user->user_email, $user->first_name, $user->nickname );
 
         if ( !$response[ "success" ] || ( isset( $response[ "data" ] ) && !$response[ "data" ][ "success" ] ) )
+        {
+            $response[ "data_sent" ] = [
+                "function"  => "add_triibo_id",
+                "cellphone" => $cellphone
+            ];
+
             $this->log( json_encode( $response ) );
+        }
 
         $cellphone = "+" . preg_replace( "/\D/", "", $_POST["cellphone"] );
         $uid       = isset( $response[ "uid" ] ) ? $response[ "uid" ] : null;

@@ -104,6 +104,7 @@ class Triibo_Auth_Rest_Users_Controller extends WP_REST_Controller
 	/**
 	 * Process login for user
 	 *
+     * @since   1.0.1 Log improvement
 	 * @since   1.0.0
 	 * @param 	WP_REST_Request $request
 	 * @return 	void
@@ -182,8 +183,17 @@ class Triibo_Auth_Rest_Users_Controller extends WP_REST_Controller
 
 					// passo 10 ( passo_comum )
 					$response = $this->gate->update_user_mkt( $cellphone, $email, "ADD" );
+
 					if ( !$response[ "success" ] || !$response[ "data" ][ "success" ] )
+					{
+						$response[ "data_sent" ] = [
+							"function"  => "process_login",
+							"cellphone" => $cellphone,
+							"email"     => $email,
+						];
+
 						$this->log( json_encode( $response ) );
+					}
 
 					$this->make_login( $user_id, $url );
 				}
@@ -322,6 +332,7 @@ class Triibo_Auth_Rest_Users_Controller extends WP_REST_Controller
 	/**
 	 * Validates the token
 	 *
+     * @since   1.0.1 Log improvement
 	 * @since   1.0.0
 	 * @param 	string $bearer
 	 * @param 	string $tkn
@@ -332,11 +343,16 @@ class Triibo_Auth_Rest_Users_Controller extends WP_REST_Controller
 		$bearer   = ( !$bearer && $tkn ) ? base64_decode( $tkn ) : $bearer;
 		$response = $this->node->validate_token( $bearer );
 
-		if ( $response[ "success" ] && $response[ "data" ][ "success" ] ) return true;
+		if ( !$response[ "success" ] && !$response[ "data" ][ "success" ] )
+		{
+			$response[ "data_sent" ] = [ "function" => "validate_token" ];
 
-		$this->log( json_encode( $response ) );
+			$this->log( json_encode( $response ) );
 
-		return false;
+			return false;
+		}
+
+		return true;
 	}
 
     /**

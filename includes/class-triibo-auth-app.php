@@ -108,6 +108,7 @@ class Triibo_Auth_App
     /**
      * Validate code sent by sms/email
      *
+     * @since   1.0.1 Log improvement
      * @since   1.0.0
      * @return  void
      */
@@ -142,8 +143,16 @@ class Triibo_Auth_App
 
 					// passo 14 ( passo_comum )
                     $response = $this->gate->update_user_mkt( $cellphone, $email, "UPDATE" );
+
 					if ( !$response[ "success" ] || !$response[ "data" ][ "success" ] )
+                    {
+                        $response[ "data_sent" ] = [
+                            "function" => "validate_code",
+                            "email"    => $email
+                        ];
+
 						$this->log( json_encode( $response ) );
+                    }
 
                     self::make_login( $user_id );
 
@@ -187,6 +196,7 @@ class Triibo_Auth_App
     /**
      * Validate account, if it exists connect, if not create
      *
+     * @since   1.0.1 Log improvement
      * @since   1.0.0
      * @return  void
      */
@@ -214,8 +224,16 @@ class Triibo_Auth_App
                 add_user_meta( $user->ID, "triiboId_phone", "+$cellphone" );
 
                 $response = $this->gate->update_user_mkt( $cellphone, $email, "CREATE" );
+
                 if ( !$response[ "success" ] || !$response[ "data" ][ "success" ] )
+                {
+                    $response[ "data_sent" ] = [
+                        "function" => "new_account 1",
+                        "email"    => $email
+                    ];
+
                     $this->log( json_encode( $response ) );
+                }
 
                 self::make_login( $user->ID );
 
@@ -264,8 +282,16 @@ class Triibo_Auth_App
 
                 // passo 20 ( passo_comum )
                 $response = $this->gate->update_user_mkt( $cellphone, $email, "UPDATE" );
+
                 if ( !$response[ "success" ] || !$response[ "data" ][ "success" ] )
+                {
+                    $response[ "data_sent" ] = [
+                        "function" => "new_account 2",
+                        "email"    => $email
+                    ];
+
                     $this->log( json_encode( $response ) );
+                }
 
                 self::make_login( $user_id );
 
@@ -292,6 +318,7 @@ class Triibo_Auth_App
     /**
      * validate account, if it exists connect
      *
+     * @since   1.0.1 Log improvement
      * @since   1.0.0
      * @return  void
      */
@@ -311,7 +338,7 @@ class Triibo_Auth_App
 
         $user      = get_user_by( "email", $email );
 
-        if ( ! $user )
+        if ( !$user )
         {
             $result = [
                 "code"    => 4004,
@@ -325,8 +352,16 @@ class Triibo_Auth_App
             {
                 // passo 28 ( passo_comum )
                 $response = $this->gate->update_user_mkt( $cellphone, $email, "CREATE" );
+
                 if ( !$response[ "success" ] || !$response[ "data" ][ "success" ] )
+                {
+                    $response[ "data_sent" ] = [
+                        "function" => "validate_account",
+                        "email"    => $email
+                    ];
+
                     $this->log( json_encode( $response ) );
+                }
 
                 self::make_login( $user->ID );
 
@@ -353,15 +388,24 @@ class Triibo_Auth_App
     /**
      * Resend code by email
      *
+     * @since   1.0.1 Log improvement
      * @since   1.0.0
      * @return  void
      */
     public function resend_email_code()
     {
-        $response = Triibo_Auth::send_code_by_email( $_POST[ "email" ] );
+        $email    = $_POST[ "email" ];
+        $response = Triibo_Auth::send_code_by_email( $email );
 
         if ( !$response[ "success" ] )
+        {
+            $response[ "data_sent" ] = [
+                "function" => "resend_email_code",
+                "email"    => $email
+            ];
+
             $this->log( json_encode( $response ) );
+        }
 
         echo json_encode( $response );
         die();
