@@ -234,7 +234,7 @@ class Triibo_Auth
 	 */
 	public function triibo_api_services_missing_notice()
 	{
-		require_once( dirname( __FILE__ ) . "/templates/notices/missing-triibo_api_services.php" );
+		require_once( dirname( TRIIBO_AUTH_PLUGIN_FILE ) . "/templates/notices/missing-triibo_api_services.php" );
 	}
 
 	/**
