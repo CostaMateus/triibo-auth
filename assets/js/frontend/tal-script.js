@@ -232,6 +232,12 @@
 
                 talEnableBtns();
 
+                if ( result == null )
+                {
+                    $( tal_error_auth ).removeClass( "ta-d-none" ).html( "Serviço temporáriamente indisponível." );
+                    return;
+                }
+
                 if ( !result.success )
                 {
                     let errorMsg = "";
@@ -263,12 +269,12 @@
                     }
 
                     $( tal_modal_valid ).removeClass( "ta-d-none" );
-                    $( "#tal-code" ).focus();
+                    $( "#tal-code"     ).focus();
 
                     tal_cd         = 40;
                     tal_intervalId = setInterval( talCountdown, 1000 );
                     $( "#tal-resend-count" ).removeClass( "ta-d-none" );
-                    $( "#tal-resend" ).addClass( "ta-d-none" );
+                    $( "#tal-resend"       ).addClass( "ta-d-none" );
                 }
             },
             error: function( err ) {
