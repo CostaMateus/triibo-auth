@@ -96,6 +96,8 @@ class Triibo_Auth_Ajax
     /**
      * Validates code sent by email
      *
+     * @deprecated  1.1.0
+     *
      * @since   1.0.1 Log improvement
      * @since   1.0.0
      * @return  void
@@ -159,6 +161,8 @@ class Triibo_Auth_Ajax
 
     /**
      * Resend code by email
+     *
+     * @deprecated  1.1.0
      *
      * @since   1.0.1 Log improvement
      * @since   1.0.0
@@ -415,6 +419,8 @@ class Triibo_Auth_Ajax
 
     /**
      * Check valid email
+     *
+     * @deprecated 1.1.0
      *
      * @since   1.0.0
      * @param   array $data
