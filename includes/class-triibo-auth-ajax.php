@@ -438,17 +438,18 @@ class Triibo_Auth_Ajax
     /**
      * Create or update user triibo
      *
+     * @since   1.1.0   Change 'Null Coalescing Operator' to 'Elvis Operator'
      * @since   1.0.0
-     * @param   string $cellphone
-     * @param   string $email
-     * @param   string $name
-     * @param   string $nick
+     * @param   string  $cellphone
+     * @param   string  $email
+     * @param   string  $name
+     * @param   string  $nick
      * @return  string
      */
     private function create_or_update_user_triibo( string $cellphone, string $email, string $name = "", string $nick = "" )
     {
-        $name     = $name ?? reset( explode( "@", $email ) );
-        $nick     = $nick ?? $name;
+        $name = $name ?: reset( explode( "@", $email ) );
+        $nick = $nick ?: $name;
 
         return $this->gate->update_user_mkt( $cellphone, $email, "UPDATE", $name, $nick );
     }
