@@ -21,14 +21,17 @@
 
 .ta-pt-8 { padding-top: 8px !important; }
 .ta-pt-20 { padding-top: 20px !important; }
+.ta-pb-0 { padding-bottom: 0 !important; }
 .ta-pb-20 { padding-bottom: 20px !important; }
 
 .ta-mt-20 { margin-top: 20px !important; }
 .ta-mb-0 { margin-bottom: 0 !important; }
 .ta-mb-5 { margin-bottom: 5px !important; }
+.ta-mb-12 { margin-bottom: 12px !important; }
 .ta-mb-15 { margin-bottom: 15px !important; }
 
 .ta-mx-auto { margin-left: auto !important; margin-right:  auto !important; }
+.ta-my-0 { margin-top: 0 !important; margin-bottom: 0 !important; }
 
 .ta-pointer { cursor: pointer; }
 
@@ -155,4 +158,43 @@
 @keyframes ta-spin {
     0%   { transform: rotate( 0deg   ); }
     100% { transform: rotate( 360deg ); }
+}
+
+.ta-form-row__remember {
+    position: relative;
+    display: flex;
+    align-items: start;
+    justify-content: left;
+}
+.ta-form-row__remember .ta-form__label-for-checkbox {
+    display: inline-block;
+    line-height: 1;
+    margin-top: 0;
+}
+.ta-form__label-for-checkbox .ta-form__input-checkbox {
+    opacity: 0;
+    display: none;
+}
+.ta-form__label-for-checkbox span {
+    display: inline-block;
+    color: #000;
+    text-transform: inherit;
+    position: relative;
+    line-height: 1;
+    padding-left: 30px;
+    cursor: pointer;
+}
+.ta-form__label-for-checkbox span:before {
+    content: "";
+    display: inline-block;
+    font: normal normal normal 14px/1 linearicons;
+    font-size: 18px;
+    position: absolute;
+    top: -3px;
+    left: 0;
+    color: #000;
+    transition: 0.5s;
+}
+.ta-form__label-for-checkbox .ta-form__input-checkbox:checked + span:before {
+    content: "\e999";
 }
