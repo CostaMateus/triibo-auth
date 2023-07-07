@@ -517,6 +517,8 @@ class Triibo_Auth
 	/**
 	 * Send code by email
 	 *
+     * @deprecated  1.1.0
+	 *
 	 * @since 	1.0.0
 	 * @param 	string $email
 	 * @return 	array
