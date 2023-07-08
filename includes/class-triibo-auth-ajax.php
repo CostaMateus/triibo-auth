@@ -295,8 +295,7 @@ class Triibo_Auth_Ajax
 
         if ( $error )
         {
-            $log = $result;
-
+            $log                = $result;
             $log[ "data_sent" ] = [
                 "function"  => "user_info 2",
                 "cellphone" => $cellphone
@@ -312,6 +311,7 @@ class Triibo_Auth_Ajax
     /**
      * Create user triibo
      *
+     * @since   1.1.0 Non-existent user no longer validates email
      * @since   1.0.1 Log improvement
      * @since   1.0.0
      * @return  void
@@ -322,29 +322,57 @@ class Triibo_Auth_Ajax
         $email     = $_POST[ "email"     ];
         $passw     = $_POST[ "password"  ];
 
+        /**
+         * TODO validar como setar na conta Triibo
+         */
+        $term      = $_POST[ "term"      ];
+
         $user      = get_user_by( "email", $email );
 
-        // enviar email com código
         if ( !$user )
         {
-            $response = Triibo_Auth::send_code_by_email( $email );
+            /**
+             * @deprecated 1.1.0
+             * No longer validates the email provided
+             */
+            if ( false )
+            {
+                $response = Triibo_Auth::send_code_by_email( $email );
+                $message  = ( $response[ "success" ] ) ? "Usuário inexistente" : "Usuário inexistente. Código não enviado!";
+                $code     = ( $response[ "success" ] ) ? 301 : 501;
+                $result   = [
+                    "success" => false,
+                    "error"   => [
+                        "message" => $message,
+                        "code"    => $code,
+                    ],
+                ];
+            }
 
-            $message  = ( $response[ "success" ] ) ? "Usuário inexistente" : "Usuário inexistente. Código não enviado!";
-            $code     = ( $response[ "success" ] ) ? 301 : 501;
+            /**
+             * @since 1.1.0
+             * Create marketplace account directly
+             */
+            $response = $this->create_or_update_user_triibo( $cellphone, $email );
 
-            $result   = [
-                "success" => false,
-                "error"   => [
-                    "message" => $message,
-                    "code"    => $code,
-                ],
-            ];
+            if ( !$response[ "success" ] || ( isset( $response[ "data" ] ) && !$response[ "data" ][ "success" ] ) )
+            {
+                $response[ "data_sent" ] = [
+                    "function"  => "find_user",
+                    "cellphone" => $cellphone,
+                    "email"     => $email,
+                ];
+
+                $this->log( json_encode( $response ) );
+            }
+
+            $uid      = isset( $response[ "uid" ] ) ? $response[ "uid" ] : null;
+            $result   = $this->create_user_marketplace( $uid, $cellphone, $email, $passw );
         }
         else
         {
             if ( $user && wp_check_password( $passw, $user->data->user_pass, $user->ID ) )
             {
-
                 $response  = $this->create_or_update_user_triibo( $cellphone, $email, $user->first_name, $user->nickname );
 
                 if ( !$response[ "success" ] || ( isset( $response[ "data" ] ) && !$response[ "data" ][ "success" ] ) )
