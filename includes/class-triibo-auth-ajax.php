@@ -238,58 +238,78 @@ class Triibo_Auth_Ajax
         }
         else
         {
-            $uid     = $data[ "success" ][ "userInfo" ][ "id"          ];
-            $contact = $data[ "success" ][ "userInfo" ][ "contactList" ];
+            $u_triibo  = $response[ "success" ][ "userInfo" ];
+            $uid       = $u_triibo[ "uId" ];
+            $cellphone = "+" . preg_replace( "/\D/", "", $cellphone );
 
-            $email   = $this->get_verified_email( $contact );
+            $user      = get_users( [
+                "meta_key"   => "_triibo_id",
+                "meta_value" => $uid
+            ] );
 
-            if ( $email )
+            // achou usuario com _triibo_id == uid
+            if ( !empty( $user ) )
             {
-                $user_id = email_exists( $email );
+                $user     = reset( $user );
+                $email    = $user->user_email;
 
-                if ( $user_id )
+                $response = $this->create_or_update_user_triibo( $cellphone, $email, $user->first_name, $user->nickname );
+
+                if ( !$response[ "success" ] || ( isset( $response[ "data" ] ) && !$response[ "data" ][ "success" ] ) )
                 {
-                    // add triibo_phone and triibo_uid when $checkout true
-                    if ( $checkout )
+                    $response[ "data_sent" ] = [
+                        "function"  => "find_user",
+                        "cellphone" => $cellphone,
+                        "email"     => $email,
+                    ];
+
+                    $this->log( json_encode( $response ) );
+                }
+
+                update_user_meta( $user->ID, "triiboId_phone", $cellphone );
+
+                $result   = $this->login_by_triibo( "id", $user->ID );
+            }
+            else
+            {
+                $user = get_users( [
+                    "meta_key"   => "triiboId_phone",
+                    "meta_value" => $cellphone
+                ] );
+
+                // achou usuario com triiboId_phone
+                if ( !empty( $user ) )
+                {
+                    $user     = reset( $user );
+                    $email    = $user->user_email;
+
+                    $response = $this->create_or_update_user_triibo( $cellphone, $email, $user->first_name, $user->nickname );
+
+                    if ( !$response[ "success" ] || ( isset( $response[ "data" ] ) && !$response[ "data" ][ "success" ] ) )
                     {
-                        $triibo_phone = get_user_meta( $user_id, "triiboId_phone", true );
-                        $triibo_uid   = get_user_meta( $user_id, "_triibo_id",     true );
+                        $response[ "data_sent" ] = [
+                            "function"  => "find_user",
+                            "cellphone" => $cellphone,
+                            "email"     => $email,
+                        ];
 
-                        // User without triiboId_phone
-                        if ( empty( $triibo_phone ) )
-                        {
-                            $cellphone = "+" . preg_replace( "/\D/", "", $cellphone );
-                            update_user_meta( $user_id, "triiboId_phone", $cellphone );
-                        }
-
-                        // User without _triibo_id
-                        if ( empty( $triibo_uid ) )
-                            update_user_meta( $user_id, "_triibo_id", $uid );
+                        $this->log( json_encode( $response ) );
                     }
 
-                    $result = $this->login_by_triibo( "id", $user_id );
-                    $error  = false;
+                    update_user_meta( $user->ID, "_triibo_id", $uid );
+
+                    $result   = $this->login_by_triibo( "id", $user->ID );
                 }
                 else
                 {
-                    $result = [
+                    $result   = [
                         "success" => false,
                         "error"   => [
-                            "message" => "E-mail não encontrado",
+                            "message" => "Celular não encontrado",
                             "code"    => 401,
                         ],
                     ];
                 }
-            }
-            else
-            {
-                $result = [
-                    "success" => false,
-                    "error"   => [
-                        "message" => "E-mail não verificado",
-                        "code"    => 401,
-                    ],
-                ];
             }
         }
 
