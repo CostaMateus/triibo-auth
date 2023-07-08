@@ -10,6 +10,13 @@
                 ?>
             </div>
             <form id="tal-form-validate" method="post" >
+                <?php
+                    /**
+                     * TODO nova api de SMS
+                     * mexer por aqui para impl nova mensagem
+                     * whatsapp ou SMS
+                     */
+                ?>
                 <p class="ta-text-left ta-mb-15" >Enviamos um SMS com seu código de acesso, informe-o abaixo.</p>
 
                 <p class="woocommerce-form-row woocommerce-form-row--wide form-row form-row-wide ta-mb-0" >
