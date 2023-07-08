@@ -41,8 +41,17 @@
     let tal_btn_valid      = document.getElementById( "tal-btn-form-validate"         );
 
     // vars validate_email
+    /**
+     * @deprecated 1.1.0
+     */
     let tal_modal_v_email  = document.getElementById( "tal-modal-form-validate-email" );
+    /**
+     * @deprecated 1.1.0
+     */
     let tal_error_v_email  = document.getElementById( "tal-error-valid-email"         );
+    /**
+     * @deprecated 1.1.0
+     */
     let tal_btn_v_email    = document.getElementById( "tal-btn-form-validate-email"   );
 
     // vars register
@@ -79,6 +88,9 @@
                 window.talSubmitValidate();
             break;
 
+            /**
+             * @deprecated  1.1.0
+             */
             case "tal-btn-form-validate-email":
                 e.preventDefault();
                 window.talSubmitValidateEmail();
@@ -133,6 +145,9 @@
         }, 3000 );
     }
 
+    /**
+     * @deprecated 1.1.0
+     */
     window.talResendCodeEmail     = function ()
     {
         talDisableBtns();
@@ -299,7 +314,7 @@
         else
         {
             talEnableBtns();
-            errorMsg = ( tal_code == "" ) ? "Insira código recebido." : "O código tem 6 dígitos." ;
+            let errorMsg = ( tal_code == "" ) ? "Insira código recebido." : "O código tem 6 dígitos." ;
             $( tal_error_valid ).removeClass( "ta-d-none" ).html( errorMsg );
         }
     }
@@ -449,9 +464,6 @@
         });
     }
 
-    /**
-     * TODO
-     */
     window.talCallAddTriiboId     = function ()
     {
         $.ajax( {
@@ -568,6 +580,9 @@
         });
     }
 
+    /**
+     * @deprecated 1.1.0
+     */
     window.talSubmitValidateEmail = function ()
     {
         talDisableBtns();
@@ -585,11 +600,14 @@
         {
             talEnableBtns();
 
-            errorMsg = ( tal_codeEmail == "" ) ? "Insira código recebido." : "O código tem 6 dígitos." ;
+            let errorMsg = ( tal_codeEmail == "" ) ? "Insira código recebido." : "O código tem 6 dígitos." ;
             $( tal_error_v_email ).removeClass( "ta-d-none" ).html( errorMsg );
         }
     }
 
+    /**
+     * @deprecated 1.1.0
+     */
     window.talCallValidateEmail   = function ()
     {
         $.ajax( {
