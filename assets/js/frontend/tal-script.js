@@ -410,7 +410,7 @@
 
                     switch ( result.error.code )
                     {
-                        // has triibo account, but not mkt account
+                        // has triibo account, but no mkt account linked
                         case 401:
                             let t1 = "Complete seu cadastro";
                             let p1 = "Notamos que sua conta Triibo ainda não está associada a uma conta Marketplace.";
