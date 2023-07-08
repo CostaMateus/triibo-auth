@@ -28,12 +28,12 @@ class Triibo_Auth_Login extends Triibo_Auth_Ajax
         add_action( "wp_ajax_nopriv_tal_auth_sms",            [ $this, "auth_sms"               ]        );
         add_action( "wp_ajax_tal_validate_sms",               [ $this, "validate_sms"           ]        );
         add_action( "wp_ajax_nopriv_tal_validate_sms",        [ $this, "validate_sms"           ]        );
-        add_action( "wp_ajax_tal_validate_code_email",        [ $this, "validate_code_email"    ]        );
-        add_action( "wp_ajax_nopriv_tal_validate_code_email", [ $this, "validate_code_email"    ]        );
+        // add_action( "wp_ajax_tal_validate_code_email",        [ $this, "validate_code_email"    ]        );
+        // add_action( "wp_ajax_nopriv_tal_validate_code_email", [ $this, "validate_code_email"    ]        );
         add_action( "wp_ajax_tal_user_info",                  [ $this, "user_info"              ]        );
         add_action( "wp_ajax_nopriv_tal_user_info",           [ $this, "user_info"              ]        );
-        add_action( "wp_ajax_tal_resend_email_code",          [ $this, "resend_email_code"      ]        );
-        add_action( "wp_ajax_nopriv_tal_resend_email_code",   [ $this, "resend_email_code"      ]        );
+        // add_action( "wp_ajax_tal_resend_email_code",          [ $this, "resend_email_code"      ]        );
+        // add_action( "wp_ajax_nopriv_tal_resend_email_code",   [ $this, "resend_email_code"      ]        );
         add_action( "wp_ajax_tal_find_user",                  [ $this, "find_user"              ]        );
         add_action( "wp_ajax_nopriv_tal_find_user",           [ $this, "find_user"              ]        );
     }

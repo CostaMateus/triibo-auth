@@ -50,15 +50,12 @@ class Triibo_Auth_App
 
         add_action( "wp_ajax_taa_validate_code",            [ $this, "validate_code"     ] );
         add_action( "wp_ajax_nopriv_taa_validate_code",     [ $this, "validate_code"     ] );
-
         add_action( "wp_ajax_taa_new_account",              [ $this, "new_account"       ] );
         add_action( "wp_ajax_nopriv_taa_new_account",       [ $this, "new_account"       ] );
-
         add_action( "wp_ajax_taa_validate_account",         [ $this, "validate_account"  ] );
         add_action( "wp_ajax_nopriv_taa_validate_account",  [ $this, "validate_account"  ] );
-
-        add_action( "wp_ajax_taa_resend_email_code",        [ $this, "resend_email_code" ] );
-        add_action( "wp_ajax_nopriv_taa_resend_email_code", [ $this, "resend_email_code" ] );
+        // add_action( "wp_ajax_taa_resend_email_code",        [ $this, "resend_email_code" ] );
+        // add_action( "wp_ajax_nopriv_taa_resend_email_code", [ $this, "resend_email_code" ] );
     }
 
     /**
@@ -387,6 +384,8 @@ class Triibo_Auth_App
 
     /**
      * Resend code by email
+     *
+     * @deprecated 1.1.0
      *
      * @since   1.0.1 Log improvement
      * @since   1.0.0
