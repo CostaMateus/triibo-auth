@@ -23,6 +23,7 @@
     let tal_codeEmail      = null;
     let tal_email          = null;
     let tal_pass           = null;
+    let tal_terms          = null;
     let tal_cellphone      = null;
     let tal_transactionId  = null;
 
@@ -506,8 +507,17 @@
 
         tal_email = $( "#tal-form-register-email"    ).val();
         tal_pass  = $( "#tal-form-register-password" ).val();
+        tal_terms = $( "#tal-form-register-terms"    ).prop( "checked" );
 
-        if ( tal_email != "" && ( tal_pass != "" && tal_pass.length >= 8 ) )
+        if ( !tal_terms )
+        {
+            talEnableBtns();
+
+            $( tal_error_regis ).removeClass( "ta-d-none" ).html( "Vocé precisa aceitar os termos de uso." );
+            return;
+        }
+
+        if ( tal_email != "" && tal_pass != "" )
         {
             $( tal_error_regis ).addClass( "ta-d-none" );
             $( "#tal-form-register-email"    ).removeClass( "ta-error-border" );
@@ -533,6 +543,7 @@
                 cellphone : tal_cellphone,
                 email     : tal_email,
                 password  : tal_pass,
+                terms     : tal_terms,
             },
             success: function( data ) {
                 let result = JSON.parse( data );
@@ -545,12 +556,12 @@
 
                     switch ( result.error.code )
                     {
-                        // email not registred in mkt
-                        case 301:
-                            $( tal_modal_regis   ).addClass( "ta-d-none" );
-                            $( tal_modal_v_email ).removeClass( "ta-d-none" );
-                            $( "#tal-code-email" ).focus();
-                        break;
+                        // // email not registred in mkt
+                        // case 301:
+                        //     $( tal_modal_regis   ).addClass( "ta-d-none" );
+                        //     $( tal_modal_v_email ).removeClass( "ta-d-none" );
+                        //     $( "#tal-code-email" ).focus();
+                        // break;
 
                         // email/pass not ok
                         case 401: // 500 e 501
