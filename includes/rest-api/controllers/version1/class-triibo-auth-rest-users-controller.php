@@ -145,88 +145,13 @@ class Triibo_Auth_Rest_Users_Controller extends WP_REST_Controller
 
 		$data      = $request->get_param( "data" ) ?: null;
 		$user      = null;
-		$params    = null;
 
 		// celular e email ausentes na request
 		// redireciona para $url ou para "/", caso $url == null
 		if ( !$cellphone && !$data ) $this->redirect( $url );
 
-		// passo 2
-		if ( $data )
+		if ( $cellphone )
 		{
-			$arr      = explode( "|", $data );
-			$type     = $arr[ 0 ]; // Type:     email || emailMarketplace
-			$email    = $arr[ 1 ]; // Value:    me@example.com
-			$verified = $arr[ 2 ]; // Verified: true || false || 1 || 0
-			$verified = filter_var( $verified, FILTER_VALIDATE_BOOLEAN );
-
-			// passo 3
-			if ( $type == "emailMarketplace" && $verified )
-			{
-				// passo 4
-				$user_id = email_exists( $email );
-
-				// passo 5 ( passo_comum )
-				$this->make_login( $user_id, $url );
-			}
-			// passo 6
-			else
-			{
-				// passo 7
-				$user_id = email_exists( $email );
-
-				// passo 8
-				if ( $user_id && $verified )
-				{
-					// passo 9
-					update_user_meta( $user_id, "triiboId_phone", "+$cellphone" );
-
-					// passo 10 ( passo_comum )
-					$response = $this->gate->update_user_mkt( $cellphone, $email, "ADD" );
-
-					if ( !$response[ "success" ] || !$response[ "data" ][ "success" ] )
-					{
-						$response[ "data_sent" ] = [
-							"function"  => "process_login",
-							"cellphone" => $cellphone,
-							"email"     => $email,
-						];
-
-						$this->log( json_encode( $response ) );
-					}
-
-					$this->make_login( $user_id, $url );
-				}
-				// passo 8
-				else if ( $user_id && !$verified )
-				{
-					// passo 11
-					$params = $this->send_email_code( $email ) ? "taac=code&email={$email}" : null;
-
-					// passo 12
-					$this->redirect( $url, $params );
-				}
-				// passo 16
-				else if ( !$user_id && $verified )
-				{
-					// passo 17
-					$params = "taac=newacc&email={$email}";
-
-					$this->redirect( $url, $params );
-				}
-				// passo 16
-				else // ( !$user_id && !$verified )
-				{
-					// passo 21
-					$params = $this->send_email_code( $email ) ? "taac=code&email={$email}" : null;
-
-					$this->redirect( $url, $params );
-				}
-			}
-		}
-		else if ( $cellphone )
-		{
-			// passo 25
 			$user = get_users( [
 				"meta_key"   => "triiboId_phone",
 				"meta_value" => "+$cellphone"
@@ -234,27 +159,56 @@ class Triibo_Auth_Rest_Users_Controller extends WP_REST_Controller
 
 			if ( !empty( $user ) )
 			{
-				// passo 26
-				$user   = reset( $user );
-				$email  = $user->user_email;
+				$user     = reset( $user );
+				$email    = $user->user_email;
 
-				// passo 27
-				$params = "taac=acc&email=$email";
+				$response = $this->gate->update_user_mkt( $cellphone, $email, "UPDATE", $user->first_name, $user->nickname );
 
-				$this->redirect( $url, $params );
+				if ( !$response[ "success" ] || ( isset( $response[ "data" ] ) && !$response[ "data" ][ "success" ] ) )
+				{
+					$response[ "data_sent" ] = [
+						"function"  => "rest_api_process_login",
+						"cellphone" => $cellphone,
+						"email"     => $email,
+					];
+
+					$this->log( json_encode( $response ) );
+				}
+
+                if ( isset( $response[ "uid" ] ) ) update_user_meta( $user->ID, "_triibo_id", $response[ "uid" ] );
+
+				$this->make_login( $user->ID, $url );
 			}
-			else
-			{
-				// passo 29
-				$params = "taac=newacc";
+		}
 
-				$this->redirect( $url, $params );
-			}
+		$this->process_data_user( $data, $url );
+	}
+
+	/**
+	 * Process data user for proper redirect
+	 *
+	 * @since   1.1.0
+	 * @param 	string|null $data
+	 * @param 	string 		$url
+	 * @return 	void
+	 */
+	private function process_data_user( string $data, string $url )
+	{
+		if ( $data )
+		{
+			$arr      = explode( "|", $data );
+			$email    = $arr[ 1 ];
+
+			$user_id  = email_exists( $email );
+
+			$params   = ( $user_id ) ? "taac=acc" : "taac=newacc";
+			$params  .= "&email={$email}";
+
+			$this->redirect( $url, $params );
 		}
 		else
 		{
 			wp_clear_auth_cookie();
-
 			$this->redirect( $url );
 		}
 	}
@@ -300,6 +254,8 @@ class Triibo_Auth_Rest_Users_Controller extends WP_REST_Controller
 
 	/**
 	 * Send code by email
+	 *
+	 * @deprecated 1.1.0
 	 *
 	 * @since   1.0.0
 	 * @param 	string $email
