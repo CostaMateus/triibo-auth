@@ -8,15 +8,38 @@
             <form id="taa-form-validate-account" method="post" >
                 <p class="ta-text-left ta-mb-15" >Informe o e-mail e a senha da sua conta:</p>
 
-                <p class="woocommerce-form-row woocommerce-form-row--wide form-row form-row-wide ta-mb-0">
-                    <input id="taa-validate-acc-email" type="email" name="taa-email" class="woocommerce-Input woocommerce-Input--text input-text ta-mb-15"
-                           placeholder="E-mail" required />
-                    <input id="taa-validate-acc-pass" type="password" name="taa-pass" class="woocommerce-Input woocommerce-Input--text input-text ta-mb-0"
-                           placeholder="Senha" pattern=".{8,}" title="A senha deve ter no mínimo 8 dígitos" required />
-
-                    <!-- Error message -->
-                    <p id="taa-error-validate-acc" class="ta-bg-transp ta-text-center ta-text-danger ta-pt-8 ta-mb-0 ta-d-none" ></p>
+                <p class="woocommerce-form-row woocommerce-form-row--wide form-row form-row-wide" >
+                    <input type="email" class="woocommerce-Input woocommerce-Input--text input-text" required placeholder="Endereço de e-mail"
+                        name="email" id="taa-validate-acc-email" autocomplete="email" />
                 </p>
+
+                <p class="woocommerce-form-row woocommerce-form-row--wide form-row form-row-wide" >
+                    <input type="password" class="woocommerce-Input woocommerce-Input--text input-text" required placeholder="Senha"
+                        name="password" id="taa-validate-acc-pass" autocomplete="password" />
+                </p>
+
+                <p class="woocommerce-form-row woocommerce-form-row--wide form-row form-row-wide" >
+                    <span class="ta-form-row__remember" >
+                        <label for="taa-validate-acc-terms" class="ta-form__label ta-form__label-for-checkbox ta-form-login__rememberme ta-mb-0" >
+                            <input id="taa-validate-acc-terms" name="terms" type="checkbox" class="ta-form__input ta-form__input-checkbox" >
+                            <span for="taa-validate-acc-terms" >
+                                Li e aceito os
+                                <a href="https://triibo.com.br/termos-de-uso-dos-servicos-triibo/" target="_blank" >
+                                    termos de uso.
+                                </a>
+                            </span>
+                        </label>
+                    </span>
+                </p>
+
+                <!-- Error message -->
+                <p id="taa-error-validate-acc" class="ta-bg-transp ta-text-center ta-text-danger ta-mb-12 ta-d-none" ></p>
+
+                <p class="woocommerce-form-row woocommerce-form-row--wide form-row form-row-wide ta-my-0" >
+                    <a id="taa-lost-pass"   class="ta-bg-transp ta-float-right ta-pointer ta-pb-20 ta-mb-0" onclick="closeModal()"
+                        href="<?= esc_url( home_url( "/minha-conta/lost-password/" ) ); ?>" target="_blank" >Esqueceu a senha?</a>
+                </p>
+
                 <button id="taa-btn-form-validate-account" type="submit" class="woocommerce-Button button ta-button ta-set-spin" >Entrar <div class="ta-d-none ta-spin-load"></div></button>
             </form>
         </div>
