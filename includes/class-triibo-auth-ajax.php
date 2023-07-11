@@ -43,6 +43,19 @@ class Triibo_Auth_Ajax
      */
     public function auth_sms()
     {
+        // /**
+        //  * TODO remover esse trecho
+        //  */
+        // $cellphone = preg_replace( "/\D/", "", $_POST[ "cellphone" ] );
+        // if ( $cellphone == "5511949482897" )
+        // {
+        //     echo json_encode( [ "success" => [ "transactionId" => "123123" ] ] );
+        //     die();
+        // }
+        // /**
+        //  * TODO remover trecho acima
+        //  */
+
         $cellphone = $_POST[ "cellphone" ];
         $response  = $this->gate->auth_sms( $cellphone );
 
@@ -69,6 +82,20 @@ class Triibo_Auth_Ajax
      */
     public function validate_sms()
     {
+        // /**
+        //  * TODO remover esse trecho
+        //  */
+        // $code      = preg_replace( "/\D/", "", $_POST[ "code" ] );
+        // $cellphone = preg_replace( "/\D/", "", $_POST[ "cellphone" ] );
+        // if ( $code == "123123" && $cellphone == "5511949482897" )
+        // {
+        //     echo json_encode( [ "success" => [ "logged_in" => false ] ] );
+        //     die();
+        // }
+        // /**
+        //  * TODO remover trecho acima
+        //  */
+
         $code      = $_POST[ "code"          ];
         $cellphone = $_POST[ "cellphone"     ];
         $trans_id  = $_POST[ "transactionId" ];
@@ -96,7 +123,7 @@ class Triibo_Auth_Ajax
     /**
      * Validates code sent by email
      *
-     * @deprecated  1.1.0
+     * @deprecated  1.1.0   Will be removed in 1.2.0
      *
      * @since   1.0.1 Log improvement
      * @since   1.0.0
@@ -200,6 +227,7 @@ class Triibo_Auth_Ajax
     {
         $error     = true;
         $cellphone = $_POST[ "cellphone" ];
+        // $cellphone = "5511949482897";
 
         $response  = $this->gate->user_info( $cellphone );
 
@@ -348,7 +376,7 @@ class Triibo_Auth_Ajax
         if ( !$user )
         {
             /**
-             * @deprecated 1.1.0
+             * @deprecated  1.1.0   Will be removed in 1.2.0
              * No longer validates the email provided
              */
             if ( false )
@@ -464,7 +492,7 @@ class Triibo_Auth_Ajax
     /**
      * Check valid email
      *
-     * @deprecated 1.1.0
+     * @deprecated  1.1.0   Will be removed in 1.2.0
      *
      * @since   1.0.0
      * @param   array $data

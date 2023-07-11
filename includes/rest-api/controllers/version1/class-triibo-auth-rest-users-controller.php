@@ -256,7 +256,7 @@ class Triibo_Auth_Rest_Users_Controller extends WP_REST_Controller
 	/**
 	 * Send code by email
 	 *
-	 * @deprecated 1.1.0
+	 * @deprecated 	1.1.0 	Will be removed in 1.2.0
 	 *
 	 * @since   1.0.0
 	 * @param 	string $email

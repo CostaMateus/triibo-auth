@@ -105,7 +105,7 @@ class Triibo_Auth_App
     /**
      * Validate code sent by sms/email
      *
-     * @deprecated 1.1.0
+     * @deprecated  1.1.0   Will be removed in 1.2.0
      *
      * @since   1.0.1 Log improvement
      * @since   1.0.0
@@ -372,7 +372,7 @@ class Triibo_Auth_App
     /**
      * Resend code by email
      *
-     * @deprecated 1.1.0
+     * @deprecated  1.1.0   Will be removed in 1.2.0
      *
      * @since   1.0.1 Log improvement
      * @since   1.0.0

@@ -43,15 +43,15 @@
 
     // vars validate_email
     /**
-     * @deprecated 1.1.0
+     * @deprecated  1.1.0   Will be removed in 1.2.0
      */
     let tal_modal_v_email  = document.getElementById( "tal-modal-form-validate-email" );
     /**
-     * @deprecated 1.1.0
+     * @deprecated  1.1.0   Will be removed in 1.2.0
      */
     let tal_error_v_email  = document.getElementById( "tal-error-valid-email"         );
     /**
-     * @deprecated 1.1.0
+     * @deprecated  1.1.0   Will be removed in 1.2.0
      */
     let tal_btn_v_email    = document.getElementById( "tal-btn-form-validate-email"   );
 
@@ -147,7 +147,7 @@
     }
 
     /**
-     * @deprecated 1.1.0
+     * @deprecated  1.1.0   Will be removed in 1.2.0
      */
     window.talResendCodeEmail     = function ()
     {
@@ -391,6 +391,9 @@
         } );
     }
 
+    /**
+     * @since 1.1.0 New flow.
+     */
     window.talCallUserInfo        = function ()
     {
         $.ajax( {
@@ -501,6 +504,9 @@
         });
     }
 
+    /**
+     * @since 1.1.0 New flow.
+     */
     window.talSubmitRegister      = function ()
     {
         talDisableBtns();
@@ -533,6 +539,9 @@
         }
     }
 
+    /**
+     * @since 1.1.0 New flow.
+     */
     window.talCallFindUser        = function ()
     {
         $.ajax( {
@@ -592,7 +601,7 @@
     }
 
     /**
-     * @deprecated 1.1.0
+     * @deprecated  1.1.0   Will be removed in 1.2.0
      */
     window.talSubmitValidateEmail = function ()
     {
@@ -617,7 +626,7 @@
     }
 
     /**
-     * @deprecated 1.1.0
+     * @deprecated  1.1.0   Will be removed in 1.2.0
      */
     window.talCallValidateEmail   = function ()
     {

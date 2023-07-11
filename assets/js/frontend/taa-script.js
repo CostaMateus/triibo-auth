@@ -14,15 +14,15 @@
 
     // vars validate code
     /**
-     * @deprecated 1.1.0
+     * @deprecated  1.1.0   Will be removed in 1.2.0
      */
     let taa_mvc = document.getElementById( "taa-modal-validate-code"       );
     /**
-     * @deprecated 1.1.0
+     * @deprecated  1.1.0   Will be removed in 1.2.0
      */
     let taa_bvc = document.getElementById( "taa-btn-form-validate-code"    );
     /**
-     * @deprecated 1.1.0
+     * @deprecated  1.1.0   Will be removed in 1.2.0
      */
     let taa_evc = document.getElementById( "taa-error-validate-code"       );
 
@@ -52,7 +52,7 @@
                 break;
 
                 /**
-                 * @deprecated 1.1.0
+                 * @deprecated  1.1.0   Will be removed in 1.2.0
                  */
                 case "code":
                     taa_cd         = 40;
@@ -79,7 +79,7 @@
             break;
 
             /**
-             * @deprecated 1.1.0
+             * @deprecated  1.1.0   Will be removed in 1.2.0
              */
             case "taa-btn-form-validate-code":
                 e.preventDefault();
@@ -90,7 +90,7 @@
     }, false );
 
     /**
-     * @deprecated 1.1.0
+     * @deprecated  1.1.0   Will be removed in 1.2.0
      */
     window.taaCountdown        = function ()
     {
@@ -271,7 +271,7 @@
     }
 
     /**
-     * @deprecated 1.1.0
+     * @deprecated  1.1.0   Will be removed in 1.2.0
      */
     window.taaSubmitValCode    = function ()
     {
@@ -337,7 +337,7 @@
     }
 
     /**
-     * @deprecated 1.1.0
+     * @deprecated  1.1.0   Will be removed in 1.2.0
      */
     window.taaResendCodeEmail  = function ()
     {
