@@ -192,7 +192,7 @@ class Triibo_Auth_Rest_Users_Controller extends WP_REST_Controller
 	 * @param 	string 		$url
 	 * @return 	void
 	 */
-	private function process_data_user( string $data, string $url )
+	private function process_data_user( string|null $data, string $url )
 	{
 		if ( $data )
 		{
