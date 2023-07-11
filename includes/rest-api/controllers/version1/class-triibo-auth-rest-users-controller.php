@@ -104,6 +104,7 @@ class Triibo_Auth_Rest_Users_Controller extends WP_REST_Controller
 	/**
 	 * Process login for user
 	 *
+	 * @since   1.1.0 New flow
      * @since   1.0.1 Log improvement
 	 * @since   1.0.0
 	 * @param 	WP_REST_Request $request
