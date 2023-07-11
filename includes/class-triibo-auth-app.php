@@ -195,24 +195,18 @@ class Triibo_Auth_App
     /**
      * Validate account, if it exists connect, if not create
      *
+     * @since   1.1.0 New flow
      * @since   1.0.1 Log improvement
      * @since   1.0.0
      * @return  void
      */
     public function new_account()
     {
-        $result    = [
-            "code"    => 5000,
-            "error"   => true,
-            "message" => "Error"
-        ];
-
         $email     = $_POST[ "email" ];
         $pass      = $_POST[ "pass"  ];
+        $terms     = $_POST[ "terms" ];
 
         $cellphone = get_transient( "_taa_triibo_cellphone" );
-        delete_transient( "_taa_triibo_cellphone" );
-
         $user      = get_user_by( "email", $email );
 
         // valida se conta existe e se a senha está correta
@@ -222,13 +216,14 @@ class Triibo_Auth_App
             {
                 add_user_meta( $user->ID, "triiboId_phone", "+$cellphone" );
 
-                $response = $this->gate->update_user_mkt( $cellphone, $email, "CREATE" );
+                $response = $this->gate->update_user_mkt( $cellphone, $email, "CREATE", $user->first_name, $user->nickname, $terms );
 
                 if ( !$response[ "success" ] || !$response[ "data" ][ "success" ] )
                 {
                     $response[ "data_sent" ] = [
-                        "function" => "new_account 1",
-                        "email"    => $email
+                        "function"  => "new_account_1",
+						"cellphone" => $cellphone,
+                        "email"     => $email
                     ];
 
                     $this->log( json_encode( $response ) );
@@ -236,18 +231,16 @@ class Triibo_Auth_App
 
                 self::make_login( $user->ID );
 
-                $result = [
-                    "code"    => 2000,
-                    "error"   => null,
-                    "message" => "Usuário conectado"
-                ];
+                $result = [ "success" => true ];
             }
             else
             {
                 $result = [
-                    "code"    => 4001,
-                    "error"   => true,
-                    "message" => "E-mail e/ou senha incorreta"
+                    "success" => false,
+                    "error"   => [
+                        "code"    => 401,
+                        "message" => "E-mail e/ou senha incorreta",
+                    ]
                 ];
             }
         }
@@ -255,7 +248,6 @@ class Triibo_Auth_App
         {
             $name    = explode( "@", $email )[ 0 ];
 
-            // passo 18
             $user_id = wp_insert_user( [
                 "user_login"    => $email,
                 "user_pass"     => wp_hash_password( "Triibo" . date( "Y" ) . "@!#" ),
@@ -267,11 +259,10 @@ class Triibo_Auth_App
                 "last_name"     => "",
             ] );
 
-            if ( ! is_wp_error( $user_id ) )
+            if ( !is_wp_error( $user_id ) )
             {
                 wp_set_password( $pass, $user_id );
 
-                // passo 19
                 add_user_meta( $user_id, "triiboId_phone", "+$cellphone" );
 
                 $user = get_user_by( "id", $user_id );
@@ -279,14 +270,14 @@ class Triibo_Auth_App
                 $user->set_role( "subscriber" );
                 if ( class_exists( "WooCommerce" ) ) $user->set_role( "customer" );
 
-                // passo 20 ( passo_comum )
-                $response = $this->gate->update_user_mkt( $cellphone, $email, "UPDATE" );
+                $response = $this->gate->update_user_mkt( $cellphone, $email, "UPDATE", $user->first_name, $user->nickname, $terms );
 
                 if ( !$response[ "success" ] || !$response[ "data" ][ "success" ] )
                 {
                     $response[ "data_sent" ] = [
-                        "function" => "new_account 2",
-                        "email"    => $email
+                        "function"  => "new_account_2",
+						"cellphone" => $cellphone,
+                        "email"     => $email
                     ];
 
                     $this->log( json_encode( $response ) );
@@ -294,18 +285,17 @@ class Triibo_Auth_App
 
                 self::make_login( $user_id );
 
-                $result = [
-                    "code"    => 2000,
-                    "error"   => null,
-                    "message" => "Conta criada"
-                ];
+                $result = [ "success" => true ];
+                delete_transient( "_taa_triibo_cellphone" );
             }
             else
             {
                 $result = [
-                    "code"    => 5000,
-                    "error"   => true,
-                    "message" => "Falha na criação da conta"
+                    "success" => false,
+                    "error"   => [
+                        "code"    => 500,
+                        "message" => "Falha na criação da conta"
+                    ]
                 ];
             }
         }
@@ -329,8 +319,6 @@ class Triibo_Auth_App
         $terms     = $_POST[ "terms" ];
 
         $cellphone = get_transient( "_taa_triibo_cellphone" );
-        delete_transient( "_taa_triibo_cellphone" );
-
         $user      = get_user_by( "email", $email );
 
         if ( !$user )
@@ -363,6 +351,7 @@ class Triibo_Auth_App
                 self::make_login( $user->ID );
 
                 $result = [ "success" => true ];
+                delete_transient( "_taa_triibo_cellphone" );
             }
             else
             {
