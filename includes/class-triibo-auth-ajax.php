@@ -206,7 +206,7 @@ class Triibo_Auth_Ajax
         if ( !$response[ "success" ] || !$response[ "data" ][ "success" ] )
         {
             $response[ "data_sent" ] = [
-                "function" => "user_info 1",
+                "function" => "user_info_1",
                 "cellphone" => $cellphone
             ];
 
@@ -258,7 +258,7 @@ class Triibo_Auth_Ajax
                 if ( !$response[ "success" ] || ( isset( $response[ "data" ] ) && !$response[ "data" ][ "success" ] ) )
                 {
                     $response[ "data_sent" ] = [
-                        "function"  => "find_user",
+                        "function"  => "user_info_3",
                         "cellphone" => $cellphone,
                         "email"     => $email,
                     ];
@@ -288,7 +288,7 @@ class Triibo_Auth_Ajax
                     if ( !$response[ "success" ] || ( isset( $response[ "data" ] ) && !$response[ "data" ][ "success" ] ) )
                     {
                         $response[ "data_sent" ] = [
-                            "function"  => "find_user",
+                            "function"  => "user_info_3",
                             "cellphone" => $cellphone,
                             "email"     => $email,
                         ];
@@ -317,7 +317,7 @@ class Triibo_Auth_Ajax
         {
             $log                = $result;
             $log[ "data_sent" ] = [
-                "function"  => "user_info 2",
+                "function"  => "user_info_2",
                 "cellphone" => $cellphone
             ];
 
@@ -341,11 +341,7 @@ class Triibo_Auth_Ajax
         $cellphone = $_POST[ "cellphone" ];
         $email     = $_POST[ "email"     ];
         $passw     = $_POST[ "password"  ];
-
-        /**
-         * TODO validar como setar na conta Triibo
-         */
-        $term      = $_POST[ "term"      ];
+        $terms     = $_POST[ "terms"     ];
 
         $user      = get_user_by( "email", $email );
 
@@ -373,7 +369,7 @@ class Triibo_Auth_Ajax
              * @since 1.1.0
              * Create marketplace account directly
              */
-            $response = $this->create_or_update_user_triibo( $cellphone, $email );
+            $response = $this->create_or_update_user_triibo( $cellphone, $email, "", "", $terms );
 
             if ( !$response[ "success" ] || ( isset( $response[ "data" ] ) && !$response[ "data" ][ "success" ] ) )
             {
@@ -393,7 +389,7 @@ class Triibo_Auth_Ajax
         {
             if ( $user && wp_check_password( $passw, $user->data->user_pass, $user->ID ) )
             {
-                $response  = $this->create_or_update_user_triibo( $cellphone, $email, $user->first_name, $user->nickname );
+                $response  = $this->create_or_update_user_triibo( $cellphone, $email, $user->first_name, $user->nickname, $terms );
 
                 if ( !$response[ "success" ] || ( isset( $response[ "data" ] ) && !$response[ "data" ][ "success" ] ) )
                 {
@@ -492,14 +488,15 @@ class Triibo_Auth_Ajax
      * @param   string  $email
      * @param   string  $name
      * @param   string  $nick
+     * @param   bool    $terms
      * @return  string
      */
-    private function create_or_update_user_triibo( string $cellphone, string $email, string $name = "", string $nick = "" )
+    private function create_or_update_user_triibo( string $cellphone, string $email, string $name = "", string $nick = "", bool $terms = null )
     {
         $name = $name ?: reset( explode( "@", $email ) );
         $nick = $nick ?: $name;
 
-        return $this->gate->update_user_mkt( $cellphone, $email, "UPDATE", $name, $nick );
+        return $this->gate->update_user_mkt( $cellphone, $email, "UPDATE", $name, $nick, $terms );
     }
 
     /**
