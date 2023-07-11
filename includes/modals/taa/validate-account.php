@@ -36,7 +36,7 @@
                 <p id="taa-error-validate-acc" class="ta-bg-transp ta-text-center ta-text-danger ta-mb-12 ta-d-none" ></p>
 
                 <p class="woocommerce-form-row woocommerce-form-row--wide form-row form-row-wide ta-my-0" >
-                    <a id="taa-lost-pass"   class="ta-bg-transp ta-float-right ta-pointer ta-pb-20 ta-mb-0" onclick="closeModal()"
+                    <a id="taa-validate-lost-pass" class="ta-bg-transp ta-float-right ta-pointer ta-pb-20 ta-mb-0" onclick="closeModal()"
                         href="<?= esc_url( home_url( "/minha-conta/lost-password/" ) ); ?>" target="_blank" >Esqueceu a senha?</a>
                 </p>
 
