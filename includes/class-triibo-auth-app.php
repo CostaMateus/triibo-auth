@@ -48,8 +48,8 @@ class Triibo_Auth_App
 		add_action( "wp_footer",                            [ $this, "add_modals"        ] );
 		add_action( "wp_footer",                            [ $this, "add_script"        ] );
 
-        add_action( "wp_ajax_taa_validate_code",            [ $this, "validate_code"     ] );
-        add_action( "wp_ajax_nopriv_taa_validate_code",     [ $this, "validate_code"     ] );
+        // add_action( "wp_ajax_taa_validate_code",            [ $this, "validate_code"     ] );
+        // add_action( "wp_ajax_nopriv_taa_validate_code",     [ $this, "validate_code"     ] );
         add_action( "wp_ajax_taa_new_account",              [ $this, "new_account"       ] );
         add_action( "wp_ajax_nopriv_taa_new_account",       [ $this, "new_account"       ] );
         add_action( "wp_ajax_taa_validate_account",         [ $this, "validate_account"  ] );
@@ -104,6 +104,8 @@ class Triibo_Auth_App
 
     /**
      * Validate code sent by sms/email
+     *
+     * @deprecated 1.1.0
      *
      * @since   1.0.1 Log improvement
      * @since   1.0.0
@@ -315,20 +317,16 @@ class Triibo_Auth_App
     /**
      * validate account, if it exists connect
      *
+     * @since   1.1.0 New flow
      * @since   1.0.1 Log improvement
      * @since   1.0.0
      * @return  void
      */
     public function validate_account()
     {
-        $result    = [
-            "code"    => 5000,
-            "error"   => true,
-            "message" => "Error"
-        ];
-
         $email     = $_POST[ "email" ];
         $pass      = $_POST[ "pass"  ];
+        $terms     = $_POST[ "terms" ];
 
         $cellphone = get_transient( "_taa_triibo_cellphone" );
         delete_transient( "_taa_triibo_cellphone" );
@@ -338,23 +336,25 @@ class Triibo_Auth_App
         if ( !$user )
         {
             $result = [
-                "code"    => 4004,
-                "error"   => true,
-                "message" => "Usuário não encontrado",
+                "success" => false,
+                "error"   => [
+                    "code"    => 404,
+                    "message" => "Usuário não encontrado",
+                ]
             ];
         }
         else
         {
             if ( $user && wp_check_password( $pass, $user->data->user_pass, $user->ID ) )
             {
-                // passo 28 ( passo_comum )
-                $response = $this->gate->update_user_mkt( $cellphone, $email, "CREATE" );
+                $response = $this->gate->update_user_mkt( $cellphone, $email, "CREATE", $user->first_name, $user->nickname, $terms );
 
-                if ( !$response[ "success" ] || !$response[ "data" ][ "success" ] )
+                if ( !$response[ "success" ] || ( isset( $response[ "data" ] ) && !$response[ "data" ][ "success" ] ) )
                 {
                     $response[ "data_sent" ] = [
-                        "function" => "validate_account",
-                        "email"    => $email
+                        "function"  => "validate_account",
+						"cellphone" => $cellphone,
+                        "email"     => $email
                     ];
 
                     $this->log( json_encode( $response ) );
@@ -362,18 +362,16 @@ class Triibo_Auth_App
 
                 self::make_login( $user->ID );
 
-                $result = [
-                    "code"    => 2000,
-                    "error"   => null,
-                    "message" => "Usuário conectado"
-                ];
+                $result = [ "success" => true ];
             }
             else
             {
                 $result = [
-                    "code"    => 4001,
-                    "error"   => true,
-                    "message" => "E-mail e/ou senha incorreta"
+                    "success" => false,
+                    "error"   => [
+                        "code"    => 401,
+                        "message" => "E-mail e/ou senha incorreta",
+                    ]
                 ];
             }
         }
