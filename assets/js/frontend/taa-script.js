@@ -2,19 +2,28 @@
 
     "use strict";
 
+    // vars new acc
     let taa_mna = document.getElementById( "taa-modal-new-account"         );
-    // let taa_mnp = document.getElementById( "taa-modal-new-password"        );
-    let taa_mva = document.getElementById( "taa-modal-validate-account"    );
-    let taa_mvc = document.getElementById( "taa-modal-validate-code"       );
-
     let taa_bna = document.getElementById( "taa-btn-form-new-account"      );
-    let taa_bnp = document.getElementById( "taa-btn-form-new-password"     );
-    let taa_bva = document.getElementById( "taa-btn-form-validate-account" );
-    let taa_bvc = document.getElementById( "taa-btn-form-validate-code"    );
-
     let taa_ena = document.getElementById( "taa-error-new-acc"             );
-    // let taa_enp = document.getElementById( "taa-error-new-pass"            );
+
+    // vars validate acc
+    let taa_mva = document.getElementById( "taa-modal-validate-account"    );
+    let taa_bva = document.getElementById( "taa-btn-form-validate-account" );
     let taa_eva = document.getElementById( "taa-error-validate-acc"        );
+
+    // vars validate code
+    /**
+     * @deprecated 1.1.0
+     */
+    let taa_mvc = document.getElementById( "taa-modal-validate-code"       );
+    /**
+     * @deprecated 1.1.0
+     */
+    let taa_bvc = document.getElementById( "taa-btn-form-validate-code"    );
+    /**
+     * @deprecated 1.1.0
+     */
     let taa_evc = document.getElementById( "taa-error-validate-code"       );
 
     let taa_cd         = 0;
@@ -37,6 +46,9 @@
                     $( "#taa-validate-acc-email" ).val( email );
                 break;
 
+                /**
+                 * @deprecated 1.1.0
+                 */
                 case "code":
                     taa_cd         = 40;
                     taa_intervalId = setInterval( taaCountdown, 1000 );
@@ -66,6 +78,9 @@
                 taaSubmitValAccount();
             break;
 
+            /**
+             * @deprecated 1.1.0
+             */
             case "taa-btn-form-validate-code":
                 e.preventDefault();
                 taaSubmitValCode();
@@ -74,6 +89,9 @@
 
     }, false );
 
+    /**
+     * @deprecated 1.1.0
+     */
     window.taaCountdown        = function ()
     {
         if ( taa_cd == 0 )
@@ -157,53 +175,81 @@
 
         let email = $( "#taa-validate-acc-email" ).val();
         let pass  = $( "#taa-validate-acc-pass"  ).val();
+        let terms = $( "#taa-validate-acc-terms" ).prop( "checked" );
+
+        if ( !terms )
+        {
+            taaEnableBtns();
+            $( taa_eva ).removeClass( "ta-d-none" ).html( "Vocé precisa aceitar os termos de uso." );
+            return;
+        }
 
         if ( email == "" )
         {
             taaEnableBtns();
             $( taa_eva ).removeClass( "ta-d-none" ).html( "Informe um e-mail válido" );
             $( "#taa-validate-acc-email" ).addClass( "ta-error-border" );
+            return;
         }
-        else if ( pass == "" )
+
+        if ( pass == "" )
         {
             taaEnableBtns();
             $( taa_eva ).removeClass( "ta-d-none" ).html( "Informe uma senha" );
             $( "#taa-validate-acc-pass" ).addClass( "ta-error-border" );
+            return;
         }
-        else
-        {
-            $.ajax( {
-                url : taa_script_obj.ajaxurl,
-                type: "POST",
-                data: {
-                    action : "taa_validate_account",
-                    email  : email,
-                    pass   : pass
-                },
-                success: function( data ) {
 
-                    let result = JSON.parse( data );
+        $.ajax( {
+            url : taa_script_obj.ajaxurl,
+            type: "POST",
+            data: {
+                action : "taa_validate_account",
+                email  : email,
+                pass   : pass,
+                terms  : terms,
+            },
+            success: function( data ) {
 
-                    if ( result.error )
+                let result = JSON.parse( data );
+
+                if ( !result.success )
+                {
+                    taaEnableBtns();
+
+                    let message = "";
+
+                    switch ( result.error.code )
                     {
-                        taaEnableBtns();
+                        case 404:
+                            // user not found
+                            message = "Usuário não encontrado.";
+                        break;
 
-                        $( taa_eva ).removeClass( "ta-d-none" ).html( "E-mail e/ou senha incorreta" );
-                        $( "#taa-validate-acc-email" ).addClass( "ta-error-border" );
-                        $( "#taa-validate-acc-pass"  ).addClass( "ta-error-border" );
+                        case 401:
+                            // email/password incorrect
+                            $( "#taa-validate-acc-pass" ).addClass( "ta-error-border" );
+                            message = "Email/senha incorretos.";
+                        break;
                     }
-                    else
-                    {
-                        taaRefresh();
-                    }
-                },
-                error: function( err ) {
-                    taaAjaxError( err );
+
+                    $( "#taa-validate-acc-email" ).addClass( "ta-error-border" ).focus();
+                    $( taa_eva ).removeClass( "ta-d-none" ).html( message );
                 }
-            } );
-        }
+                else
+                {
+                    taaRefresh();
+                }
+            },
+            error: function( err ) {
+                taaAjaxError( err );
+            }
+        } );
     }
 
+    /**
+     * @deprecated 1.1.0
+     */
     window.taaSubmitValCode    = function ()
     {
         taaDisableBtns();
@@ -267,6 +313,9 @@
         }
     }
 
+    /**
+     * @deprecated 1.1.0
+     */
     window.taaResendCodeEmail  = function ()
     {
         taaDisableBtns();
@@ -321,14 +370,14 @@
 
     window.taaDisableBtns      = function ()
     {
-        [ taa_bna, taa_bnp, taa_bva, taa_bvc ].forEach( ( e ) => {
+        [ taa_bna, taa_bva, taa_bvc ].forEach( ( e ) => {
             $( e ).prop( "disabled", "disabled" ).find( "div" ).removeClass( "ta-d-none" );
         } );
     }
 
     window.taaEnableBtns       = function ()
     {
-        [ taa_bna, taa_bnp, taa_bva, taa_bvc ].forEach( ( e ) => {
+        [ taa_bna, taa_bva, taa_bvc ].forEach( ( e ) => {
             $( e ).prop( "disabled", null ).find( "div" ).addClass( "ta-d-none" );
         } );
     }
