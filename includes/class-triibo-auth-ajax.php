@@ -191,6 +191,7 @@ class Triibo_Auth_Ajax
     /**
      * Get user info triibo
      *
+     * @since   1.1.0 New flow
      * @since   1.0.1 Log improvement
      * @since   1.0.0
      * @return  void
@@ -198,7 +199,6 @@ class Triibo_Auth_Ajax
     public function user_info()
     {
         $error     = true;
-        $checkout  = $_POST[ "ckt"       ];
         $cellphone = $_POST[ "cellphone" ];
 
         $response  = $this->gate->user_info( $cellphone );
@@ -331,7 +331,7 @@ class Triibo_Auth_Ajax
     /**
      * Create user triibo
      *
-     * @since   1.1.0 Non-existent user no longer validates email
+     * @since   1.1.0 New flow. Non-existent user no longer validates email
      * @since   1.0.1 Log improvement
      * @since   1.0.0
      * @return  void
