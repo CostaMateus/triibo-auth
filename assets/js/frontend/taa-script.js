@@ -46,6 +46,11 @@
                     $( "#taa-validate-acc-email" ).val( email );
                 break;
 
+                case "newacc":
+                    $( taa_mna ).removeClass( "ta-d-none" );
+                    if ( email ) $( "#taa-new-acc-email" ).val( email );
+                break;
+
                 /**
                  * @deprecated 1.1.0
                  */
@@ -55,11 +60,6 @@
                     $( "#taa-resend-count" ).removeClass( "ta-d-none" );
                     $( taa_mvc ).removeClass( "ta-d-none" );
                     $( "#taa-email" ).val( email );
-                break;
-
-                case "newacc":
-                    $( taa_mna ).removeClass( "ta-d-none" );
-                    if ( email ) $( "#taa-new-acc-email" ).val( email );
                 break;
             }
         }
@@ -116,53 +116,76 @@
         $( "#taa-new-acc-pass1" ).removeClass( "ta-error-border" );
 
         let email = $( "#taa-new-acc-email" ).val();
-        let pass1 = $( "#taa-new-acc-pass1" ).val();
+        let pass  = $( "#taa-new-acc-pass"  ).val();
+        let terms = $( "#taa-new-acc-terms" ).prop( "checked" );
+
+        if ( !terms )
+        {
+            taaEnableBtns();
+            $( taa_ena ).removeClass( "ta-d-none" ).html( "Vocé precisa aceitar os termos de uso." );
+            return;
+        }
 
         if ( email == "" )
         {
             taaEnableBtns();
             $( taa_ena ).removeClass( "ta-d-none" ).html( "Informe um e-mail válido" );
             $( "#taa-new-acc-email" ).addClass( "ta-error-border" );
+            return;
         }
-        else if ( pass1 == "" )
+
+        if ( pass == "" )
         {
             taaEnableBtns();
             $( taa_ena ).removeClass( "ta-d-none" ).html( "Informe uma senha" );
             $( "#taa-new-acc-pass1" ).addClass( "ta-error-border" );
+            return;
         }
-        else
-        {
-            $.ajax( {
-                url : taa_script_obj.ajaxurl,
-                type: "POST",
-                data: {
-                    action : "taa_new_account",
-                    email  : email,
-                    pass   : pass1
-                },
-                success: function( data ) {
 
-                    let result = JSON.parse( data );
+        $.ajax( {
+            url : taa_script_obj.ajaxurl,
+            type: "POST",
+            data: {
+                action : "taa_new_account",
+                email  : email,
+                pass   : pass,
+                terms  : terms,
+            },
+            success: function( data ) {
 
-                    if ( result.error )
+                let result = JSON.parse( data );
+
+                if ( !result.success )
+                {
+                    taaEnableBtns();
+
+                    let message = "";
+
+                    switch ( result.error.code )
                     {
-                        taaEnableBtns();
+                        case 500:
+                            message = "Falha na criação da conta. Tente novamente mais tarde.";
+                        break;
 
-                        $( taa_ena ).removeClass( "ta-d-none" ).html( result.message );
-                        $( "#taa-code" ).addClass( "ta-error-border" );
-                        $( "#taa-new-acc-email" ).addClass( "ta-error-border" );
-                        $( "#taa-new-acc-pass1" ).addClass( "ta-error-border" );
+                        case 401:
+                            // email/password incorrect
+                            $( "#taa-new-acc-pass" ).addClass( "ta-error-border" );
+                            message = "E-mail/senha incorretos.";
+                        break;
                     }
-                    else
-                    {
-                        taaRefresh();
-                    }
-                },
-                error: function( err ) {
-                    taaAjaxError( err );
+
+                    $( "#taa-new-acc-email" ).addClass( "ta-error-border" ).focus();
+                    $( taa_ena ).removeClass( "ta-d-none" ).html( message );
                 }
-            } );
-        }
+                else
+                {
+                    taaRefresh();
+                }
+            },
+            error: function( err ) {
+                taaAjaxError( err );
+            }
+        } );
     }
 
     window.taaSubmitValAccount = function ()
@@ -229,7 +252,7 @@
                         case 401:
                             // email/password incorrect
                             $( "#taa-validate-acc-pass" ).addClass( "ta-error-border" );
-                            message = "Email/senha incorretos.";
+                            message = "E-mail/senha incorretos.";
                         break;
                     }
 
