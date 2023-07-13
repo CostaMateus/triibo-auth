@@ -43,18 +43,19 @@ class Triibo_Auth_Ajax
      */
     public function auth_sms()
     {
-        // /**
-        //  * TODO remover esse trecho
-        //  */
-        // $cellphone = preg_replace( "/\D/", "", $_POST[ "cellphone" ] );
-        // if ( $cellphone == "5511949482897" )
-        // {
-        //     echo json_encode( [ "success" => [ "transactionId" => "123123" ] ] );
-        //     die();
-        // }
-        // /**
-        //  * TODO remover trecho acima
-        //  */
+        /**
+         * TODO remover esse trecho
+         */
+        $phones    = [ "5511949289507", ];
+        $cellphone = preg_replace( "/\D/", "", $_POST[ "cellphone" ] );
+        if ( in_array( $cellphone, $phones ) )
+        {
+            echo json_encode( [ "success" => [ "transactionId" => "123123" ] ] );
+            die();
+        }
+        /**
+         * TODO remover trecho acima
+         */
 
         $cellphone = $_POST[ "cellphone" ];
         $response  = $this->gate->auth_sms( $cellphone );
@@ -82,19 +83,19 @@ class Triibo_Auth_Ajax
      */
     public function validate_sms()
     {
-        // /**
-        //  * TODO remover esse trecho
-        //  */
-        // $code      = preg_replace( "/\D/", "", $_POST[ "code" ] );
-        // $cellphone = preg_replace( "/\D/", "", $_POST[ "cellphone" ] );
-        // if ( $code == "123123" && $cellphone == "5511949482897" )
-        // {
-        //     echo json_encode( [ "success" => [ "logged_in" => false ] ] );
-        //     die();
-        // }
-        // /**
-        //  * TODO remover trecho acima
-        //  */
+        /**
+         * TODO remover esse trecho
+         */
+        $code      = preg_replace( "/\D/", "", $_POST[ "code"      ] );
+        $cellphone = preg_replace( "/\D/", "", $_POST[ "cellphone" ] );
+        if ( $code == "123123" && $cellphone == "5511949289507" )
+        {
+            echo json_encode( [ "success" => [ "logged_in" => false ] ] );
+            die();
+        }
+        /**
+         * TODO remover trecho acima
+         */
 
         $code      = $_POST[ "code"          ];
         $cellphone = $_POST[ "cellphone"     ];
@@ -227,7 +228,6 @@ class Triibo_Auth_Ajax
     {
         $error     = true;
         $cellphone = $_POST[ "cellphone" ];
-        // $cellphone = "5511949482897";
 
         $response  = $this->gate->user_info( $cellphone );
 
@@ -266,8 +266,7 @@ class Triibo_Auth_Ajax
         }
         else
         {
-            $u_triibo  = $response[ "success" ][ "userInfo" ];
-            $uid       = $u_triibo[ "uId" ];
+            $uid       = $response[ "data" ][ "success" ][ "userInfo" ][ "uId" ];
             $cellphone = "+" . preg_replace( "/\D/", "", $cellphone );
 
             $user      = get_users( [
@@ -281,20 +280,7 @@ class Triibo_Auth_Ajax
                 $user     = reset( $user );
                 $email    = $user->user_email;
 
-                $response = $this->create_or_update_user_triibo( $cellphone, $email, $user->first_name, $user->nickname );
-
-                if ( !$response[ "success" ] || ( isset( $response[ "data" ] ) && !$response[ "data" ][ "success" ] ) )
-                {
-                    $response[ "data_sent" ] = [
-                        "function"  => "user_info_3",
-                        "cellphone" => $cellphone,
-                        "email"     => $email,
-                    ];
-
-                    $this->log( json_encode( $response ) );
-                }
-
-                update_user_meta( $user->ID, "triiboId_phone", $cellphone );
+                delete_user_meta( $user->ID, "triiboId_phone", $cellphone );
 
                 $result   = $this->login_by_triibo( "id", $user->ID );
             }
@@ -324,7 +310,10 @@ class Triibo_Auth_Ajax
                         $this->log( json_encode( $response ) );
                     }
 
-                    update_user_meta( $user->ID, "_triibo_id", $uid );
+                    $uid      = ( $uid == $response[ "data" ][ "success" ][ "newUserInfo" ][ "uId" ] ) ? $uid : $response[ "data" ][ "success" ][ "userInfo" ][ "uId" ];
+
+                    update_user_meta( $user->ID, "_triibo_id",     $uid       );
+                    delete_user_meta( $user->ID, "triiboId_phone", $cellphone );
 
                     $result   = $this->login_by_triibo( "id", $user->ID );
                 }
@@ -373,7 +362,44 @@ class Triibo_Auth_Ajax
 
         $user      = get_user_by( "email", $email );
 
-        if ( !$user )
+        if ( !empty( $user ) )
+        {
+
+            if ( $user && wp_check_password( $passw, $user->data->user_pass, $user->ID ) )
+            {
+                $response  = $this->create_or_update_user_triibo( $cellphone, $email, $user->first_name, $user->nickname, $terms );
+
+                if ( !$response[ "success" ] || ( isset( $response[ "data" ] ) && !$response[ "data" ][ "success" ] ) )
+                {
+                    $response[ "data_sent" ] = [
+                        "function"  => "find_user",
+                        "cellphone" => $cellphone,
+                        "email"     => $email,
+                    ];
+
+                    $this->log( json_encode( $response ) );
+                }
+
+                $cellphone = "+" . preg_replace( "/\D/", "", $cellphone );
+
+                update_user_meta( $user->ID, "triiboId_phone", $cellphone );
+
+                if ( isset( $response[ "uid" ] ) ) update_user_meta( $user->ID, "_triibo_id", $response[ "uid" ] );
+
+                $result    = $this->login_by_triibo( "id", $user->ID );
+            }
+            else
+            {
+                $result = [
+                    "success" => false,
+                    "error"   => [
+                        "message" => "E-mail e/ou senha incorreta",
+                        "code"    => 401,
+                    ],
+                ];
+            }
+        }
+        else
         {
             /**
              * @deprecated  1.1.0   Will be removed in 1.2.0
@@ -412,42 +438,6 @@ class Triibo_Auth_Ajax
 
             $uid      = isset( $response[ "uid" ] ) ? $response[ "uid" ] : null;
             $result   = $this->create_user_marketplace( $uid, $cellphone, $email, $passw );
-        }
-        else
-        {
-            if ( $user && wp_check_password( $passw, $user->data->user_pass, $user->ID ) )
-            {
-                $response  = $this->create_or_update_user_triibo( $cellphone, $email, $user->first_name, $user->nickname, $terms );
-
-                if ( !$response[ "success" ] || ( isset( $response[ "data" ] ) && !$response[ "data" ][ "success" ] ) )
-                {
-                    $response[ "data_sent" ] = [
-                        "function"  => "find_user",
-                        "cellphone" => $cellphone,
-                        "email"     => $email,
-                    ];
-
-                    $this->log( json_encode( $response ) );
-                }
-
-                $cellphone = "+" . preg_replace( "/\D/", "", $cellphone );
-
-                update_user_meta( $user->ID, "triiboId_phone", $cellphone );
-
-                if ( isset( $response[ "uid" ] ) ) update_user_meta( $user->ID, "_triibo_id", $response[ "uid" ] );
-
-                $result    = $this->login_by_triibo( "id", $user->ID );
-            }
-            else
-            {
-                $result = [
-                    "success" => false,
-                    "error"   => [
-                        "message" => "E-mail e/ou senha incorreta",
-                        "code"    => 401,
-                    ],
-                ];
-            }
         }
 
         echo json_encode( $result );
