@@ -523,20 +523,18 @@
             return;
         }
 
-        if ( tal_email != "" && tal_pass != "" )
-        {
-            $( tal_error_regis ).addClass( "ta-d-none" );
-            $( "#tal-form-register-email"    ).removeClass( "ta-error-border" );
-            $( "#tal-form-register-password" ).removeClass( "ta-error-border" );
-            $( "#tal-modal-form-load"        ).removeClass( "ta-d-none" );
-
-            talCallFindUser(); // search user
-        }
-        else
+        if ( tal_email == "" || tal_pass == "" )
         {
             talEnableBtns();
             $( tal_error_regis ).removeClass( "ta-d-none" ).html( "E-mail/Senha não podem ser em branco. A senha deve ter no mínimo 8 caracteres." );
         }
+
+        $( tal_error_regis ).addClass( "ta-d-none" );
+        $( "#tal-form-register-email"    ).removeClass( "ta-error-border" );
+        $( "#tal-form-register-password" ).removeClass( "ta-error-border" );
+        $( "#tal-modal-form-load"        ).removeClass( "ta-d-none"       );
+
+        talCallFindUser(); // search user
     }
 
     /**
