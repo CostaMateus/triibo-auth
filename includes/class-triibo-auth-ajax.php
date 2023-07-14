@@ -60,7 +60,7 @@ class Triibo_Auth_Ajax
         $cellphone = $_POST[ "cellphone" ];
         $response  = $this->gate->auth_sms( $cellphone );
 
-        if ( !$response[ "success" ] || !$response[ "data" ][ "success" ] )
+        if ( !$response[ "success" ] || ( isset( $response[ "data" ] ) && !$response[ "data" ][ "success" ] ) )
         {
             $response[ "data_sent" ] = [
                 "function"  => "auth_sms",
@@ -231,7 +231,7 @@ class Triibo_Auth_Ajax
 
         $response  = $this->gate->user_info( $cellphone );
 
-        if ( !$response[ "success" ] || !$response[ "data" ][ "success" ] )
+        if ( !$response[ "success" ] || ( isset( $response[ "data" ] ) && !$response[ "data" ][ "success" ] ) )
         {
             $response[ "data_sent" ] = [
                 "function" => "user_info_1",
