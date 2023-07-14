@@ -104,6 +104,7 @@ class Triibo_Auth_Rest_Users_Controller extends WP_REST_Controller
 	/**
 	 * Process login for user
 	 *
+	 * @since   1.1.1 New param $code == uid
 	 * @since   1.1.0 New flow
      * @since   1.0.1 Log improvement
 	 * @since   1.0.0
@@ -112,7 +113,7 @@ class Triibo_Auth_Rest_Users_Controller extends WP_REST_Controller
 	 */
 	public function process_login( $request )
 	{
-		$url = $request->get_param( "url" ) ?: null;
+		$url  = $request->get_param( "url" ) ?: null;
 
 		if ( !$this->status() )
 		{
@@ -140,78 +141,71 @@ class Triibo_Auth_Rest_Users_Controller extends WP_REST_Controller
 			if ( !$this->validate_token( $bearer, $token ) ) $this->redirect( $url );
 		}
 
+		$uid       = $request->get_param( "code"      ) ?: null;
+		set_transient( "_taa_triibo_uid", $uid );
+
 		$cellphone = $request->get_param( "cellphone" ) ?: null;
         $cellphone = preg_replace( "/\D/", "", $cellphone );
 		set_transient( "_taa_triibo_cellphone", $cellphone );
 
-		$data      = $request->get_param( "data" ) ?: null;
+		$data      = $request->get_param( "data"      ) ?: null;
 		$user      = null;
 
-		// celular e email ausentes na request
+		// uid, cellphone, email ausentes na request
 		// redireciona para $url ou para "/", caso $url == null
-		if ( !$cellphone && !$data ) $this->redirect( $url );
+		if ( !$uid  && !$cellphone && !$data ) $this->redirect( $url );
 
-		if ( $cellphone )
+		if ( $uid )
 		{
 			$user = get_users( [
-				"meta_key"   => "triiboId_phone",
-				"meta_value" => "+$cellphone"
+				"meta_key"   => "_triibo_id",
+				"meta_value" => $uid
 			] );
 
+            // achou usuario com _triibo_id == uid
 			if ( !empty( $user ) )
 			{
-				$user     = reset( $user );
-				$email    = $user->user_email;
-
-				$response = $this->gate->update_user_mkt( $cellphone, $email, "UPDATE", $user->first_name, $user->nickname );
-
-				if ( !$response[ "success" ] || ( isset( $response[ "data" ] ) && !$response[ "data" ][ "success" ] ) )
-				{
-					$response[ "data_sent" ] = [
-						"function"  => "rest_api_process_login",
-						"cellphone" => $cellphone,
-						"email"     => $email,
-					];
-
-					$this->log( json_encode( $response ) );
-				}
-
-                if ( isset( $response[ "uid" ] ) ) update_user_meta( $user->ID, "_triibo_id", $response[ "uid" ] );
+				$user = reset( $user );
 
 				$this->make_login( $user->ID, $url );
 			}
 		}
 
-		$this->process_data_user( $data, $url );
-	}
+		if ( $cellphone )
+		{
+			$user = get_users( [
+				"meta_key"   => "triiboId_phone",
+				"meta_value" => $cellphone
+			] );
 
-	/**
-	 * Process data user for proper redirect
-	 *
-	 * @since   1.1.0
-	 * @param 	string|null $data
-	 * @param 	string 		$url
-	 * @return 	void
-	 */
-	private function process_data_user( $data, string $url )
-	{
+			// achou usuario com triiboId_phone
+			if ( !empty( $user ) )
+			{
+				$user = reset( $user );
+
+				update_user_meta( $user->ID, "_triibo_id",     $uid       );
+				delete_user_meta( $user->ID, "triiboId_phone", $cellphone );
+
+				$this->make_login( $user->ID, $url );
+			}
+		}
+
 		if ( $data )
 		{
-			$arr      = explode( "|", $data );
-			$email    = $arr[ 1 ];
+			$arr     = explode( "|", $data );
+			$email   = $arr[ 1 ];
+			$user_id = email_exists( $email );
 
-			$user_id  = email_exists( $email );
+			// achou usuario pelo email
+			if ( $user_id ) $this->redirect( $url, "taac=acc&email={$email}" );
 
-			$params   = ( $user_id ) ? "taac=acc" : "taac=newacc";
-			$params  .= "&email={$email}";
-
-			$this->redirect( $url, $params );
+			// $params  = ( $user_id ) ? "taac=acc" : "taac=newacc";
+			// $params .= "&email={$email}";
+			// $this->redirect( $url, $params );
 		}
-		else
-		{
-			wp_clear_auth_cookie();
-			$this->redirect( $url );
-		}
+
+		wp_clear_auth_cookie();
+		$this->redirect( $url );
 	}
 
     /**
@@ -273,7 +267,7 @@ class Triibo_Auth_Rest_Users_Controller extends WP_REST_Controller
 	 * Make login for user
 	 *
 	 * @since   1.0.0
-	 * @param 	integer $user_id
+	 * @param 	int 	$user_id
 	 * @param 	string 	$url
 	 * @return 	void
 	 */
