@@ -214,7 +214,8 @@ class Triibo_Auth_App
         {
             if ( wp_check_password( $pass, $user->data->user_pass, $user->ID ) )
             {
-                add_user_meta( $user->ID, "triiboId_phone", "+$cellphone" );
+                // add_user_meta( $user->ID, "triiboId_phone", "+$cellphone" );
+                add_user_meta( $user->ID, "_triibo_phone", "+$cellphone" );
 
                 $response = $this->gate->update_user_mkt( $cellphone, $email, "CREATE", $user->first_name, $user->nickname, $terms );
 
@@ -263,7 +264,8 @@ class Triibo_Auth_App
             {
                 wp_set_password( $pass, $user_id );
 
-                add_user_meta( $user_id, "triiboId_phone", "+$cellphone" );
+                // add_user_meta( $user_id, "triiboId_phone", "+$cellphone" );
+                add_user_meta( $user_id, "_triibo_phone", "+$cellphone" );
 
                 $user = get_user_by( "id", $user_id );
 

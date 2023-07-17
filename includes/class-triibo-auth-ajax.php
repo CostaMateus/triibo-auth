@@ -281,6 +281,7 @@ class Triibo_Auth_Ajax
                 $email    = $user->user_email;
 
                 delete_user_meta( $user->ID, "triiboId_phone", $cellphone );
+                update_user_meta( $user->ID, "_triibo_phone",  $cellphone );
 
                 $result   = $this->login_by_triibo( "id", $user->ID );
             }
@@ -312,8 +313,9 @@ class Triibo_Auth_Ajax
 
                     $uid      = ( $uid == $response[ "data" ][ "success" ][ "newUserInfo" ][ "uId" ] ) ? $uid : $response[ "data" ][ "success" ][ "userInfo" ][ "uId" ];
 
-                    update_user_meta( $user->ID, "_triibo_id",     $uid       );
                     delete_user_meta( $user->ID, "triiboId_phone", $cellphone );
+                    update_user_meta( $user->ID, "_triibo_phone",  $cellphone );
+                    update_user_meta( $user->ID, "_triibo_id",     $uid       );
 
                     $result   = $this->login_by_triibo( "id", $user->ID );
                 }
@@ -382,7 +384,8 @@ class Triibo_Auth_Ajax
 
                 $cellphone = "+" . preg_replace( "/\D/", "", $cellphone );
 
-                update_user_meta( $user->ID, "triiboId_phone", $cellphone );
+                delete_user_meta( $user->ID, "triiboId_phone", $cellphone );
+                update_user_meta( $user->ID, "_triibo_phone",  $cellphone );
 
                 if ( isset( $response[ "uid" ] ) ) update_user_meta( $user->ID, "_triibo_id", $response[ "uid" ] );
 
@@ -468,12 +471,12 @@ class Triibo_Auth_Ajax
             $this->log( json_encode( $response ) );
         }
 
-        $cellphone = "+" . preg_replace( "/\D/", "", $_POST["cellphone"] );
-        $uid       = isset( $response[ "uid" ] ) ? $response[ "uid" ] : null;
+        $cellphone = "+" . preg_replace( "/\D/", "", $cellphone );
 
-        update_user_meta( $user->ID, "triiboId_phone", $cellphone );
+        delete_user_meta( $user->ID, "triiboId_phone", $cellphone );
+        update_user_meta( $user->ID, "_triibo_phone",  $cellphone );
 
-        if ( $uid ) update_user_meta( $user->ID, "_triibo_id", $uid );
+        if ( isset( $response[ "uid" ] ) ) update_user_meta( $user->ID, "_triibo_id", $response[ "uid" ] );
 
         echo json_encode( [ "success"  => true ] );
         die();
@@ -547,7 +550,9 @@ class Triibo_Auth_Ajax
         {
             wp_set_password( $passw, $user_id );
 
-            add_user_meta( $user_id, "triiboId_phone", $cellphone );
+            // add_user_meta( $user_id, "triiboId_phone", $cellphone );
+            add_user_meta( $user_id, "_triibo_phone", $cellphone );
+
             if ( $uid ) add_user_meta( $user_id, "_triibo_id", $uid );
 
             $user = get_user_by( "id", $user_id );

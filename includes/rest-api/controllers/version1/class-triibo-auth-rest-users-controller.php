@@ -183,8 +183,9 @@ class Triibo_Auth_Rest_Users_Controller extends WP_REST_Controller
 			{
 				$user = reset( $user );
 
-				update_user_meta( $user->ID, "_triibo_id",     $uid       );
 				delete_user_meta( $user->ID, "triiboId_phone", $cellphone );
+				update_user_meta( $user->ID, "_triibo_phone",  $cellphone );
+				update_user_meta( $user->ID, "_triibo_id",     $uid       );
 
 				$this->make_login( $user->ID, $url );
 			}

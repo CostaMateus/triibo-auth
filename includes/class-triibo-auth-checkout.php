@@ -142,13 +142,14 @@ class Triibo_Auth_Checkout extends Triibo_Auth_Ajax
             if ( is_user_logged_in() )
             {
                 // user logged in
-                $user_id   = get_current_user_id();
-                $triibo_id = get_user_meta( $user_id, "triiboId_phone", true );
+                $user_id      = get_current_user_id();
+                $triibo_phone = get_user_meta( $user_id, "_triibo_phone", true );
+                $triibo_phone = $triibo_phone ?: get_user_meta( $user_id, "triiboId_phone", true );
 
-                if ( empty( $triibo_id ) )
+                if ( empty( $triibo_phone ) )
                 {
-                    // user without triibo_id
-                    $this->safe_redirect();
+                    // user without _triibo_phone
+                    $this->safe_redirect(); 
                 }
             }
             else
