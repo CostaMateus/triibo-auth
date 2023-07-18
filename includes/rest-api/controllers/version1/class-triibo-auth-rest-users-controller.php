@@ -145,7 +145,7 @@ class Triibo_Auth_Rest_Users_Controller extends WP_REST_Controller
 		set_transient( "_taa_triibo_uid", $uid );
 
 		$cellphone = $request->get_param( "cellphone" ) ?: null;
-        $cellphone = preg_replace( "/\D/", "", $cellphone );
+        $cellphone = "+" . preg_replace( "/\D/", "", $cellphone );
 		set_transient( "_taa_triibo_cellphone", $cellphone );
 
 		$data      = $request->get_param( "data"      ) ?: null;
@@ -199,10 +199,6 @@ class Triibo_Auth_Rest_Users_Controller extends WP_REST_Controller
 
 			// achou usuario pelo email
 			if ( $user_id ) $this->redirect( $url, "taac=acc&email={$email}" );
-
-			// $params  = ( $user_id ) ? "taac=acc" : "taac=newacc";
-			// $params .= "&email={$email}";
-			// $this->redirect( $url, $params );
 		}
 
 		wp_clear_auth_cookie();
