@@ -288,6 +288,7 @@ class Triibo_Auth_App
                 self::make_login( $user_id );
 
                 $result = [ "success" => true ];
+                delete_transient( "_taa_triibo_uid"       );
                 delete_transient( "_taa_triibo_cellphone" );
             }
             else
@@ -320,6 +321,7 @@ class Triibo_Auth_App
         $pass      = $_POST[ "pass"  ];
         $terms     = $_POST[ "terms" ];
 
+        $uid       = get_transient( "_taa_triibo_uid"       );
         $cellphone = get_transient( "_taa_triibo_cellphone" );
         $user      = get_user_by( "email", $email );
 
@@ -353,6 +355,12 @@ class Triibo_Auth_App
                 self::make_login( $user->ID );
 
                 $result = [ "success" => true ];
+
+				delete_user_meta( $user->ID, "triiboId_phone", $cellphone );
+				update_user_meta( $user->ID, "_triibo_phone",  $cellphone );
+				update_user_meta( $user->ID, "_triibo_id",     $uid       );
+
+                delete_transient( "_taa_triibo_uid"       );
                 delete_transient( "_taa_triibo_cellphone" );
             }
             else
