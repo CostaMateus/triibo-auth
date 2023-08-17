@@ -89,12 +89,15 @@ class Triibo_Auth_Ajax
         /**
          * TODO remover esse trecho
          */
-        $code      = preg_replace( "/\D/", "", $_POST[ "code"      ] );
-        $cellphone = preg_replace( "/\D/", "", $_POST[ "cellphone" ] );
-        if ( $code == "123123" && $cellphone == "5511949289507" )
+        if ( ( get_home_url() != "https://marketplace.triibo.com.br" ) )
         {
-            echo json_encode( [ "success" => [ "logged_in" => false ] ] );
-            die();
+            $code      = preg_replace( "/\D/", "", $_POST[ "code"      ] );
+            $cellphone = preg_replace( "/\D/", "", $_POST[ "cellphone" ] );
+            if ( $code == "123123" && $cellphone == "5511949289507" )
+            {
+                echo json_encode( [ "success" => [ "logged_in" => false ] ] );
+                die();
+            }
         }
         /**
          * TODO remover trecho acima
