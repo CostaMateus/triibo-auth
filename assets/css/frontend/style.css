@@ -50,6 +50,10 @@
     justify-content: space-between;
 }
 
+#tal-modal-form-load {
+    z-index: 999999999 !important;
+}
+
 .ta-bg-modal,
 .ta-bg-modal-login {
     background-color: rgba(0,0,0,0.7);
