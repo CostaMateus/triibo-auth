@@ -45,7 +45,7 @@
     display: flex;
     position: fixed;
     overflow: auto;
-    z-index: 99999999;
+    z-index: 99999998;
     text-align: center;
     justify-content: space-between;
 }
