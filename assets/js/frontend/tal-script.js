@@ -515,26 +515,31 @@
         tal_pass  = $( "#tal-form-register-password" ).val();
         tal_terms = $( "#tal-form-register-terms"    ).prop( "checked" );
 
-        if ( !tal_terms )
-        {
-            talEnableBtns();
-
-            $( tal_error_regis ).removeClass( "ta-d-none" ).html( "Vocé precisa aceitar os termos de uso." );
-            return;
-        }
-
         if ( tal_email == "" || tal_pass == "" )
         {
             talEnableBtns();
             $( tal_error_regis ).removeClass( "ta-d-none" ).html( "E-mail/Senha não podem ser em branco. A senha deve ter no mínimo 8 caracteres." );
+
+            return;
         }
 
-        $( tal_error_regis ).addClass( "ta-d-none" );
-        $( "#tal-form-register-email"    ).removeClass( "ta-error-border" );
-        $( "#tal-form-register-password" ).removeClass( "ta-error-border" );
-        $( "#tal-modal-form-load"        ).removeClass( "ta-d-none"       );
+        else if ( !tal_terms )
+        {
+            talEnableBtns();
+            $( tal_error_regis ).removeClass( "ta-d-none" ).html( "Vocé precisa aceitar os termos de uso." );
 
-        talCallFindUser(); // search user
+            return;
+        }
+
+        else
+        {
+            $( tal_error_regis ).addClass( "ta-d-none" );
+            $( "#tal-form-register-email"    ).removeClass( "ta-error-border" );
+            $( "#tal-form-register-password" ).removeClass( "ta-error-border" );
+            $( "#tal-modal-form-load"        ).removeClass( "ta-d-none"       );
+
+            talCallFindUser(); // search user
+        }
     }
 
     /**
