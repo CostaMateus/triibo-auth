@@ -46,12 +46,15 @@ class Triibo_Auth_Ajax
         /**
          * TODO remover esse trecho
          */
-        $phones    = [ "5511949289507", ];
-        $cellphone = preg_replace( "/\D/", "", $_POST[ "cellphone" ] );
-        if ( in_array( $cellphone, $phones ) )
+        if ( ( get_home_url() != "https://marketplace.triibo.com.br" ) )
         {
-            echo json_encode( [ "success" => [ "transactionId" => "123123" ] ] );
-            die();
+            $phones    = [ "5511949289507", ];
+            $cellphone = preg_replace( "/\D/", "", $_POST[ "cellphone" ] );
+            if ( in_array( $cellphone, $phones ) )
+            {
+                echo json_encode( [ "success" => [ "transactionId" => "123123" ] ] );
+                die();
+            }
         }
         /**
          * TODO remover trecho acima
