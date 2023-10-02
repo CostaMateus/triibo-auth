@@ -41,20 +41,6 @@
     let tal_error_valid    = document.getElementById( "tal-error-valid"               );
     let tal_btn_valid      = document.getElementById( "tal-btn-form-validate"         );
 
-    // vars validate_email
-    /**
-     * @deprecated  1.1.0   Will be removed in 1.2.0
-     */
-    let tal_modal_v_email  = document.getElementById( "tal-modal-form-validate-email" );
-    /**
-     * @deprecated  1.1.0   Will be removed in 1.2.0
-     */
-    let tal_error_v_email  = document.getElementById( "tal-error-valid-email"         );
-    /**
-     * @deprecated  1.1.0   Will be removed in 1.2.0
-     */
-    let tal_btn_v_email    = document.getElementById( "tal-btn-form-validate-email"   );
-
     // vars register
     let tal_modal_regis    = document.getElementById( "tal-modal-form-register"       );
     let tal_error_regis    = document.getElementById( "tal-error-register"            );
@@ -87,14 +73,6 @@
             case "tal-btn-form-validate":
                 e.preventDefault();
                 window.talSubmitValidate();
-            break;
-
-            /**
-             * @deprecated  1.1.0
-             */
-            case "tal-btn-form-validate-email":
-                e.preventDefault();
-                window.talSubmitValidateEmail();
             break;
 
             case "tal-btn-form-register":
@@ -144,56 +122,6 @@
             talEnableBtns();
             $( "#tal-code-resend" ).addClass( "ta-d-none" );
         }, 3000 );
-    }
-
-    /**
-     * @deprecated  1.1.0   Will be removed in 1.2.0
-     */
-    window.talResendCodeEmail     = function ()
-    {
-        talDisableBtns();
-
-        $( tal_error_v_email ).addClass( "ta-d-none" );
-        $( "#tal-code-email" ).removeClass( "ta-error-border" );
-
-        $( "#tal-resend-email" ).addClass( "ta-d-none" );
-
-        tal_email = $( "#tal-form-register-email" ).val();
-
-        $.ajax( {
-            url  : tal_ajaxurl,
-            type : "POST",
-            data : {
-                action : "tal_resend_email_code",
-                email  : tal_email
-            },
-            success: function( data ) {
-                let result = JSON.parse( data );
-
-                talEnableBtns();
-
-                if ( !result.success )
-                {
-                    $( tal_error_v_email ).removeClass( "ta-d-none" ).html( tal_genericError1 );
-                }
-                else
-                {
-                    $( "#tal-code-email" ).focus();
-                    $( "#tal-code-resend-email"  ).removeClass( "ta-d-none" );
-
-                    tal_cd         = 40;
-                    tal_intervalId = setInterval( talCountdown, 1000 );
-                    $( "#tal-resend-email-count" ).removeClass( "ta-d-none" );
-
-                    setTimeout( function() {
-                        $( "#tal-code-resend-email" ).addClass( "ta-d-none" );
-                    }, 3000 );
-                }
-            },
-            error: function( err ) {
-                talAjaxError( err );
-            }
-        } );
     }
 
     window.talCloseModal          = function ()
@@ -602,88 +530,6 @@
                 talAjaxError( err );
             }
         });
-    }
-
-    /**
-     * @deprecated  1.1.0   Will be removed in 1.2.0
-     */
-    window.talSubmitValidateEmail = function ()
-    {
-        talDisableBtns();
-
-        tal_codeEmail = $( "#tal-code-email" ).val();
-
-        if ( tal_code != "" && tal_code.length == 6 )
-        {
-            $( tal_error_v_email ).addClass( "ta-d-none" );
-            $( "#tal-code-email" ).removeClass( "ta-error-border" );
-
-            talCallValidateEmail(); // validate code
-        }
-        else
-        {
-            talEnableBtns();
-
-            let errorMsg = ( tal_codeEmail == "" ) ? "Insira código recebido." : "O código tem 6 dígitos." ;
-            $( tal_error_v_email ).removeClass( "ta-d-none" ).html( errorMsg );
-        }
-    }
-
-    /**
-     * @deprecated  1.1.0   Will be removed in 1.2.0
-     */
-    window.talCallValidateEmail   = function ()
-    {
-        $.ajax( {
-            url  : tal_ajaxurl,
-            type : "POST",
-            data : {
-                action    : "tal_validate_code_email",
-                codeEmail : tal_codeEmail,
-                cellphone : tal_cellphone,
-                email     : tal_email,
-                password  : tal_pass
-            },
-            success: function( data ) {
-                let result = JSON.parse( data );
-
-                if ( !result.success )
-                {
-                    talEnableBtns();
-
-                    switch ( result.error.code )
-                    {
-                        // invalid code
-                        case 401:
-                            $( tal_error_v_email ).removeClass( "ta-d-none" ).html( "Código inválido." );
-                            $( "#tal-code-email" ).addClass( "ta-error-border" );
-                        break;
-
-                        // internal error
-                        case 500:
-                        default:
-                            $( tal_modal_v_email ).addClass( "ta-d-none" );
-                            $( tal_error_auth    ).removeClass( "ta-d-none" ).html( tal_genericError2 );
-                        break;
-                    }
-                }
-                else
-                {
-                    $( "#tal-modal-form-load" ).addClass( "ta-bg-modal-white" ).removeClass( "ta-d-none" );
-
-                    talHideModals();
-                    talDisableBtns();
-
-                    if ( tal_ckt )
-                        window.location.href = tal_redirect;
-                    else
-                        window.location.reload();
-                }
-            },
-            error: function( err ) {
-                talAjaxError( err );
-            }
-        } );
     }
 
     window.talDisableBtns         = function ()
