@@ -113,6 +113,7 @@ class Triibo_Auth
 		add_action( "admin_menu",                          [ $this, "add_submenu_page"          ], 11 );
 		add_action( "triibo_api_service_add_button",       [ $this, "add_btn"                   ], 11 );
 		add_action( "triibo_api_service_list_plugin_gate", [ $this, "add_info_dependency"       ]     );
+		add_action( "triibo_api_service_list_plugin_node", [ $this, "add_info_dependency"       ]     );
 		add_action( "wp_footer",                           [ $this, "add_global_css"            ]     );
 	}
 
