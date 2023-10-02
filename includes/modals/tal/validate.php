@@ -19,9 +19,17 @@
 
                     <!-- Error message -->
                     <p id="tal-error-valid"  class="ta-bg-transp ta-text-center ta-text-danger ta-pt-8           ta-mb-0 ta-d-none" ></p>
-                    <p id="tal-code-resend"  class="ta-bg-transp ta-float-left  ta-text-dark   ta-pb-20 ta-mt-20 ta-mb-0 ta-d-none"                           >Código reenviado</p>
-                    <a id="tal-resend"       class="ta-bg-transp ta-float-right ta-pointer     ta-pb-20 ta-mt-20 ta-mb-0 ta-d-none" onclick="talResendCode()" >Reenviar código</a>
-                    <p id="tal-resend-count" class="ta-bg-transp ta-float-right                ta-pb-20 ta-mt-20 ta-mb-0"                                     >Reenviar código em 40</p>
+                    <p id="tal-code-resend"  class="ta-bg-transp ta-float-left  ta-text-dark   ta-pb-20 ta-mt-20 ta-mb-0 ta-d-none" >Código reenviado</p>
+
+                    <?php
+                        /**
+                         * @since 2.0.0 Add resend btn wpp. Fix resend btn default sms.
+                         */
+                    ?>
+                    <a id="tal-resend"       class="ta-bg-transp ta-float-right ta-pointer     ta-pb-20 ta-mt-20   ta-mb-0 ta-d-none" onclick="talResendCode( 'sms' )" >Reenviar código via SMS</a>
+                    <a id="tal-resend-wpp"   class="ta-bg-transp ta-float-right ta-pointer     ta-pb-20 ta-n-mt-20 ta-mb-0 ta-d-none" onclick="talResendCode( 'wpp' )" >Reenviar código via Whatsapp</a>
+
+                    <p id="tal-resend-count" class="ta-bg-transp ta-float-right                ta-pb-20 ta-mt-20 ta-mb-0" >Reenviar código em 30</p>
                 </p>
                 <button id="tal-btn-form-validate" type="submit" class="woocommerce-Button button ta-button ta-set-spin" >Entrar <div class="ta-d-none ta-spin-load" ></div></button>
             </form>
