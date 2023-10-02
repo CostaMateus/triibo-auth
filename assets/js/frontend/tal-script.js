@@ -27,6 +27,11 @@
     let tal_cellphone      = null;
     let tal_transactionId  = null;
 
+    /**
+     * @since 2.0.0
+     */
+    let tal_send_type      = "sms";
+
     // vars auth
     let tal_error_auth     = document.getElementById( "tal-error-auth"                );
     let tal_btn_auth       = document.getElementById( "tal-btn-form-auth"             );
@@ -82,18 +87,21 @@
         }
     }, false);
 
+    /**
+     * @since 2.0.0 Add new ID #tal-resend-wpp.
+     * @since 1.0.0
+     */
     window.talCountdown           = function ()
     {
         if ( tal_cd == 0 )
         {
             clearInterval( tal_intervalId );
-            $( "#tal-resend-count"       ).addClass( "ta-d-none" );
+            $( "#tal-resend-count"       ).addClass( "ta-d-none" ).html( "Reenviar código em 30" );
             $( "#tal-resend"             ).removeClass( "ta-d-none" );
-            $( "#tal-resend-count"       ).html( "Reenviar código em 40" );
+            $( "#tal-resend-wpp"         ).removeClass( "ta-d-none" );
 
-            $( "#tal-resend-email-count" ).addClass( "ta-d-none" );
+            $( "#tal-resend-email-count" ).addClass( "ta-d-none" ).html( "Reenviar código em 30" );
             $( "#tal-resend-email"       ).removeClass( "ta-d-none" );
-            $( "#tal-resend-email-count" ).html( "Reenviar código em 40" );
         }
         else
         {
@@ -103,9 +111,16 @@
         }
     }
 
-    window.talResendCode          = function ()
+    /**
+     * @since 2.0.0 Add param type. Add new ID #tal-resend-wpp.
+     * @since 1.0.0
+     */
+    window.talResendCode          = function ( type )
     {
-        $( "#tal-resend" ).addClass( "ta-d-none" );
+        tal_send_type = type;
+
+        $( "#tal-resend"     ).addClass( "ta-d-none" );
+        $( "#tal-resend-wpp" ).addClass( "ta-d-none" );
 
         if ( tal_ckt )
             $( tal_btn_auth_ckt ).click();
@@ -162,6 +177,10 @@
         }
     }
 
+    /**
+     * @since 2.0.0 Add param type (sms/wpp).
+     * @since 1.0.0
+     */
     window.talCallAuthAjax        = function ( id, err )
     {
         $.ajax( {
@@ -170,7 +189,7 @@
             data : {
                 action    : "tal_auth_sms",
                 cellphone : tal_cellphone,
-                type      : "sms",
+                type      : tal_send_type,
             },
             success: function( data ) {
                 let result = JSON.parse( data );
@@ -538,7 +557,6 @@
         $( tal_btn_auth_ckt ).prop( "disabled", "disabled" ).find( "div" ).removeClass( "ta-d-none" );
 
         $( tal_btn_valid    ).prop( "disabled", "disabled" ).find( "div" ).removeClass( "ta-d-none" );
-        $( tal_btn_v_email  ).prop( "disabled", "disabled" ).find( "div" ).removeClass( "ta-d-none" );
         $( tal_btn_regis    ).prop( "disabled", "disabled" ).find( "div" ).removeClass( "ta-d-none" );
     }
 
@@ -548,7 +566,6 @@
         $( tal_btn_auth_ckt ).prop( "disabled", null ).find( "div" ).addClass( "ta-d-none" );
 
         $( tal_btn_valid    ).prop( "disabled", null ).find( "div" ).addClass( "ta-d-none" );
-        $( tal_btn_v_email  ).prop( "disabled", null ).find( "div" ).addClass( "ta-d-none" );
         $( tal_btn_regis    ).prop( "disabled", null ).find( "div" ).addClass( "ta-d-none" );
     }
 
