@@ -27,6 +27,22 @@ class Triibo_Auth_Ajax
 	protected $gate;
 
 	/**
+	 * API Node.
+	 *
+	 * @since 	2.0.0
+	 * @var     Triibo_Api_Node
+	 */
+	protected $node;
+
+    /**
+     * Send types
+     *
+	 * @since 	2.0.0
+     * @var     array
+     */
+    protected $send_types = [ "sms", "wpp" ];
+
+	/**
 	 * WC Logger.
 	 *
 	 * @since 	1.0.0
@@ -37,43 +53,69 @@ class Triibo_Auth_Ajax
     /**
      * Send code by sms
      *
+     * @since   2.0.0 New Node API for send code by sms/wpp
      * @since   1.0.1 Log improvement
      * @since   1.0.0
      * @return  void
      */
     public function auth_sms()
     {
-        /**
-         * TODO remover esse trecho
-         */
-        if ( ( get_home_url() != "https://marketplace.triibo.com.br" ) )
+        $response = $this->node->auth( "" );
+
+        if ( $response[ "success" ] )
         {
-            $phones    = [ "5511949289507", ];
-            $cellphone = preg_replace( "/\D/", "", $_POST[ "cellphone" ] );
-            if ( in_array( $cellphone, $phones ) )
+            $_token    = $response[ "data"  ][ "token" ];
+
+            $type      = ( !in_array( $_POST[ "type" ], $this->send_types ) ) ? "sms" : $_POST[ "type" ];
+
+            $cellphone = $_POST[ "cellphone" ];
+
+            $response  = $this->node->auth_code( $_token, [
+                "cellphone" => $cellphone,
+                "type"      => $type
+            ] );
+
+            if ( $response[ "success" ] )
             {
-                echo json_encode( [ "success" => [ "transactionId" => "123123" ] ] );
+                $this->log( "INFO - auth_sms : " . json_encode( $response ) );
+
+                $return = [
+                    "error"   => false,
+                    "success" => [
+                        "transactionId" => $response[ "data" ][ "transactionId" ],
+                    ]
+                ];
+
+                echo json_encode( $return );
                 die();
             }
+            else
+            {
+                $this->log( "ERR - auth_sms : " . json_encode( $response ) );
+
+                $err   = $response[ "data" ][ "error" ];
+                $code  = ( $err == "Usuário excedeu o limite de requisições" ) ? 429 : 400;
+                $error = [
+                    "success" => false,
+                    "error"   => [
+                        "errorCode" => $code,
+                    ]
+                ];
+            }
         }
-        /**
-         * TODO remover trecho acima
-         */
-
-        $cellphone = $_POST[ "cellphone" ];
-        $response  = $this->gate->auth_sms( $cellphone );
-
-        if ( !$response[ "success" ] || ( isset( $response[ "data" ] ) && !$response[ "data" ][ "success" ] ) )
+        else
         {
-            $response[ "data_sent" ] = [
-                "function"  => "auth_sms",
-                "cellphone" => $cellphone
-            ];
+            $this->log( "ERR - auth_sms : " . json_encode( $response ) );
 
-            $this->log( json_encode( $response ) );
+            $error = [
+                "success" => false,
+                "error"   => [
+                    "errorCode" => 500,
+                ]
+            ];
         }
 
-        echo json_encode( $response[ "data" ] );
+        echo json_encode( $error );
         die();
     }
 
@@ -86,23 +128,6 @@ class Triibo_Auth_Ajax
      */
     public function validate_sms()
     {
-        /**
-         * TODO remover esse trecho
-         */
-        if ( ( get_home_url() != "https://marketplace.triibo.com.br" ) )
-        {
-            $code      = preg_replace( "/\D/", "", $_POST[ "code"      ] );
-            $cellphone = preg_replace( "/\D/", "", $_POST[ "cellphone" ] );
-            if ( $code == "123123" && $cellphone == "5511949289507" )
-            {
-                echo json_encode( [ "success" => [ "logged_in" => false ] ] );
-                die();
-            }
-        }
-        /**
-         * TODO remover trecho acima
-         */
-
         $code      = $_POST[ "code"          ];
         $cellphone = $_POST[ "cellphone"     ];
         $trans_id  = $_POST[ "transactionId" ];
