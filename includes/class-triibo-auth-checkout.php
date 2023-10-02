@@ -37,6 +37,7 @@ class Triibo_Auth_Checkout extends Triibo_Auth_Ajax
     /**
      * Construct
      *
+     * @since   2.0.0 Add instance of Triibo_Api_Node
      * @since   1.0.0
      */
 	public function __construct ()

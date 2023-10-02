@@ -104,6 +104,7 @@ class Triibo_Auth
 	/**
 	 * Add plugin actions
 	 *
+	 * @since 	2.0.0 Add dependecy of Node API
 	 * @since 	1.0.0
 	 * @return 	void
 	 */
