@@ -43,6 +43,7 @@ class Triibo_Auth_Checkout extends Triibo_Auth_Ajax
     {
 		$this->log      = ( function_exists( "wc_get_logger" ) ) ? wc_get_logger() : new WC_Logger();
 		$this->gate     = new Triibo_Api_Gateway();
+		$this->node     = new Triibo_Api_Node();
 
         self::$_ckt_url = md5( "redirect_to_checkout" );
 
@@ -149,7 +150,7 @@ class Triibo_Auth_Checkout extends Triibo_Auth_Ajax
                 if ( empty( $triibo_phone ) )
                 {
                     // user without _triibo_phone
-                    $this->safe_redirect(); 
+                    $this->safe_redirect();
                 }
             }
             else

@@ -19,6 +19,7 @@ class Triibo_Auth_Login extends Triibo_Auth_Ajax
     {
 		$this->log  = ( function_exists( "wc_get_logger" ) ) ? wc_get_logger() : new WC_Logger();
 		$this->gate = new Triibo_Api_Gateway();
+		$this->node = new Triibo_Api_Node();
 
         add_filter( "gettext",                                [ $this, "change_text_form_login" ], 20, 1 );
         add_action( "woocommerce_login_form_start",           [ $this, "add_text_form_login"    ]        );
