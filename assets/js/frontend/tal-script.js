@@ -241,7 +241,8 @@
             type : "POST",
             data : {
                 action    : "tal_auth_sms",
-                cellphone : tal_cellphone
+                cellphone : tal_cellphone,
+                type      : "sms",
             },
             success: function( data ) {
                 let result = JSON.parse( data );
@@ -258,7 +259,7 @@
                 {
                     let errorMsg = "";
 
-                    if ( result.error.errorCode == 1005 )
+                    if ( result.error.errorCode == 429 )
                     {
                         errorMsg = "Quantidade de tentativas excedida, tente novamente em 15min.";
                         $( id ).addClass( "ta-error-border" );
@@ -287,7 +288,7 @@
                     $( tal_modal_valid ).removeClass( "ta-d-none" );
                     $( "#tal-code"     ).focus();
 
-                    tal_cd         = 40;
+                    tal_cd         = 30;
                     tal_intervalId = setInterval( talCountdown, 1000 );
                     $( "#tal-resend-count" ).removeClass( "ta-d-none" );
                     $( "#tal-resend"       ).addClass( "ta-d-none" );
