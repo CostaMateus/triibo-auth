@@ -103,96 +103,6 @@ class Triibo_Auth_App
     }
 
     /**
-     * Validate code sent by sms/email
-     *
-     * @deprecated  1.1.0   Will be removed in 1.2.0
-     *
-     * @since   1.0.1 Log improvement
-     * @since   1.0.0
-     * @return  void
-     */
-    public function validate_code()
-    {
-        $result    = [
-            "code"    => 5000,
-            "error"   => true,
-            "message" => "Error"
-        ];
-
-        $code      = $_POST[ "code"  ];
-        $email     = $_POST[ "email" ];
-
-        $sent_code = get_transient( "_ta_global_code" );
-        delete_transient( "_ta_global_code" );
-
-        if ( $sent_code )
-        {
-            // passo 12
-            if ( $sent_code == $code )
-            {
-				$user_id = email_exists( $email );
-
-                if ( $user_id )
-                {
-                    $cellphone = get_transient( "_taa_triibo_cellphone" );
-                    delete_transient( "_taa_triibo_cellphone" );
-
-                    // passo 13
-					update_user_meta( $user_id, "triiboId_phone", "+$cellphone" );
-
-					// passo 14 ( passo_comum )
-                    $response = $this->gate->update_user_mkt( $cellphone, $email, "UPDATE" );
-
-					if ( !$response[ "success" ] || !$response[ "data" ][ "success" ] )
-                    {
-                        $response[ "data_sent" ] = [
-                            "function" => "validate_code",
-                            "email"    => $email
-                        ];
-
-						$this->log( json_encode( $response ) );
-                    }
-
-                    self::make_login( $user_id );
-
-                    $result = [
-                        "code"    => 2000,
-                        "error"   => null,
-                        "message" => "Usuário conectado"
-                    ];
-                }
-                else
-                {
-                    $result = [
-                        "code"    => 2001,
-                        "error"   => null,
-                        "message" => "Criar conta"
-                    ];
-                }
-            }
-            else
-            {
-                $result = [
-                    "code"    => 4001,
-                    "error"   => true,
-                    "message" => "Código inválido"
-                ];
-            }
-        }
-        else
-        {
-            $result = [
-                "code"    => 4002,
-                "error"   => true,
-                "message" => "Código expirado"
-            ];
-        }
-
-        echo json_encode( $result );
-        die();
-    }
-
-    /**
      * Validate account, if it exists connect, if not create
      *
      * @since   1.1.0 New flow
@@ -376,34 +286,6 @@ class Triibo_Auth_App
         }
 
         echo json_encode( $result );
-        die();
-    }
-
-    /**
-     * Resend code by email
-     *
-     * @deprecated  1.1.0   Will be removed in 1.2.0
-     *
-     * @since   1.0.1 Log improvement
-     * @since   1.0.0
-     * @return  void
-     */
-    public function resend_email_code()
-    {
-        $email    = $_POST[ "email" ];
-        $response = Triibo_Auth::send_code_by_email( $email );
-
-        if ( !$response[ "success" ] )
-        {
-            $response[ "data_sent" ] = [
-                "function" => "resend_email_code",
-                "email"    => $email
-            ];
-
-            $this->log( json_encode( $response ) );
-        }
-
-        echo json_encode( $response );
         die();
     }
 

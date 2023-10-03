@@ -12,20 +12,6 @@
     let taa_bva = document.getElementById( "taa-btn-form-validate-account" );
     let taa_eva = document.getElementById( "taa-error-validate-acc"        );
 
-    // vars validate code
-    /**
-     * @deprecated  1.1.0   Will be removed in 1.2.0
-     */
-    let taa_mvc = document.getElementById( "taa-modal-validate-code"       );
-    /**
-     * @deprecated  1.1.0   Will be removed in 1.2.0
-     */
-    let taa_bvc = document.getElementById( "taa-btn-form-validate-code"    );
-    /**
-     * @deprecated  1.1.0   Will be removed in 1.2.0
-     */
-    let taa_evc = document.getElementById( "taa-error-validate-code"       );
-
     let taa_cd         = 0;
     let taa_intervalId = null;
     let taa_ajaxurl    = taa_script_obj.ajaxurl;
@@ -50,17 +36,6 @@
                     $( taa_mna ).removeClass( "ta-d-none" );
                     if ( email ) $( "#taa-new-acc-email" ).val( email );
                 break;
-
-                /**
-                 * @deprecated  1.1.0   Will be removed in 1.2.0
-                 */
-                case "code":
-                    taa_cd         = 40;
-                    taa_intervalId = setInterval( taaCountdown, 1000 );
-                    $( "#taa-resend-count" ).removeClass( "ta-d-none" );
-                    $( taa_mvc ).removeClass( "ta-d-none" );
-                    $( "#taa-email" ).val( email );
-                break;
             }
         }
     } );
@@ -77,35 +52,9 @@
                 e.preventDefault();
                 taaSubmitValAccount();
             break;
-
-            /**
-             * @deprecated  1.1.0   Will be removed in 1.2.0
-             */
-            case "taa-btn-form-validate-code":
-                e.preventDefault();
-                taaSubmitValCode();
-            break;
         }
 
     }, false );
-
-    /**
-     * @deprecated  1.1.0   Will be removed in 1.2.0
-     */
-    window.taaCountdown        = function ()
-    {
-        if ( taa_cd == 0 )
-        {
-            clearInterval( taa_intervalId );
-            $( "#taa-resend-count" ).addClass( "ta-d-none" ).html( "Reenviar código em 40" );
-            $( "#taa-resend-code"  ).removeClass( "ta-d-none" );
-        }
-        else
-        {
-            $( "#taa-resend-count" ).html( `Reenviar código em ${taa_cd}` );
-            taa_cd -= 1;
-        }
-    }
 
     window.taaSubmitNewAccount = function ()
     {
@@ -262,121 +211,6 @@
                 else
                 {
                     taaRefresh();
-                }
-            },
-            error: function( err ) {
-                taaAjaxError( err );
-            }
-        } );
-    }
-
-    /**
-     * @deprecated  1.1.0   Will be removed in 1.2.0
-     */
-    window.taaSubmitValCode    = function ()
-    {
-        taaDisableBtns();
-
-        $( taa_evc ).addClass( "ta-d-none" );
-        $( "#taa-code" ).removeClass( "ta-error-border" );
-
-        let code  = $( "#taa-code"  ).val();
-        let email = $( "#taa-email" ).val();
-
-        if ( code != "" && code.length == 6 )
-        {
-            $.ajax( {
-                url : taa_script_obj.ajaxurl,
-                type: "POST",
-                data: {
-                    action : "taa_validate_code",
-                    code   : code,
-                    email  : email
-                },
-                success: function( data ) {
-
-                    let result = JSON.parse( data );
-
-                    if ( result.error )
-                    {
-                        taaEnableBtns();
-
-                        $( taa_evc ).removeClass( "ta-d-none" ).html( result.message );
-                        $( "#taa-code" ).addClass( "ta-error-border" );
-                    }
-                    else
-                    {
-                        switch ( result.code )
-                        {
-                            case 2000:
-                                taaRefresh();
-                            break;
-
-                            case 2001:
-                                $( taa_mvc ).addClass( "ta-d-none" );
-                                taaEnableBtns();
-                                $( taa_mna ).removeClass( "ta-d-none" );
-                                $( "#taa-new-acc-email" ).val( email );
-                            break;
-                        }
-                    }
-                },
-                error: function( err ) {
-                    taaAjaxError( err );
-                }
-            } );
-        }
-        else
-        {
-            taaEnableBtns();
-
-            let errorMsg = ( code == "" ) ? "Insira o código recebido" : "O código tem 6 dígitos" ;
-            $( taa_evc ).removeClass( "ta-d-none" ).html( errorMsg );
-            $( "#taa-code" ).addClass( "ta-error-border" );
-        }
-    }
-
-    /**
-     * @deprecated  1.1.0   Will be removed in 1.2.0
-     */
-    window.taaResendCodeEmail  = function ()
-    {
-        taaDisableBtns();
-
-        $( taa_evc            ).addClass( "ta-d-none" );
-        $( "#taa-resend-code" ).addClass( "ta-d-none" );
-        $( "#taa-code"        ).removeClass( "ta-error-border" );
-
-        let taa_email = $( "#taa-email" ).val();
-
-        $.ajax( {
-            url  : taa_ajaxurl,
-            type : "POST",
-            data : {
-                action : "taa_resend_email_code",
-                email  : taa_email
-            },
-            success: function( data ) {
-                let result = JSON.parse( data );
-
-                taaEnableBtns();
-
-                if ( !result.success )
-                {
-                    $( taa_evc ).removeClass( "ta-d-none" ).html( result.error.message );
-                }
-                else
-                {
-                    $( "#taa-code" ).focus();
-                    $( "#taa-resent-code"  ).removeClass( "ta-d-none" );
-
-                    taa_cd         = 40;
-                    taa_intervalId = setInterval( taaCountdown, 1000 );
-                    $( "#taa-resend-count" ).removeClass( "ta-d-none" );
-
-                    setTimeout( function() {
-                        $( "#taa-resent-code" ).addClass( "ta-d-none" );
-                    }, 3000 );
                 }
             },
             error: function( err ) {

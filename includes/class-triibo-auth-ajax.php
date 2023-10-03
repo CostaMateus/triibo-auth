@@ -153,101 +153,6 @@ class Triibo_Auth_Ajax
     }
 
     /**
-     * Validates code sent by email
-     *
-     * @deprecated  1.1.0   Will be removed in 1.2.0
-     *
-     * @since   1.0.1 Log improvement
-     * @since   1.0.0
-     * @return  void
-     */
-    public function validate_code_email()
-    {
-        $code      = $_POST[ "codeEmail" ];
-        $cellphone = $_POST[ "cellphone" ];
-        $email     = $_POST[ "email"     ];
-        $passw     = $_POST[ "password"  ];
-
-        $sent_code = get_transient( "_ta_global_code" );
-        delete_transient( "_ta_global_code" );
-
-        if ( $sent_code )
-        {
-            if ( $sent_code == $code )
-            {
-                $response = $this->create_or_update_user_triibo( $cellphone, $email );
-
-                if ( !$response[ "success" ] || ( isset( $response[ "data" ] ) && !$response[ "data" ][ "success" ] ) )
-                {
-                    $response[ "data_sent" ] = [
-                        "function"  => "validate_code_email",
-                        "cellphone" => $cellphone,
-                        "email"     => $email,
-                    ];
-
-                    $this->log( json_encode( $response ) );
-                }
-
-                $uid      = isset( $response[ "uid" ] ) ? $response[ "uid" ] : null;
-
-                $result   = $this->create_user_marketplace( $uid, $cellphone, $email, $passw );
-            }
-            else
-            {
-                $result = [
-                    "success" => false,
-                    "error"   => [
-                        "code"    => 400.1,
-                        "message" => "Código inválido"
-                    ],
-                ];
-            }
-        }
-        else
-        {
-            $result = [
-                "success" => false,
-                "error"   => [
-                    "code"    => 400.2,
-                    "message" => "Código expirado"
-                ],
-            ];
-        }
-
-        echo json_encode( $result );
-        die();
-    }
-
-    /**
-     * Resend code by email
-     *
-     * @deprecated  1.1.0
-     *
-     * @since   1.0.1 Log improvement
-     * @since   1.0.0
-     * @return  void
-     */
-    public function resend_email_code()
-    {
-        $email    = $_POST[ "email" ];
-
-        $response = Triibo_Auth::send_code_by_email( $email );
-
-        if ( !$response[ "success" ] )
-        {
-            $response[ "data_sent" ] = [
-                "function" => "resend_email_code",
-                "email"    => $email
-            ];
-
-            $this->log( json_encode( $response ) );
-        }
-
-        echo json_encode( $response );
-        die();
-    }
-
-    /**
      * Get user info triibo
      *
      * @since   1.1.0 New flow
@@ -436,24 +341,6 @@ class Triibo_Auth_Ajax
         else
         {
             /**
-             * @deprecated  1.1.0   Will be removed in 1.2.0
-             * No longer validates the email provided
-             */
-            if ( false )
-            {
-                $response = Triibo_Auth::send_code_by_email( $email );
-                $message  = ( $response[ "success" ] ) ? "Usuário inexistente" : "Usuário inexistente. Código não enviado!";
-                $code     = ( $response[ "success" ] ) ? 301 : 501;
-                $result   = [
-                    "success" => false,
-                    "error"   => [
-                        "message" => $message,
-                        "code"    => $code,
-                    ],
-                ];
-            }
-
-            /**
              * @since 1.1.0
              * Create marketplace account directly
              */
@@ -511,24 +398,6 @@ class Triibo_Auth_Ajax
 
         echo json_encode( [ "success"  => true ] );
         die();
-    }
-
-    /**
-     * Check valid email
-     *
-     * @deprecated  1.1.0   Will be removed in 1.2.0
-     *
-     * @since   1.0.0
-     * @param   array $data
-     * @return  string|null
-     */
-    private function get_verified_email( array $data )
-    {
-        foreach ( $data as $c )
-            if ( $c[ "type" ] == "emailMarketplace" && $c[ "verified" ] )
-                return $c[ "value" ];
-
-        return null;
     }
 
     /**
