@@ -21,7 +21,7 @@
                     <p id="tal-error-valid-email"  class="ta-bg-transp ta-text-center ta-text-danger ta-pt-8           ta-mb-0 ta-d-none" ></p>
                     <p id="tal-code-resend-email"  class="ta-bg-transp ta-float-left  ta-text-dark   ta-pb-20 ta-mt-20 ta-mb-0 ta-d-none"                                >Código reenviado</p>
                     <a id="tal-resend-email"       class="ta-bg-transp ta-float-right ta-pointer     ta-pb-20 ta-mt-20 ta-mb-0 ta-d-none" onclick="talResendCodeEmail()" >Reenviar código</a>
-                    <p id="tal-resend-email-count" class="ta-bg-transp ta-float-right                ta-pb-20 ta-mt-20 ta-mb-0"                                          >Reenviar código em 40</p>
+                    <p id="tal-resend-email-count" class="ta-bg-transp ta-float-right                ta-pb-20 ta-mt-20 ta-mb-0"                                          >Reenviar código em 30</p>
                 </p>
                 <button id="tal-btn-form-validate-email" type="submit" class="woocommerce-Button button ta-button ta-set-spin" >Entrar <div class="ta-d-none ta-spin-load" ></div></button>
             </form>
