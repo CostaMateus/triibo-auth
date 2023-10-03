@@ -7,7 +7,7 @@
  * Plugin Name: 	#Triibo_Auth
  * Plugin URI: 		https://triibo.com.br
  * Description: 	Disponibiliza o login pela Triibo, força o login Triibo antes do checkout, login oriundo do Triibo App. Dependências: Triibo API Services e WooCommerce.
- * Version: 		1.1.3
+ * Version: 		2.0.0
  * Author: 			Mateus Costa
  * Author URI: 		https://costamateus.com.br/
  * Text Domain: 	triibo_auth
@@ -22,7 +22,7 @@ define( "TRIIBO_AUTH_APP",          "triibo-auth-app"      );
 define( "TRIIBO_AUTH_CHECKOUT",     "triibo-auth-checkout" );
 define( "TRIIBO_AUTH_LOGIN",        "triibo-auth-login"    );
 define( "TRIIBO_AUTH_DOMAIN",       "triibo_auth"          );
-define( "TRIIBO_AUTH_VERSION",      "1.1.3"                );
+define( "TRIIBO_AUTH_VERSION",      "2.0.0"                );
 define( "TRIIBO_AUTH_PLUGIN_FILE",  __FILE__               );
 
 if ( !class_exists( "Triibo_Auth" ) )
