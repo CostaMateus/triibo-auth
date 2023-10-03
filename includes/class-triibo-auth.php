@@ -121,12 +121,14 @@ class Triibo_Auth
 	/**
 	 * Add plugin filters
 	 *
+	 * @since 	2.0.0 Add plugin_row_meta
 	 * @since 	1.0.0
 	 * @return 	void
 	 */
 	private function add_filters()
 	{
 		add_filter( "plugin_action_links_" . plugin_basename( TRIIBO_AUTH_PLUGIN_FILE ), [ $this, "plugin_action_links" ] );
+		add_filter( "plugin_row_meta",                                                   [ $this, "plugin_row_meta"     ], 10, 3 );
 	}
 
 	/**
@@ -257,6 +259,36 @@ class Triibo_Auth
 	}
 
 	/**
+	 * Add link to changelog modal
+	 *
+	 * @since 	2.0.0
+	 * @param 	array 	$plugin_meta
+	 * @param 	string 	$plugin_file
+	 * @param 	array 	$plugin_data
+	 * @return 	array
+	 */
+	public function plugin_row_meta( $plugin_meta, $plugin_file, $plugin_data )
+	{
+		$path = path_join( WP_PLUGIN_DIR, $plugin_file );
+		$path = str_replace( "/", "\\", $path );
+
+        if ( TRIIBO_AUTH_PLUGIN_FILE === $path )
+		{
+            $url = plugins_url( "readme.txt", TRIIBO_AUTH_PLUGIN_FILE );
+
+            $plugin_meta[] = sprintf(
+                "<a href='%s' class='thickbox open-plugin-details-modal' aria-label='%s' data-title='%s'>%s</a>",
+                add_query_arg( "TB_iframe", "true", $url ),
+                esc_attr( sprintf( __( "More information about %s" ), $plugin_data[ "Name" ] ) ),
+                esc_attr( $plugin_data[ "Name" ] ),
+                __( "Histórico de alterações" )
+            );
+        }
+
+        return $plugin_meta;
+	}
+
+	/**
 	 * Add submenu
 	 *
 	 * @since 	1.0.0
@@ -359,6 +391,18 @@ class Triibo_Auth
 					"value" => true,
 				],
 			],
+
+			/**
+			 * @since 2.0.0 Add config whatsapp
+			 */
+			"wpp"      => [
+				[
+					"key"   => "wpp_status",
+					"title" => "Ativar / Desativar",
+					"label" => "Ativar opção de envio (Checkout e Login)",
+					"value" => true,
+				],
+			],
 		];
 
 		register_setting( $this->page, $this->prefix . "options" );
@@ -368,6 +412,11 @@ class Triibo_Auth
 		add_settings_section( $this->prefix . "app"      . $this->sufix, "App",      [ $this, "message_section" ], $this->page );
 		add_settings_section( $this->prefix . "checkout" . $this->sufix, "Checkout", [ $this, "message_section" ], $this->page );
 		add_settings_section( $this->prefix . "login"    . $this->sufix, "Login",    [ $this, "message_section" ], $this->page );
+
+		/**
+		 * @since 2.0.0 Add config whatsapp
+		 */
+		add_settings_section( $this->prefix . "wpp"      . $this->sufix, "Código via Whatsapp", [ $this, "message_section" ], $this->page );
 
 		foreach ( $resources as $res => $fields )
 		{
@@ -464,13 +513,18 @@ class Triibo_Auth
 			case "input":
 				$status = 0;
 
-				if ( strpos( $args[ "id" ], "login"    ) !== false ) $status = get_option( "triibo_auth_login_status"    );
-				if ( strpos( $args[ "id" ], "checkout" ) !== false ) $status = get_option( "triibo_auth_checkout_status" );
-				if ( strpos( $args[ "id" ], "app"      ) !== false ) $status = get_option( "triibo_auth_app_status"      );
+				/**
+				 * @since 2.0.0 Add config whatsapp
+				 */
+				if ( strpos( $args[ "id" ], "wpp"      ) !== false ) $status = get_option( TRIIBO_AUTH_ID . "_wpp_status"      );
+
+				if ( strpos( $args[ "id" ], "login"    ) !== false ) $status = get_option( TRIIBO_AUTH_ID . "_login_status"    );
+				if ( strpos( $args[ "id" ], "checkout" ) !== false ) $status = get_option( TRIIBO_AUTH_ID . "_checkout_status" );
+				if ( strpos( $args[ "id" ], "app"      ) !== false ) $status = get_option( TRIIBO_AUTH_ID . "_app_status"      );
 
 				$value = ( $args[ "value_type" ] == "serialized" ) ? serialize( $wp_data_value ) : $wp_data_value;
 
-				if ( $args[ "subtype" ] != "checkbox")
+				if ( $args[ "subtype" ] != "checkbox" )
 				{
 					$prependStart = ( isset( $args[ "prepend_value" ] ) ) ? "<div class='input-prepend'> <span class='add-on'>{$args[ "prepend_value" ]}</span>" : "";
 					$prependEnd   = ( isset( $args[ "prepend_value" ] ) ) ? "</div>"                   : "";
@@ -511,6 +565,11 @@ class Triibo_Auth
 	 */
 	public function message_section( array $args )
 	{
+		/**
+		 * @since 2.0.0 Add config whatsapp
+		 */
+		if ( strpos( $args[ "id" ], "wpp"      ) !== false ) echo "<p>Envio de código de autenticação via whatsapp</p>";
+
 		if ( strpos( $args[ "id" ], "login"    ) !== false ) echo "<p>Login pela Triibo</p>";
 		if ( strpos( $args[ "id" ], "checkout" ) !== false ) echo "<p>Login Triibo antes do Checkout</p>";
 		if ( strpos( $args[ "id" ], "app"      ) !== false ) echo "<p>Login pelo App</p>";

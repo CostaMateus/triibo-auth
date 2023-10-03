@@ -39,6 +39,14 @@
 			let el2 = $( `#${prefix}_login_status`    ).parent().parent().parent().parent().prev().prev();
 			el1.css( "border-top", "1px solid #CCC" ).css( "padding-top", "2rem" );
 			el2.css( "border-top", "1px solid #CCC" ).css( "padding-top", "2rem" );
+
+			<?php
+			/**
+			 * @since 2.0.0 Add config whatsapp
+			 */
+			?>
+			let el3 = $( `#${prefix}_wpp_status` ).parent().parent().parent().parent().prev().prev();
+			el3.css( "border-top", "1px solid #CCC" ).css( "padding-top", "2rem" );
 		} );
 
 	} )( jQuery );

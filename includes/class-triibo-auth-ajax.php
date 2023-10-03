@@ -67,6 +67,7 @@ class Triibo_Auth_Ajax
             $_token    = $response[ "data"  ][ "token" ];
 
             $type      = ( !in_array( $_POST[ "type" ], $this->send_types ) ) ? "sms" : $_POST[ "type" ];
+            $type      = get_option( TRIIBO_AUTH_ID . "_wpp_status" ) ? $type : "sms";
 
             $cellphone = $_POST[ "cellphone" ];
 

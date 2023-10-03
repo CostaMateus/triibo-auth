@@ -26,10 +26,13 @@
                          * @since 2.0.0 Add resend btn wpp. Fix resend btn default sms.
                          */
                     ?>
-                    <a id="tal-resend"       class="ta-bg-transp ta-float-right ta-pointer     ta-pb-20 ta-mt-20   ta-mb-0 ta-d-none" onclick="talResendCode( 'sms' )" >Reenviar código via SMS</a>
-                    <a id="tal-resend-wpp"   class="ta-bg-transp ta-float-right ta-pointer     ta-pb-20 ta-n-mt-20 ta-mb-0 ta-d-none" onclick="talResendCode( 'wpp' )" >Reenviar código via Whatsapp</a>
+                    <a id="tal-resend" class="ta-bg-transp ta-float-right ta-pointer ta-pb-20 ta-mt-20 ta-mb-0 ta-d-none" onclick="talResendCode( 'sms' )" >Reenviar código via SMS</a>
 
-                    <p id="tal-resend-count" class="ta-bg-transp ta-float-right                ta-pb-20 ta-mt-20 ta-mb-0" >Reenviar código em 30</p>
+                    <?php if ( get_option( TRIIBO_AUTH_ID . "_wpp_status" ) ) : ?>
+                        <a id="tal-resend-wpp" class="ta-bg-transp ta-float-right ta-pointer ta-pb-20 ta-n-mt-20 ta-mb-0 ta-d-none" onclick="talResendCode( 'wpp' )" >Reenviar código via Whatsapp</a>;
+                    <?php endif; ?>
+
+                    <p id="tal-resend-count" class="ta-bg-transp ta-float-right ta-pb-20 ta-mt-20 ta-mb-0" >Reenviar código em 30</p>
                 </p>
                 <button id="tal-btn-form-validate" type="submit" class="woocommerce-Button button ta-button ta-set-spin" >Entrar <div class="ta-d-none ta-spin-load" ></div></button>
             </form>
