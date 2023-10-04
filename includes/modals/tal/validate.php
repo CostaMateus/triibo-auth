@@ -29,8 +29,8 @@
                     <a id="tal-resend" class="ta-bg-transp ta-float-right ta-pointer ta-pb-20 ta-mt-20 ta-mb-0 ta-d-none" onclick="talResendCode( 'sms' )" >Reenviar código via SMS</a>
 
                     <?php if ( get_option( TRIIBO_AUTH_ID . "_wpp_status" ) ) : ?>
-                        <a id="tal-resend-wpp" class="ta-bg-transp ta-float-right ta-pointer ta-pb-20 ta-n-mt-20 ta-mb-0 ta-d-none" onclick="talResendCode( 'wpp' )" >Reenviar código via Whatsapp</a>;
-                    <?php endif ?>
+                        <a id="tal-resend-wpp" class="ta-bg-transp ta-float-right ta-pointer ta-pb-20 ta-n-mt-20 ta-mb-0 ta-d-none" onclick="talResendCode( 'wpp' )" >Reenviar código via Whatsapp</a>
+                    <?php endif; ?>
 
                     <p id="tal-resend-count" class="ta-bg-transp ta-float-right ta-pb-20 ta-mt-20 ta-mb-0" >Reenviar código em 30</p>
                 </p>
