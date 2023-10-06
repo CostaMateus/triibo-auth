@@ -516,13 +516,6 @@
 
                     switch ( result.error.code )
                     {
-                        // // email not registred in mkt
-                        // case 301:
-                        //     $( tal_modal_regis   ).addClass( "ta-d-none" );
-                        //     $( tal_modal_v_email ).removeClass( "ta-d-none" );
-                        //     $( "#tal-code-email" ).focus();
-                        // break;
-
                         // email/pass not ok
                         case 401: // 500 e 501
                         default:
@@ -573,7 +566,6 @@
     {
         $( tal_modal_ckt     ).addClass( "ta-d-none" );
         $( tal_modal_valid   ).addClass( "ta-d-none" );
-        $( tal_modal_v_email ).addClass( "ta-d-none" );
         $( tal_modal_regis   ).addClass( "ta-d-none" );
     }
 
@@ -582,7 +574,6 @@
         $( tal_error_auth     ).addClass( "ta-d-none" ).html( "" );
         $( tal_error_auth_ckt ).addClass( "ta-d-none" ).html( "" );
         $( tal_error_valid    ).addClass( "ta-d-none" ).html( "" );
-        $( tal_error_v_email  ).addClass( "ta-d-none" ).html( "" );
         $( tal_error_regis    ).addClass( "ta-d-none" ).html( "" );
     }
 
