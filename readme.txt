@@ -1,5 +1,9 @@
 == Changelog ==
 
+= 2.1.0 - 2023/10/06 =
+
+- Adicionado SecurityCode
+
 = 2.0.0 - 2023/10/03 =
 
 - Adicionado changelog
