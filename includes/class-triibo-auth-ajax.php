@@ -53,6 +53,7 @@ class Triibo_Auth_Ajax
     /**
      * Send code by sms
      *
+     * @since   2.1.0 New Node API securityCode
      * @since   2.0.0 New Node API for send code by sms/wpp
      * @since   1.0.1 Log improvement
      * @since   1.0.0
@@ -60,58 +61,79 @@ class Triibo_Auth_Ajax
      */
     public function auth_sms()
     {
-        $response = $this->node->auth( "" );
+        /**
+         * @since 2.1.0 Added api security code
+         */
+        $response = $this->node->get_security_code();
 
         if ( $response[ "success" ] )
         {
-            $_token    = $response[ "data"  ][ "token" ];
+            $code     = $response[ "data" ][ "securityCode" ];
 
-            $type      = ( !in_array( $_POST[ "type" ], $this->send_types ) ) ? "sms" : $_POST[ "type" ];
-            $type      = get_option( TRIIBO_AUTH_ID . "_wpp_status" ) ? $type : "sms";
-
-            $cellphone = $_POST[ "cellphone" ];
-
-            $response  = $this->node->auth_code( $_token, [
-                "cellphone" => $cellphone,
-                "type"      => $type
-            ] );
+            $response = $this->node->auth( "", $code );
 
             if ( $response[ "success" ] )
             {
-                $this->log( "INFO - auth_sms : " . json_encode( $response ) );
+                $_token    = $response[ "data"  ][ "token" ];
 
-                $return = [
-                    "error"   => false,
-                    "success" => [
-                        "transactionId" => $response[ "data" ][ "transactionId" ],
-                    ]
-                ];
+                $type      = ( !in_array( $_POST[ "type" ], $this->send_types ) ) ? "sms" : $_POST[ "type" ];
+                $type      = get_option( TRIIBO_AUTH_ID . "_wpp_status" ) ? $type : "sms";
 
-                echo json_encode( $return );
-                die();
+                $cellphone = $_POST[ "cellphone" ];
+
+                $response  = $this->node->auth_code( $_token, [
+                    "cellphone" => $cellphone,
+                    "type"      => $type
+                ] );
+
+                if ( $response[ "success" ] )
+                {
+                    $this->log( "INFO - auth_sms : " . json_encode( $response ) );
+
+                    $return = [
+                        "error"   => false,
+                        "success" => [
+                            "transactionId" => $response[ "data" ][ "transactionId" ],
+                        ]
+                    ];
+
+                    echo json_encode( $return );
+                    die();
+                }
+                else
+                {
+                    $this->log( "ERROR - auth_code : " . json_encode( $response ) );
+
+                    $err   = $response[ "data" ][ "error" ];
+                    $code  = ( $err == "Usuário excedeu o limite de requisições" ) ? 429 : 400;
+                    $error = [
+                        "success" => false,
+                        "error"   => [
+                            "errorCode" => $code,
+                        ]
+                    ];
+                }
             }
             else
             {
-                $this->log( "ERR - auth_sms : " . json_encode( $response ) );
+                $this->log( "ERROR - auth : " . json_encode( $response ) );
 
-                $err   = $response[ "data" ][ "error" ];
-                $code  = ( $err == "Usuário excedeu o limite de requisições" ) ? 429 : 400;
                 $error = [
                     "success" => false,
                     "error"   => [
-                        "errorCode" => $code,
+                        "errorCode" => 500,
                     ]
                 ];
             }
         }
         else
         {
-            $this->log( "ERR - auth_sms : " . json_encode( $response ) );
+            $this->log( "ERROR - auth_security : " . json_encode( $response ) );
 
             $error = [
                 "success" => false,
                 "error"   => [
-                    "errorCode" => 500,
+                    "errorCode" => 401,
                 ]
             ];
         }
