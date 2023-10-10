@@ -1,16 +1,20 @@
 <?php
 /**
- * @link 			https://triibo.com.br
- * @since 			1.0.0
- * @package 		Triibo_Auth
+ * Plugin Name: 			#Triibo_Auth
+ * Plugin URI: 				https://triibo.com.br
+ * Description: 			Disponibiliza o login pela Triibo, força o login Triibo antes do checkout, login oriundo do Triibo App. Dependências: Triibo API Services e WooCommerce.
+ * Author: 					Mateus Costa
+ * Author URI: 				https://costamateus.com.br/
+ * Version: 				2.1.1
+ * Text Domain: 			triibo_auth
+ * Requires PHP: 			7.4
+ * Requires at least: 		6.0
+ * Tested up to: 			6.3
+ * WC requires at least: 	6.5
+ * WC tested up to: 		8.1
  *
- * Plugin Name: 	#Triibo_Auth
- * Plugin URI: 		https://triibo.com.br
- * Description: 	Disponibiliza o login pela Triibo, força o login Triibo antes do checkout, login oriundo do Triibo App. Dependências: Triibo API Services e WooCommerce.
- * Version: 		2.1.0
- * Author: 			Mateus Costa
- * Author URI: 		https://costamateus.com.br/
- * Text Domain: 	triibo_auth
+ * @package 	Triibo_Auth
+ * @version 	2.1.1
  */
 defined( "ABSPATH" ) || exit;
 
@@ -22,7 +26,7 @@ define( "TRIIBO_AUTH_APP",          "triibo-auth-app"      );
 define( "TRIIBO_AUTH_CHECKOUT",     "triibo-auth-checkout" );
 define( "TRIIBO_AUTH_LOGIN",        "triibo-auth-login"    );
 define( "TRIIBO_AUTH_DOMAIN",       "triibo_auth"          );
-define( "TRIIBO_AUTH_VERSION",      "2.1.0"                );
+define( "TRIIBO_AUTH_VERSION",      "2.1.1"                );
 define( "TRIIBO_AUTH_PLUGIN_FILE",  __FILE__               );
 
 if ( !class_exists( "Triibo_Auth" ) )
