@@ -1,5 +1,9 @@
 == Changelog ==
 
+= 2.2.0 - 2024/02/01 =
+
+- Trocando chamada validate_sms() do Gateway para Node
+
 = 2.1.1 - 2023/10/10 =
 
 - Unificação e atualização de requerimentos
