@@ -307,17 +307,9 @@
                             $( id  ).addClass( "ta-error-border" );
                         break;
 
-                        case 1005:
-                            $( tal_modal_valid ).addClass( "ta-d-none" );
-                            $( err ).removeClass( "ta-d-none" ).html( "Quantidade de tentativas excedida, tente novamente em 15min." );
-                            $( id  ).addClass( "ta-error-border" );
-                        break;
-
-                        case 1004:
-                        case 1008:
                         default:
                             $( tal_modal_valid ).addClass( "ta-d-none" );
-                            $( err ).removeClass( "ta-d-none" ).html( "Algo de erro, tente novamente." );
+                            $( err ).removeClass( "ta-d-none" ).html( "Algo de errado. Tente novamente." );
                         break;
                     }
                 }
