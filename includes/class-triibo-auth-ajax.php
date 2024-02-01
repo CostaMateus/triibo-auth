@@ -88,7 +88,7 @@ class Triibo_Auth_Ajax
 
                 if ( $response[ "success" ] )
                 {
-                    $this->log( "INFO - auth_sms : " . json_encode( $response ) );
+                    $this->log( "INFO - auth_code : " . json_encode( $response ) );
 
                     $return = [
                         "error"   => false,
@@ -176,60 +176,67 @@ class Triibo_Auth_Ajax
 
                 $response = $this->node->validate_sms( $_token, $data );
 
-                $this->log( "ERROR - validate_sms 1 : " . json_encode( $response ) );
+                if ( $response[ "success" ] )
+                {
+                    $success = [
+                        "success" => true,
+                        "data"    => [
+                            "logged_in" => is_user_logged_in(),
+                        ],
+                        "error"   => null,
+                    ];
 
-                echo json_encode( $response );
-                exit();
+                    echo json_encode( $success );
+                    exit();
+                }
+                else
+                {
+                    $code  = $this->get_error_code( $response[ "data" ][ "error" ] );
+
+                    $error = [
+                        "success" => false,
+                        "error"   => [
+                            "errorCode" => $code,
+                            "message"   => $response[ "data" ][ "error" ],
+                        ],
+                        "data"    => [
+                            "logged_in" => is_user_logged_in(),
+                        ]
+                    ];
+                }
             }
             else
             {
-
-                $this->log( "ERROR - validate_sms 3 : " . json_encode( $response ) );
-
-                echo json_encode( $response );
-                exit();
+                $error = [
+                    "success" => false,
+                    "error"   => [
+                        "errorCode" => 4000,
+                        "message"   => "Algo de errado. Tente novamente.",
+                    ],
+                    "data"    => [
+                        "logged_in" => is_user_logged_in(),
+                    ]
+                ];
             }
         }
         else
         {
-            $this->log( "ERROR - validate_sms 2 : " . json_encode( $response ) );
-
             $error = [
                 "success" => false,
                 "error"   => [
-                    "errorCode" => 401,
+                    "errorCode" => 4001,
+                    "message"   => "Algo de errado. Tente novamente.",
                 ],
                 "data"    => [
                     "logged_in" => is_user_logged_in(),
                 ]
             ];
-
-            echo json_encode( $error );
-            exit();
         }
 
+        $this->log( "ERROR - validate_sms : " . json_encode( $response ) );
 
-
-
-        // // ====================================================================
-        // $response  = $this->gate->validate_sms( $code, $cellphone, $trans_id );
-        //
-        // if ( !$response[ "success" ] || !$response[ "data" ][ "success" ] )
-        // {
-        //     $response[ "data_sent" ] = [
-        //         "function"      => "validate_sms",
-        //         "code"          => $code,
-        //         "cellphone"     => $cellphone,
-        //         "transactionId" => $trans_id,
-        //     ];
-        //
-        //     $this->log( json_encode( $response ) );
-        // }
-        //
-        // $response[ "data" ][ "logged_in" ] = is_user_logged_in();
-        //
-        // echo json_encode( $response[ "data" ] );
-        // die();
+        echo json_encode( $error );
+        exit();
     }
 
     /**
@@ -591,5 +598,32 @@ class Triibo_Auth_Ajax
     private function log( string $message )
     {
         $this->log->add( $this->id, $message );
+    }
+
+    /**
+     * Get erro code by message
+     *
+     * @param   int     $error
+     * @return  string
+     */
+    private function get_error_code( string $error )
+    {
+        switch ( $error )
+        {
+            case "Invalid code!":
+                return 1006;
+            break;
+
+            case "Code expired! - errorCode: 1007":
+                return 1007;
+            break;
+
+            case "Invalid cellphone! - errorCode: 1009":
+                return 1009;
+            break;
+
+            default:
+                return 5000;
+        }
     }
 }
