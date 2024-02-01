@@ -603,6 +603,7 @@ class Triibo_Auth_Ajax
     /**
      * Get erro code by message
      *
+     * @since   2.2.0
      * @param   int     $error
      * @return  string
      */
