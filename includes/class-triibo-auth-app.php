@@ -105,6 +105,7 @@ class Triibo_Auth_App
     /**
      * Validate account, if it exists connect, if not create
      *
+     * @since   2.2.0 Added call to get_user (Node)
      * @since   1.1.0 New flow
      * @since   1.0.1 Log improvement
      * @since   1.0.0
@@ -127,22 +128,41 @@ class Triibo_Auth_App
                 // add_user_meta( $user->ID, "triiboId_phone", "+$cellphone" );
                 add_user_meta( $user->ID, "_triibo_phone", "+$cellphone" );
 
-                $response = $this->gate->update_user_mkt( $cellphone, $email, "CREATE", $user->first_name, $user->nickname, $terms );
+                $response = $this->node->get_user( $cellphone );
 
-                if ( !$response[ "success" ] || !$response[ "data" ][ "success" ] )
+                if ( $response[ "success" ] )
                 {
-                    $response[ "data_sent" ] = [
-                        "function"  => "new_account_1",
-						"cellphone" => $cellphone,
-                        "email"     => $email
-                    ];
+                    $user     = $response[ "data" ][ "userInfo" ][ "user" ];
 
-                    $this->log( json_encode( $response ) );
+                    $response = $this->gate->update_user_mkt( $user, $email, "CREATE", $user->first_name, $user->nickname, $terms );
+
+                    if ( !$response[ "success" ] || !$response[ "data" ][ "success" ] )
+                    {
+                        $response[ "data_sent" ] = [
+                            "function"  => "new_account_1",
+                            "cellphone" => $cellphone,
+                            "email"     => $email
+                        ];
+
+                        $this->log( json_encode( $response ) );
+                    }
+
+                    self::make_login( $user->ID );
+
+                    $result   = [ "success" => true ];
                 }
+                else
+                {
+                    $this->log( "ERROR - Node /login " . json_encode( $response ) );
 
-                self::make_login( $user->ID );
-
-                $result = [ "success" => true ];
+                    $result = [
+                        "success" => false,
+                        "error"   => [
+                            "code"    => 401,
+                            "message" => "Falha na autentição Triibo",
+                        ]
+                    ];
+                }
             }
             else
             {
@@ -182,24 +202,43 @@ class Triibo_Auth_App
                 $user->set_role( "subscriber" );
                 if ( class_exists( "WooCommerce" ) ) $user->set_role( "customer" );
 
-                $response = $this->gate->update_user_mkt( $cellphone, $email, "UPDATE", $user->first_name, $user->nickname, $terms );
+                $response = $this->node->get_user( $cellphone );
 
-                if ( !$response[ "success" ] || !$response[ "data" ][ "success" ] )
+                if ( $response[ "success" ] )
                 {
-                    $response[ "data_sent" ] = [
-                        "function"  => "new_account_2",
-						"cellphone" => $cellphone,
-                        "email"     => $email
-                    ];
+                    $user_triibo = $response[ "data" ][ "userInfo" ][ "user" ];
 
-                    $this->log( json_encode( $response ) );
+                    $response    = $this->gate->update_user_mkt( $user_triibo, $email, "UPDATE", $user->first_name, $user->nickname, $terms );
+
+                    if ( !$response[ "success" ] || !$response[ "data" ][ "success" ] )
+                    {
+                        $response[ "data_sent" ] = [
+                            "function"  => "new_account_2",
+                            "cellphone" => $cellphone,
+                            "email"     => $email
+                        ];
+
+                        $this->log( json_encode( $response ) );
+                    }
+
+                    self::make_login( $user_id );
+
+                    $result      = [ "success" => true ];
+                    delete_transient( "_taa_triibo_uid"       );
+                    delete_transient( "_taa_triibo_cellphone" );
                 }
+                else
+                {
+                    $this->log( "ERROR - Node /login " . json_encode( $response ) );
 
-                self::make_login( $user_id );
-
-                $result = [ "success" => true ];
-                delete_transient( "_taa_triibo_uid"       );
-                delete_transient( "_taa_triibo_cellphone" );
+                    $result = [
+                        "success" => false,
+                        "error"   => [
+                            "code"    => 401,
+                            "message" => "Falha na autentição Triibo",
+                        ]
+                    ];
+                }
             }
             else
             {
@@ -220,6 +259,7 @@ class Triibo_Auth_App
     /**
      * validate account, if it exists connect
      *
+     * @since   2.2.0 Added call to get_user (Node)
      * @since   1.1.0 New flow
      * @since   1.0.1 Log improvement
      * @since   1.0.0
@@ -249,29 +289,48 @@ class Triibo_Auth_App
         {
             if ( $user && wp_check_password( $pass, $user->data->user_pass, $user->ID ) )
             {
-                $response = $this->gate->update_user_mkt( $cellphone, $email, "CREATE", $user->first_name, $user->nickname, $terms );
+                $response = $this->node->get_user( $cellphone );
 
-                if ( !$response[ "success" ] || ( isset( $response[ "data" ] ) && !$response[ "data" ][ "success" ] ) )
+                if ( $response[ "success" ] )
                 {
-                    $response[ "data_sent" ] = [
-                        "function"  => "validate_account",
-						"cellphone" => $cellphone,
-                        "email"     => $email
-                    ];
+                    $user_triibo = $response[ "data" ][ "userInfo" ][ "user" ];
 
-                    $this->log( json_encode( $response ) );
+                    $response    = $this->gate->update_user_mkt( $user_triibo, $email, "CREATE", $user->first_name, $user->nickname, $terms );
+
+                    if ( !$response[ "success" ] || ( isset( $response[ "data" ] ) && !$response[ "data" ][ "success" ] ) )
+                    {
+                        $response[ "data_sent" ] = [
+                            "function"  => "validate_account",
+                            "cellphone" => $cellphone,
+                            "email"     => $email
+                        ];
+
+                        $this->log( json_encode( $response ) );
+                    }
+
+                    self::make_login( $user->ID );
+
+                    $result      = [ "success" => true ];
+
+                    delete_user_meta( $user->ID, "triiboId_phone", $cellphone );
+                    update_user_meta( $user->ID, "_triibo_phone",  $cellphone );
+                    update_user_meta( $user->ID, "_triibo_id",     $uid       );
+
+                    delete_transient( "_taa_triibo_uid"       );
+                    delete_transient( "_taa_triibo_cellphone" );
                 }
+                else
+                {
+                    $this->log( "ERROR - Node /login " . json_encode( $response ) );
 
-                self::make_login( $user->ID );
-
-                $result = [ "success" => true ];
-
-				delete_user_meta( $user->ID, "triiboId_phone", $cellphone );
-				update_user_meta( $user->ID, "_triibo_phone",  $cellphone );
-				update_user_meta( $user->ID, "_triibo_id",     $uid       );
-
-                delete_transient( "_taa_triibo_uid"       );
-                delete_transient( "_taa_triibo_cellphone" );
+                    $result = [
+                        "success" => false,
+                        "error"   => [
+                            "code"    => 401,
+                            "message" => "Falha na autentição Triibo",
+                        ]
+                    ];
+                }
             }
             else
             {
