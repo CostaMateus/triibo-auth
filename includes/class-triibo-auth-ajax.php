@@ -152,88 +152,40 @@ class Triibo_Auth_Ajax
      */
     public function validate_sms()
     {
-        $code      = $_POST[ "code"          ];
-        $cellphone = $_POST[ "cellphone"     ];
-        $trans_id  = $_POST[ "transactionId" ];
+        $data     = [
+            "code"      => $_POST[ "code"          ],
+            "trans_id"  => $_POST[ "transactionId" ],
+            "cellphone" => $_POST[ "cellphone"     ],
+        ];
 
-        $response  = $this->node->get_security_code();
+        $response = $this->node->validate_sms( $data );
 
         if ( $response[ "success" ] )
         {
-            $s_code   = $response[ "data" ][ "securityCode" ];
-
-            $response = $this->node->auth( "", $s_code );
-
-            if ( $response[ "success" ] )
-            {
-                $_token   = $response[ "data"  ][ "token" ];
-
-                $data     = [
-                    "code"      => $code,
-                    "trans_id"  => $trans_id,
-                    "cellphone" => $cellphone,
-                ];
-
-                $response = $this->node->validate_sms( $_token, $data );
-
-                if ( $response[ "success" ] )
-                {
-                    $success = [
-                        "success" => true,
-                        "data"    => [
-                            "logged_in" => is_user_logged_in(),
-                        ],
-                        "error"   => null,
-                    ];
-
-                    echo json_encode( $success );
-                    exit();
-                }
-                else
-                {
-                    $code  = $this->get_error_code( $response[ "data" ][ "error" ] );
-
-                    $error = [
-                        "success" => false,
-                        "error"   => [
-                            "errorCode" => $code,
-                            "message"   => $response[ "data" ][ "error" ],
-                        ],
-                        "data"    => [
-                            "logged_in" => is_user_logged_in(),
-                        ]
-                    ];
-                }
-            }
-            else
-            {
-                $error = [
-                    "success" => false,
-                    "error"   => [
-                        "errorCode" => 4000,
-                        "message"   => "Algo de errado. Tente novamente.",
-                    ],
-                    "data"    => [
-                        "logged_in" => is_user_logged_in(),
-                    ]
-                ];
-            }
-        }
-        else
-        {
-            $error = [
-                "success" => false,
-                "error"   => [
-                    "errorCode" => 4001,
-                    "message"   => "Algo de errado. Tente novamente.",
-                ],
+            $success = [
+                "success" => true,
                 "data"    => [
                     "logged_in" => is_user_logged_in(),
-                ]
+                ],
+                "error"   => null,
             ];
+
+            echo json_encode( $success );
+            exit();
         }
 
         $this->log( "ERROR - validate_sms : " . json_encode( $response ) );
+
+        $error = [
+            "success" => false,
+            "error"   => [
+                "errorCode" => $this->get_error_code( $response[ "data" ][ "error" ] ),
+                "message"   => $response[ "data" ][ "error" ],
+            ],
+            "data"    => [
+                "logged_in" => is_user_logged_in(),
+            ]
+        ];
 
         echo json_encode( $error );
         exit();
@@ -490,6 +442,7 @@ class Triibo_Auth_Ajax
     /**
      * Create or update user triibo
      *
+     * @since   2.2.0   Add get_user(Node) after change of update_user_mkt (Gateway)
      * @since   1.1.0   Change 'Null Coalescing Operator' to 'Elvis Operator'
      * @since   1.0.0
      * @param   string  $cellphone
@@ -501,10 +454,16 @@ class Triibo_Auth_Ajax
      */
     private function create_or_update_user_triibo( string $cellphone, string $email, string $name = "", string $nick = "", bool $terms = null )
     {
-        $name = $name ?: reset( explode( "@", $email ) );
-        $nick = $nick ?: $name;
+        $name     = $name ?: reset( explode( "@", $email ) );
+        $nick     = $nick ?: $name;
 
-        return $this->gate->update_user_mkt( $cellphone, $email, "UPDATE", $name, $nick, $terms );
+        $response = $this->node->get_user( $cellphone );
+
+        if ( !$response[ "success" ] ) return $response;
+
+        $user     = $response[ "data" ][ "userInfo" ][ "user" ];
+
+        return $this->gate->update_user_mkt( $user, $email, "UPDATE", $name, $nick, $terms );
     }
 
     /**
