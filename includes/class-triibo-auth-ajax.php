@@ -145,6 +145,7 @@ class Triibo_Auth_Ajax
     /**
      * Validates code sent by sms
      *
+     * @since   2.2.0 Change validation to Node API
      * @since   1.0.1 Log improvement
      * @since   1.0.0
      * @return  void
@@ -155,24 +156,80 @@ class Triibo_Auth_Ajax
         $cellphone = $_POST[ "cellphone"     ];
         $trans_id  = $_POST[ "transactionId" ];
 
-        $response  = $this->gate->validate_sms( $code, $cellphone, $trans_id );
+        $response  = $this->node->get_security_code();
 
-        if ( !$response[ "success" ] || !$response[ "data" ][ "success" ] )
+        if ( $response[ "success" ] )
         {
-            $response[ "data_sent" ] = [
-                "function"      => "validate_sms",
-                "code"          => $code,
-                "cellphone"     => $cellphone,
-                "transactionId" => $trans_id,
+            $s_code   = $response[ "data" ][ "securityCode" ];
+
+            $response = $this->node->auth( "", $s_code );
+
+            if ( $response[ "success" ] )
+            {
+                $_token   = $response[ "data"  ][ "token" ];
+
+                $data     = [
+                    "code"      => $code,
+                    "trans_id"  => $trans_id,
+                    "cellphone" => $cellphone,
+                ];
+
+                $response = $this->node->validate_sms( $_token, $data );
+
+                $this->log( "ERROR - validate_sms 1 : " . json_encode( $response ) );
+
+                echo json_encode( $response );
+                exit();
+            }
+            else
+            {
+
+                $this->log( "ERROR - validate_sms 3 : " . json_encode( $response ) );
+
+                echo json_encode( $response );
+                exit();
+            }
+        }
+        else
+        {
+            $this->log( "ERROR - validate_sms 2 : " . json_encode( $response ) );
+
+            $error = [
+                "success" => false,
+                "error"   => [
+                    "errorCode" => 401,
+                ],
+                "data"    => [
+                    "logged_in" => is_user_logged_in(),
+                ]
             ];
 
-            $this->log( json_encode( $response ) );
+            echo json_encode( $error );
+            exit();
         }
 
-        $response[ "data" ][ "logged_in" ] = is_user_logged_in();
 
-        echo json_encode( $response[ "data" ] );
-        die();
+
+
+        // // ====================================================================
+        // $response  = $this->gate->validate_sms( $code, $cellphone, $trans_id );
+        //
+        // if ( !$response[ "success" ] || !$response[ "data" ][ "success" ] )
+        // {
+        //     $response[ "data_sent" ] = [
+        //         "function"      => "validate_sms",
+        //         "code"          => $code,
+        //         "cellphone"     => $cellphone,
+        //         "transactionId" => $trans_id,
+        //     ];
+        //
+        //     $this->log( json_encode( $response ) );
+        // }
+        //
+        // $response[ "data" ][ "logged_in" ] = is_user_logged_in();
+        //
+        // echo json_encode( $response[ "data" ] );
+        // die();
     }
 
     /**
