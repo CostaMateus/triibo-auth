@@ -5,7 +5,7 @@
  * Description: 			Disponibiliza o login pela Triibo, força o login Triibo antes do checkout, login oriundo do Triibo App. Dependências: Triibo API Services e WooCommerce.
  * Author: 					Mateus Costa
  * Author URI: 				https://costamateus.com.br/
- * Version: 				2.2.0
+ * Version: 				2.2.1
  * Text Domain: 			triibo_auth
  * Requires PHP: 			7.4
  * Requires at least: 		6.0
@@ -14,7 +14,7 @@
  * WC tested up to: 		8.1
  *
  * @package 	Triibo_Auth
- * @version 	2.2.0
+ * @version 	2.2.1
  */
 defined( "ABSPATH" ) || exit;
 
@@ -26,7 +26,7 @@ define( "TRIIBO_AUTH_APP",          "triibo-auth-app"      );
 define( "TRIIBO_AUTH_CHECKOUT",     "triibo-auth-checkout" );
 define( "TRIIBO_AUTH_LOGIN",        "triibo-auth-login"    );
 define( "TRIIBO_AUTH_DOMAIN",       "triibo_auth"          );
-define( "TRIIBO_AUTH_VERSION",      "2.2.0"                );
+define( "TRIIBO_AUTH_VERSION",      "2.2.1"                );
 define( "TRIIBO_AUTH_PLUGIN_FILE",  __FILE__               );
 
 if ( !class_exists( "Triibo_Auth" ) )
