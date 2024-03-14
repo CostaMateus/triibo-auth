@@ -304,14 +304,20 @@
                         break;
 
                         case 1009:
-                            $( tal_modal_valid ).addClass( "ta-d-none" );
-                            $( err ).removeClass( "ta-d-none" ).html( "Código expirado." );
-                            $( id  ).addClass( "ta-error-border" );
+                            $( tal_modal_ckt      ).removeClass( "ta-d-none" );
+                            $( tal_error_auth_ckt ).removeClass( "ta-d-none" ).html( "Celular inválido." );
+                            $( id                 ).addClass( "ta-error-border" );
+                            $( tal_modal_valid    ).addClass( "ta-d-none"       );
+
+                            $( "#tal-code" ).val( '' );
                         break;
 
                         default:
-                            $( tal_modal_valid ).addClass( "ta-d-none" );
-                            $( err ).removeClass( "ta-d-none" ).html( "Algo de errado. Tente novamente." );
+                            $( tal_modal_ckt      ).removeClass( "ta-d-none" );
+                            $( tal_error_auth_ckt ).removeClass( "ta-d-none" ).html( "Algo de errado. Atualize a página e tente novamente." );
+                            $( tal_modal_valid    ).addClass( "ta-d-none"       );
+
+                            $( "#tal-code" ).val( '' );
                         break;
                     }
                 }
