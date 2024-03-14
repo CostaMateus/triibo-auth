@@ -101,8 +101,8 @@
                 terms  : terms,
             },
             success: function( data ) {
-
                 let result = JSON.parse( data );
+                // console.log( result );
 
                 if ( !result.success )
                 {
@@ -182,8 +182,8 @@
                 terms  : terms,
             },
             success: function( data ) {
-
                 let result = JSON.parse( data );
+                // console.log( result );
 
                 if ( !result.success )
                 {

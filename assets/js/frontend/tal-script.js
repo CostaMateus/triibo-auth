@@ -193,6 +193,7 @@
             },
             success: function( data ) {
                 let result = JSON.parse( data );
+                // console.log( result );
 
                 talEnableBtns();
 
@@ -284,6 +285,7 @@
             },
             success: function( data ) {
                 let result = JSON.parse( data );
+                // console.log( result );
 
                 if ( !result.success )
                 {
@@ -346,6 +348,7 @@
             },
             success: function( data ) {
                 let result = JSON.parse( data );
+                // console.log( result );
 
                 if ( !result.success )
                 {
@@ -419,6 +422,7 @@
             },
             success: function( data ) {
                 let result = JSON.parse( data );
+                // console.log( result );
 
                 if ( !result.success )
                 {
@@ -499,6 +503,7 @@
             },
             success: function( data ) {
                 let result = JSON.parse( data );
+                // console.log( result );
 
                 talEnableBtns();
 
