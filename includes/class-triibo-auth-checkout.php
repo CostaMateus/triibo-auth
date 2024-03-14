@@ -37,6 +37,7 @@ class Triibo_Auth_Checkout extends Triibo_Auth_Ajax
     /**
      * Construct
      *
+     * @since   2.2.1 Add set_id()
      * @since   2.0.0 Add instance of Triibo_Api_Node
      * @since   1.0.0
      */
@@ -45,6 +46,8 @@ class Triibo_Auth_Checkout extends Triibo_Auth_Ajax
 		$this->log      = ( function_exists( "wc_get_logger" ) ) ? wc_get_logger() : new WC_Logger();
 		$this->gate     = new Triibo_Api_Gateway();
 		$this->node     = new Triibo_Api_Node();
+
+        $this->set_id( TRIIBO_AUTH_CHECKOUT );
 
         self::$_ckt_url = md5( "redirect_to_checkout" );
 

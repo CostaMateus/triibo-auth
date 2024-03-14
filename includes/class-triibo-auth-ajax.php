@@ -13,10 +13,11 @@ class Triibo_Auth_Ajax
     /**
      * Class id
      *
+     * @since   2.2.1   changed so that the other classes define its value
      * @since   1.0.0
      * @var     string
      */
-    protected $id = TRIIBO_AUTH_APP;
+    protected $id;
 
 	/**
 	 * API Gateway.
@@ -585,5 +586,17 @@ class Triibo_Auth_Ajax
             default:
                 return 5000;
         }
+    }
+
+    /**
+     * Set the id
+     *
+     * @since   2.2.1
+     * @param   string  $id
+     * @return  void
+     */
+    public function set_id( string $id = TRIIBO_AUTH_ID )
+    {
+        $this->id = $id;
     }
 }
