@@ -137,19 +137,20 @@ class Triibo_Auth_Rest_Users_Controller extends WP_REST_Controller
 			 *
 			 * ausencia dos dois é problema
 			 */
-			if ( !$bearer && ! $token                      ) $this->redirect( $url );
+			if ( !$bearer && !$token                       ) $this->redirect( $url );
 			if ( !$this->validate_token( $bearer, $token ) ) $this->redirect( $url );
 		}
 
-		$uid       = $request->get_param( "code"      ) ?: null;
-		set_transient( "_taa_triibo_uid", $uid );
-
-		$cellphone = $request->get_param( "cellphone" ) ?: null;
-        $cellphone = "+" . preg_replace( "/\D/", "", $cellphone );
-		set_transient( "_taa_triibo_cellphone", $cellphone );
-
-		$data      = $request->get_param( "data"      ) ?: null;
 		$user      = null;
+		$uid       = $request->get_param( "code"      ) ?: null;
+		$data      = $request->get_param( "data"      ) ?: null;
+		$cellphone = $request->get_param( "cellphone" ) ?: null;
+
+        $cellphone = "+" . preg_replace( "/\D/", "", $cellphone );
+		$cellphone = $cellphone === "+" ? $cellphone : null;
+
+		set_transient( "_taa_triibo_uid",       $uid       );
+		set_transient( "_taa_triibo_cellphone", $cellphone );
 
 		// uid, cellphone, email ausentes na request
 		// redireciona para $url ou para "/", caso $url == null
@@ -275,12 +276,16 @@ class Triibo_Auth_Rest_Users_Controller extends WP_REST_Controller
 		$bearer   = ( !$bearer && $tkn ) ? base64_decode( $tkn ) : $bearer;
 		$response = $this->node->validate_token( $bearer );
 
-		if ( !$response[ "success" ] && !$response[ "data" ][ "success" ] )
+		if ( !$response[ "success" ] || !isset( $response[ "data" ] ) )
+		{
+			$this->log( json_encode( $response ) );
+			return false;
+		}
+
+		if ( !$response[ "data" ][ "isValid" ] )
 		{
 			$response[ "data_sent" ] = [ "function" => "validate_token" ];
-
 			$this->log( json_encode( $response ) );
-
 			return false;
 		}
 
