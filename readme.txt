@@ -1,5 +1,9 @@
 == Changelog ==
 
+= 2.2.1 - 2024/06/19 =
+
+- Ajuste no enqueue do script/style do admin
+
 = 2.2.0 - 2024/02/01 =
 
 - Trocando chamada validate_sms() do Gateway para Node

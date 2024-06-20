@@ -54,7 +54,7 @@ class Triibo_Auth
     {
 		if ( class_exists( "Triibo_Api_Services" ) )
 		{
-			$this->enqueue_files();
+			$this->enqueue_admin_files();
 
 			$this->add_actions();
 			$this->add_filters();
@@ -86,10 +86,11 @@ class Triibo_Auth
 	/**
 	 * Enqueue admin js and css files
 	 *
+	 * @since 	2.2.1 	Change wp_enqueue_* to admin_enqueue_*
 	 * @since 	1.0.0
 	 * @return 	void
 	 */
-	private function enqueue_files()
+	private function enqueue_admin_files()
 	{
 		$js_path  = "assets/js/admin/admin.js";
 		$css_path = "assets/css/admin/admin.css";
@@ -97,8 +98,8 @@ class Triibo_Auth
 		$js_ver   = date( "ymd-His", filemtime( plugin_dir_path( TRIIBO_AUTH_PLUGIN_FILE ) . $js_path  ) );
 		$css_ver  = date( "ymd-His", filemtime( plugin_dir_path( TRIIBO_AUTH_PLUGIN_FILE ) . $css_path ) );
 
-		wp_enqueue_script( TRIIBO_AUTH_ID . "_js",  plugins_url( $js_path,  TRIIBO_AUTH_PLUGIN_FILE ), [ "jquery" ], $js_ver,  false );
-		wp_enqueue_style(  TRIIBO_AUTH_ID . "_css", plugins_url( $css_path, TRIIBO_AUTH_PLUGIN_FILE ), [],           $css_ver, "all" );
+		admin_enqueue_script( TRIIBO_AUTH_ID . "_js",  plugins_url( $js_path,  TRIIBO_AUTH_PLUGIN_FILE ), [ "jquery" ], $js_ver,  false );
+		admin_enqueue_style(  TRIIBO_AUTH_ID . "_css", plugins_url( $css_path, TRIIBO_AUTH_PLUGIN_FILE ), [],           $css_ver, "all" );
 	}
 
 	/**
@@ -203,6 +204,7 @@ class Triibo_Auth
 	{
         require_once( dirname( TRIIBO_AUTH_PLUGIN_FILE ) . "/includes/modals/tal/checkout.php"        );
         require_once( dirname( TRIIBO_AUTH_PLUGIN_FILE ) . "/includes/modals/tal/has_query_param.php" );
+        // require_once( dirname( TRIIBO_AUTH_PLUGIN_FILE ) . "/includes/modals/tal/has_ckt_param.php"   );
 	}
 
     /**
