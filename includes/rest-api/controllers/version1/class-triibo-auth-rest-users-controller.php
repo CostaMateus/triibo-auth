@@ -149,15 +149,14 @@ class Triibo_Auth_Rest_Users_Controller extends WP_REST_Controller
         $cellphone = "+" . preg_replace( "/\D/", "", $cellphone );
 		$cellphone = $cellphone === "+" ? $cellphone : null;
 
-		set_transient( "_taa_triibo_uid",       $uid       );
-		set_transient( "_taa_triibo_cellphone", $cellphone );
-
 		// uid, cellphone, email ausentes na request
 		// redireciona para $url ou para "/", caso $url == null
 		if ( !$uid  && !$cellphone && !$data ) $this->redirect( $url );
 
 		if ( $uid )
 		{
+			set_transient( "_taa_triibo_uid", $uid, 1800 );
+
 			$user = get_users( [
 				"meta_key"   => "_triibo_id",
 				"meta_value" => $uid
@@ -170,10 +169,14 @@ class Triibo_Auth_Rest_Users_Controller extends WP_REST_Controller
 
 				$this->make_login( $user->ID, $url );
 			}
+
+			setcookie( "taa_code", $uid, time() + 60 * 30, "/", parse_url( get_site_url(), PHP_URL_HOST ) );
 		}
 
 		if ( $cellphone )
 		{
+			set_transient( "_taa_triibo_cellphone", $cellphone, 1800 );
+
 			$user = get_users( [
 				"meta_key"   => "triiboId_phone",
 				"meta_value" => $cellphone
@@ -274,7 +277,7 @@ class Triibo_Auth_Rest_Users_Controller extends WP_REST_Controller
 	private function validate_token( string $bearer, string $tkn = null )
 	{
 		$bearer   = ( !$bearer && $tkn ) ? base64_decode( $tkn ) : $bearer;
-		$response = $this->node->validate_token( $bearer );
+		$response = $this->node->validate_token_auth_app( $bearer );
 
 		if ( !$response[ "success" ] || !isset( $response[ "data" ] ) )
 		{
