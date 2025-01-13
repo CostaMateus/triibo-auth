@@ -90,7 +90,7 @@ class Triibo_Auth
 	 * @since 	1.0.0
 	 * @return 	void
 	 */
-	private function enqueue_admin_files()
+	public function enqueue_admin_files()
 	{
 		$js_path  = "assets/js/admin/admin.js";
 		$css_path = "assets/css/admin/admin.css";
