@@ -104,7 +104,7 @@ class Triibo_Auth_Checkout extends Triibo_Auth_Ajax
     public static function get_checkout_url()
     {
         global $woocommerce;
-        return $woocommerce->cart ? $woocommerce->cart->get_checkout_url() : "";
+        return $woocommerce->cart ? wc_get_checkout_url() : "";
     }
 
     /**
