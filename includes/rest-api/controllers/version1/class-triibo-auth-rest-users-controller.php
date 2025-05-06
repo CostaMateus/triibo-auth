@@ -147,7 +147,7 @@ class Triibo_Auth_Rest_Users_Controller extends WP_REST_Controller
 		$cellphone = $request->get_param( "cellphone" ) ?: null;
 
         $cellphone = "+" . preg_replace( "/\D/", "", $cellphone );
-		$cellphone = $cellphone === "+" ? $cellphone : null;
+		$cellphone = $cellphone === "+" ? null : $cellphone;
 
 		// uid, cellphone, email ausentes na request
 		// redireciona para $url ou para "/", caso $url == null
