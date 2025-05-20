@@ -6,10 +6,9 @@
  * @version 1.0.0
  */
 ?>
-<!-- @author Mateus Costa <mateus@costamateus.com.br> -->
-<!-- @since 1.0.0 -->
-
-<?php if ( Triibo_Auth_Checkout::has_query_param() ) : ?>
+    <?php if ( Triibo_Auth_Checkout::has_query_param() ) : ?>
+    <!-- @author Mateus Costa <mateus@costamateus.com.br> -->
+    <!-- @since 1.0.0 -->
     <style>
         html, body {
             margin: 0 !important;

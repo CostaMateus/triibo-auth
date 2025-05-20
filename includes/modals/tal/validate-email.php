@@ -15,7 +15,7 @@
                 <h2>Entre com o código</h2>
 
                 <?php
-                    if ( class_exists( "Triibo_Auth_Checkout" ) && !Triibo_Auth_Checkout::has_query_param() )
+                    if ( class_exists( class: "Triibo_Auth_Checkout" ) && !Triibo_Auth_Checkout::has_query_param() )
                         echo "<span id=\"tal-close-form-validate-email\" aria-hidden=\"true\" >&times;</span>";
                 ?>
             </div>
