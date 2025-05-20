@@ -1,80 +1,80 @@
 <?php
+
+use phpseclib3\File\ASN1\Maps\PrivateDomainName;
 /**
  * REST API Users controller
  * Handles requests to the /users endpoint.
  *
- * @author  Mateus Costa <mateus@costamateus.com.br>
- * @package Triibo_Auth/Classes
+ * @author Mateus Costa <mateus@costamateus.com.br>
+ *
+ * @since 1.0.0
  * @version 1.0.0
  */
-defined( "ABSPATH" ) || exit;
+defined( constant_name: "ABSPATH" ) || exit;
 
 class Triibo_Auth_Rest_Users_Controller extends WP_REST_Controller
 {
 	/**
 	 * Endpoint namespace.
 	 *
-	 * @since   1.0.0
-	 * @var 	string
+	 * @since 1.0.0
+	 *
+	 * @var string
 	 */
 	protected $namespace = "triibo-rest/v1";
 
 	/**
 	 * Route base.
 	 *
-	 * @since   1.0.0
-	 * @var 	string
+	 * @since 1.0.0
+	 *
+	 * @var string
 	 */
 	protected $rest_base = "users";
 
 	/**
 	 * Stores the request.
 	 *
-	 * @since   1.0.0
-	 * @var 	array
+	 * @since 1.0.0
+	 *
+	 * @var WP_REST_Request
 	 */
-	protected $request   = [];
+	protected $request = [];
 
 	/**
 	 * ID of resource.
 	 *
-	 * @since   1.0.0
-	 * @var 	string
+	 * @since 1.0.0
+	 *
+	 * @var string
 	 */
-	protected $id        = TRIIBO_AUTH_APP;
+	protected $id = TRIIBO_AUTH_APP;
 
 	/**
 	 * API Gateway.
 	 *
-	 * @since   1.0.0
-	 * @var 	Triibo_Api_Gateway
+	 * @since 1.0.0
+	 *
+	 * @var Triibo_Api_Gateway
 	 */
 	protected $gate;
 
 	/**
 	 * API Node.
 	 *
-	 * @since   1.0.0
-	 * @var 	Triibo_Api_Node
+	 * @since 1.0.0
+	 *
+	 * @var Triibo_Api_Node
 	 */
 	protected $node;
 
 	/**
-	 * WC Logger.
-	 *
-	 * @since   1.0.0
-	 * @var 	wc_get_logger|WC_Logger
-	 */
-	protected $log;
-
-	/**
 	 * Construct
 	 *
-	 * @since   1.0.0
+	 * @since 1.0.0
 	 */
 	public function __construct()
 	{
-		$this->log  = ( function_exists( "wc_get_logger" ) ) ? wc_get_logger() : new WC_Logger();
 		$this->gate = new Triibo_Api_Gateway();
 		$this->node = new Triibo_Api_Node();
 	}
@@ -82,15 +82,16 @@ class Triibo_Auth_Rest_Users_Controller extends WP_REST_Controller
 	/**
 	 * Register the routes for users.
 	 *
-	 * @since   1.0.0
-	 * @return 	void
+	 * @since 1.0.0
+	 *
+	 * @return void
 	 */
-	public function register_routes()
+	public function register_routes() : void
 	{
 		register_rest_route(
-			$this->namespace,
-			"/$this->rest_base/login",
-			[
+			route_namespace: $this->namespace,
+			route          : "/$this->rest_base/login",
+			args           : [
 				[
 					"methods"             => WP_REST_Server::READABLE, // WP_REST_Server::EDITABLE, // POST, PUT, PATCH
 					"callback"            => [ $this, "process_login" ],
@@ -104,22 +105,33 @@ class Triibo_Auth_Rest_Users_Controller extends WP_REST_Controller
 	/**
 	 * Process login for user
 	 *
-	 * @since   1.1.1 New param $code == uid
-	 * @since   1.1.0 New flow
-     * @since   1.0.1 Log improvement
-	 * @since   1.0.0
-	 * @param 	WP_REST_Request $request
-	 * @return 	void
+	 * @since 1.1.1 	New param $code == uid
+	 * @since 1.1.0 	New flow
+     * @since 1.0.1 	Log improvement
+	 * @since 1.0.0
+	 *
+	 * @param WP_REST_Request $request
+	 *
+	 * @return void
 	 */
-	public function process_login( $request )
+	public function process_login( WP_REST_Request $request ) : void
 	{
-		$url  = $request->get_param( "url" ) ?: null;
+		$url = $request->get_param( key: "url" ) ?: null;
 
-		if ( !$this->status() )
+		$this->log(
+			is_error: true,
+			message : "Request to process_login",
+			context : [ "params" => $request->get_params(), ]
+		);
+
+		if ( ! $this->status() )
 		{
 			wp_clear_auth_cookie();
-			$this->log( "Redirecting only, disabled auth-app module." );
-			$this->redirect( $url );
+
+			$this->log( message: "Redirecting only, disabled auth-app module.", is_error: true );
+
+			$this->redirect( url: $url );
+			return;
 		}
 
 		/**
@@ -128,8 +140,8 @@ class Triibo_Auth_Rest_Users_Controller extends WP_REST_Controller
 		 */
 		if ( $this->gate->env() === false && $this->node->env() === false )
 		{
-			$token  = $request->get_param( "mkt" ) ?: null;
-			$bearer = $request->get_header( "authorization" );
+			$token  = $request->get_param( key: "mkt" ) ?: null;
+			$bearer = $request->get_header( key: "authorization" );
 
 			/**
 			 * ios     - manda apenas bearer
@@ -137,76 +149,106 @@ class Triibo_Auth_Rest_Users_Controller extends WP_REST_Controller
 			 *
 			 * ausencia dos dois é problema
 			 */
-			if ( !$bearer && !$token                       ) $this->redirect( $url );
-			if ( !$this->validate_token( $bearer, $token ) ) $this->redirect( $url );
+			if ( ! $bearer && ! $token )
+			{
+				$this->redirect( url: $url );
+				return;
+			}
+
+			if ( ! $this->validate_token( bearer: $bearer, tkn: $token ) )
+			{
+				$this->redirect( url: $url );
+				return;
+			}
 		}
 
 		$user      = null;
-		$uid       = $request->get_param( "code"      ) ?: null;
-		$data      = $request->get_param( "data"      ) ?: null;
-		$cellphone = $request->get_param( "cellphone" ) ?: null;
+		$uid       = $request->get_param( key: "code"      ) ?: null;
+		$data      = $request->get_param( key: "data"      ) ?: null;
+		$cellphone = $request->get_param( key: "cellphone" ) ?: null;
 
-        $cellphone = "+" . preg_replace( "/\D/", "", $cellphone );
+        $cellphone = "+" . preg_replace( pattern: "/\D/", replacement: "", subject: $cellphone );
 		$cellphone = $cellphone === "+" ? null : $cellphone;
 
 		// uid, cellphone, email ausentes na request
 		// redireciona para $url ou para "/", caso $url == null
-		if ( !$uid  && !$cellphone && !$data ) $this->redirect( $url );
+		if ( ! $uid  && ! $cellphone && ! $data )
+		{
+			$this->redirect( url: $url );
+			return;
+		}
 
 		if ( $uid )
 		{
-			set_transient( "_taa_triibo_uid", $uid, 1800 );
+			set_transient( transient: "_taa_triibo_uid", value: $uid, expiration: 1800 );
 
-			$user = get_users( [
-				"meta_key"   => "_triibo_id",
-				"meta_value" => $uid
-			] );
+			$user = get_users(
+				args: [
+					"meta_key"   => "_triibo_id",
+					"meta_value" => $uid
+				]
+			);
 
             // achou usuario com _triibo_id == uid
-			if ( !empty( $user ) )
+			if ( ! empty( $user ) )
 			{
-				$user = reset( $user );
+				$user = reset( array: $user );
 
-				$this->make_login( $user->ID, $url );
+				$this->make_login( user_id: $user->ID, url: $url );
+				return;
 			}
 
-			setcookie( "taa_code", $uid, time() + 60 * 30, "/", parse_url( get_site_url(), PHP_URL_HOST ) );
+			setcookie(
+				name              : "taa_code",
+				value             : $uid,
+				expires_or_options: time() + 60 * 30,
+				path              : "/",
+				domain            : parse_url( url: get_site_url(), component: PHP_URL_HOST )
+			);
 		}
 
 		if ( $cellphone )
 		{
-			set_transient( "_taa_triibo_cellphone", $cellphone, 1800 );
+			set_transient( transient: "_taa_triibo_cellphone", value: $cellphone, expiration: 1800 );
 
-			$user = get_users( [
-				"meta_key"   => "triiboId_phone",
-				"meta_value" => $cellphone
-			] );
+			$user = get_users(
+				args: [
+					"meta_key"   => "triiboId_phone",
+					"meta_value" => $cellphone
+				]
+			);
 
 			// achou usuario com triiboId_phone
-			if ( !empty( $user ) )
+			if ( ! empty( $user ) )
 			{
-				$user = reset( $user );
+				$user = reset( array: $user );
 
-				delete_user_meta( $user->ID, "triiboId_phone", $cellphone );
-				update_user_meta( $user->ID, "_triibo_phone",  $cellphone );
-				update_user_meta( $user->ID, "_triibo_id",     $uid       );
+				delete_user_meta( user_id: $user->ID, meta_key: "triiboId_phone", meta_value: $cellphone );
+				update_user_meta( user_id: $user->ID, meta_key: "_triibo_phone",  meta_value: $cellphone );
+				update_user_meta( user_id: $user->ID, meta_key: "_triibo_id",     meta_value: $uid       );
 
-				$this->make_login( $user->ID, $url );
+				$this->make_login( user_id: $user->ID, url: $url );
+				return;
 			}
 		}
 
 		if ( $data )
 		{
-			$arr     = explode( "|", $data );
+			$arr     = explode( separator: "|", string: $data );
 			$email   = $arr[ 1 ];
-			$user_id = email_exists( $email );
+			$user_id = email_exists( email: $email );
 
 			// achou usuario pelo email
-			if ( $user_id ) $this->redirect( $url, "taac=acc&email={$email}" );
+			if ( $user_id )
+			{
+				$this->redirect( url: $url, params: "taac=acc&email={$email}" );
+				return;
+			}
 		}
 
 		wp_clear_auth_cookie();
-		$this->redirect( $url );
+		$this->redirect( url: $url );
+		return;
 	}
 
     /**
@@ -214,10 +256,11 @@ class Triibo_Auth_Rest_Users_Controller extends WP_REST_Controller
      * TRUE  for active.
      * FALSE for inactive.
      *
-     * @since   1.0.0
-     * @return 	boolean
+     * @since 1.0.0
+	 *
+     * @return boolean
      */
-	private function status()
+	private function status() : bool
 	{
 		return Triibo_Auth_App::status();
 	}
@@ -225,16 +268,18 @@ class Triibo_Auth_Rest_Users_Controller extends WP_REST_Controller
 	/**
 	 * Redirect user
 	 *
-	 * @since   1.0.0
-	 * @param 	string|null $url
-	 * @param 	string $params
-	 * @return 	void
+	 * @since 1.0.0
+	 *
+	 * @param null|string 	$url
+	 * @param null|string 	$params
+	 *
+	 * @return void
 	 */
-	private function redirect( string $url = null, string $params = null )
+	private function redirect( ?string $url = null, ?string $params = null ) : void
 	{
 		if ( $url )
 		{
-			if ( ( strpos( $url, "?" ) ) !== false && $params )
+			if ( ( strpos( haystack: $url, needle: "?" ) ) !== false && $params )
 				$url .= "&$params";
 			elseif ( $params )
 				$url .= "?$params";
@@ -244,66 +289,88 @@ class Triibo_Auth_Rest_Users_Controller extends WP_REST_Controller
 			$url = home_url();
 		}
 
-		wp_safe_redirect( esc_url_raw( $url ) );
+		wp_safe_redirect( location: esc_url_raw( url: $url ) );
 		exit();
 	}
 
 	/**
 	 * Make login for user
 	 *
-	 * @since   1.0.0
-	 * @param 	int 	$user_id
-	 * @param 	string 	$url
-	 * @return 	void
+	 * @since 1.0.0
+	 *
+	 * @param int 		$user_id
+	 * @param string 	$url
+	 *
+	 * @return void
 	 */
-	private function make_login( int $user_id, string $url )
+	private function make_login( int $user_id, string $url ) : void
 	{
-		clean_user_cache( $user_id );
+		clean_user_cache( user: $user_id );
 		wp_clear_auth_cookie();
-		wp_set_current_user( $user_id );
-		wp_set_auth_cookie( $user_id, true );
-		$this->redirect( $url );
+		wp_set_current_user( id: $user_id );
+		wp_set_auth_cookie( user_id: $user_id, remember: true );
+
+		$this->redirect( url: $url );
 	}
 
 	/**
 	 * Validates the token
 	 *
-     * @since   1.0.1 Log improvement
-	 * @since   1.0.0
-	 * @param 	string $bearer
-	 * @param 	string $tkn
-	 * @return 	void
+     * @since 1.0.1 	Log improvement
+	 * @since 1.0.0
+	 *
+	 * @param string 	$bearer
+	 * @param string 	$tkn
+	 *
+	 * @return bool
 	 */
-	private function validate_token( string $bearer, string $tkn = null )
+	private function validate_token( string $bearer, ?string $tkn = null ) : bool
 	{
-		$bearer   = ( !$bearer && $tkn ) ? base64_decode( $tkn ) : $bearer;
-		$response = $this->node->validate_token_auth_app( $bearer );
+		$bearer   = ( ! $bearer && $tkn ) ? base64_decode( string: $tkn ) : $bearer;
 
-		if ( !$response[ "success" ] || !isset( $response[ "data" ] ) )
-		{
-			$this->log( json_encode( $response ) );
-			return false;
-		}
+		$response = $this->node->validate_token_auth_app( token: $bearer );
 
-		if ( !$response[ "data" ][ "isValid" ] )
+		if ( ! $response[ "success" ] || ! isset( $response[ "data" ] ) || ! $response[ "data" ][ "isValid" ] )
 		{
 			$response[ "data_sent" ] = [ "function" => "validate_token" ];
-			$this->log( json_encode( $response ) );
+
+			$this->log(
+				is_error: true,
+				level   : "error",
+				message : "validate_token : Error validating token",
+				context : [
+					"bearer"   => $bearer,
+					"token"    => $tkn,
+					"response" => $response
+				]
+			);
+
 			return false;
 		}
 
 		return true;
 	}
 
-    /**
-     * Register log
+	/**
+	 * Register log.
+	 *
+	 * @since 2.3.0 	Refactored
+     * @since 1.0.0
      *
-     * @since   1.0.0
-     * @param   string $message
-     * @return  void
-     */
-    private function log( string $message )
-    {
-        $this->log->add( $this->id, $message );
-    }
+	 * @param string 	$level 		The log level (e.g., 'error', 'info')
+	 * @param string 	$message 	The log message
+	 * @param array 	$context 	Additional context for the log message
+	 * @param bool 		$is_error 	Whether the log is an error
+     *
+     * @return void
+	 */
+	private function log( string $level = "info", string $message, array $context = [], bool $is_error = false ) : void
+	{
+		$logger  = ( function_exists( function: "wc_get_logger" ) ) ? wc_get_logger() : new WC_Logger();
+
+		$context = array_merge( $context, [ "source" => $this->id ] );
+
+		if ( $is_error )
+			$logger->$level( $message, $context );
+	}
 }
