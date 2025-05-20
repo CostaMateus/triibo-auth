@@ -1,11 +1,19 @@
-
+<?php
+/**
+ * @author Mateus Costa <mateus@costamateus.com.br>
+ *
+ * @since 1.0.0
+ * @version 1.0.0
+ */
+?>
+    <!-- @author Mateus Costa <mateus@costamateus.com.br> -->
     <div id="tal-modal-form-validate-email" class="woocommerce ta-bg-modal-login ta-d-none" >
         <div class="ta-bg-modal-login-child" >
             <div class="ta-modal-header" >
                 <h2>Entre com o código</h2>
 
                 <?php
-                    if ( class_exists( "Triibo_Auth_Checkout" ) && !Triibo_Auth_Checkout::has_query_param() )
+                    if ( class_exists( class: "Triibo_Auth_Checkout" ) && !Triibo_Auth_Checkout::has_query_param() )
                         echo "<span id=\"tal-close-form-validate-email\" aria-hidden=\"true\" >&times;</span>";
                 ?>
             </div>

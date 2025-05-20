@@ -1,3 +1,12 @@
+<?php
+/**
+ * @author Mateus Costa <mateus@costamateus.com.br>
+ *
+ * @since 1.0.0
+ * @version 1.0.0
+ */
+?>
+    <!-- @author Mateus Costa <mateus@costamateus.com.br> -->
     <hr>
     <p class="ta-title-optin" >
         Entrar com Triibo

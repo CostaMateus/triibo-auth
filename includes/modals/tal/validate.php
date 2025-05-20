@@ -1,11 +1,19 @@
-
+<?php
+/**
+ * @author Mateus Costa <mateus@costamateus.com.br>
+ *
+ * @since 1.0.0
+ * @version 1.0.0
+ */
+?>
+    <!-- @author Mateus Costa <mateus@costamateus.com.br> -->
     <div id="tal-modal-form-validate" class="woocommerce ta-bg-modal-login ta-d-none" >
         <div class="ta-bg-modal-login-child" >
             <div class="ta-modal-header" >
                 <h2>Entre com o código</h2>
 
                 <?php
-                    if ( class_exists( "Triibo_Auth_Checkout" ) && !Triibo_Auth_Checkout::has_query_param() )
+                    if ( class_exists( class: "Triibo_Auth_Checkout" ) && !Triibo_Auth_Checkout::has_query_param() )
                         echo "<span id=\"tal-close-form-validate\" aria-hidden=\"true\" >&times;</span>";
                 ?>
             </div>
@@ -28,7 +36,7 @@
                     ?>
                     <a id="tal-resend" class="ta-bg-transp ta-float-right ta-pointer ta-pb-20 ta-mt-20 ta-mb-0 ta-d-none" onclick="talResendCode( 'sms' )" >Reenviar código via SMS</a>
 
-                    <?php if ( get_option( TRIIBO_AUTH_ID . "_wpp_status" ) ) : ?>
+                    <?php if ( get_option( option: TRIIBO_AUTH_ID . "_wpp_status" ) ) : ?>
                         <a id="tal-resend-wpp" class="ta-bg-transp ta-float-right ta-pointer ta-pb-20 ta-n-mt-20 ta-mb-0 ta-d-none" onclick="talResendCode( 'wpp' )" >Reenviar código via Whatsapp</a>
                     <?php endif; ?>
 

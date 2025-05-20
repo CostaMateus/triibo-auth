@@ -1,4 +1,12 @@
-
+<?php
+/**
+ * @author Mateus Costa <mateus@costamateus.com.br>
+ *
+ * @since 1.0.0
+ * @version 1.0.0
+ */
+?>
+    <!-- @author Mateus Costa <mateus@costamateus.com.br> -->
     <div id="taa-modal-new-password" class="woocommerce ta-bg-modal ta-d-none">
         <div class="ta-bg-modal-child">
             <div class="ta-modal-header">
