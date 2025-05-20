@@ -3,10 +3,10 @@
  * Provide a admin area view for the plugin
  * This file is used to markup the admin-facing aspects of the plugin.
  *
- * @since      1.0.0
- * @package    Triibo_Auth
- * @subpackage Triibo_Auth/Templates
- * @author     Mateus Costa <mateus@costamateus.com.br>
+ * @author Mateus Costa <mateus@costamateus.com.br>
+ *
+ * @since 1.0.0
+ * @version 1.0.0
  */
 ?>
 
@@ -21,8 +21,8 @@
 
 	<form method="POST" action="options.php">
 		<?php
-			settings_fields( TRIIBO_AUTH_ID . "_settings" );
-			do_settings_sections( TRIIBO_AUTH_ID . "_settings" );
+			settings_fields( option_group: TRIIBO_AUTH_ID . "_settings" );
+			do_settings_sections( page: TRIIBO_AUTH_ID . "_settings" );
 			submit_button();
 		?>
 	</form>

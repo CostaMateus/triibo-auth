@@ -2,8 +2,9 @@
 /**
  * The file that defines the plugin class Triibo-Auth-Ajax
  *
- * @author  Mateus Costa <mateus@costamateus.com.br>
- * @package Triibo_Auth/Classes
+ * @author Mateus Costa <mateus@costamateus.com.br>
+ *
+ * @since 1.0.0
  * @version 1.0.0
  */
 defined( "ABSPATH" ) || exit;
@@ -13,54 +14,60 @@ class Triibo_Auth_Ajax
     /**
      * Class id
      *
-     * @since   2.2.1   changed so that the other classes define its value
-     * @since   1.0.0
-     * @var     string
+     * @since 2.2.1     Changed so that the other classes define its value
+     * @since 1.0.0
+     *
+     * @var string
      */
     protected $id;
 
 	/**
 	 * API Gateway.
 	 *
-	 * @since 	1.0.0
-	 * @var     Triibo_Api_Gateway
+	 * @since 1.0.0
+     *
+	 * @var Triibo_Api_Gateway
 	 */
 	protected $gate;
 
 	/**
 	 * API Node.
 	 *
-	 * @since 	2.0.0
-	 * @var     Triibo_Api_Node
+	 * @since 2.0.0
+     *
+	 * @var Triibo_Api_Node
 	 */
 	protected $node;
 
     /**
      * Send types
      *
-	 * @since 	2.0.0
-     * @var     array
+	 * @since 2.0.0
+     *
+     * @var array
      */
     protected $send_types = [ "sms", "wpp" ];
 
 	/**
 	 * WC Logger.
 	 *
-	 * @since 	1.0.0
-	 * @var     wc_get_logger|WC_Logger
+	 * @since 1.0.0
+     *
+	 * @var WC_Logger
 	 */
 	protected $log;
 
     /**
      * Send code by sms
      *
-     * @since   2.1.0 New Node API securityCode
-     * @since   2.0.0 New Node API for send code by sms/wpp
-     * @since   1.0.1 Log improvement
-     * @since   1.0.0
-     * @return  void
+     * @since 2.1.0     New Node API securityCode
+     * @since 2.0.0     New Node API for send code by sms/wpp
+     * @since 1.0.1     Log improvement
+     * @since 1.0.0
+     *
+     * @return never
      */
-    public function auth_sms()
+    public function auth_sms() : never
     {
         /**
          * @since 2.1.0 Added api security code
@@ -71,25 +78,25 @@ class Triibo_Auth_Ajax
         {
             $code     = $response[ "data" ][ "securityCode" ];
 
-            $response = $this->node->auth( "", $code );
+            $response = $this->node->auth( token: "", code: $code );
 
             if ( $response[ "success" ] )
             {
                 $_token    = $response[ "data"  ][ "token" ];
 
-                $type      = ( !in_array( $_POST[ "type" ], $this->send_types ) ) ? "sms" : $_POST[ "type" ];
-                $type      = get_option( TRIIBO_AUTH_ID . "_wpp_status" ) ? $type : "sms";
+                $type      = ( !in_array( needle: $_POST[ "type" ], haystack: $this->send_types ) ) ? "sms" : $_POST[ "type" ];
+                $type      = get_option( option: TRIIBO_AUTH_ID . "_wpp_status" ) ? $type : "sms";
 
                 $cellphone = $_POST[ "cellphone" ];
 
-                $response  = $this->node->auth_code( $_token, [
+                $response  = $this->node->auth_code( token: $_token, data: [
                     "cellphone" => $cellphone,
                     "type"      => $type
                 ] );
 
                 if ( $response[ "success" ] )
                 {
-                    $this->log( "INFO - auth_code : " . json_encode( $response ) );
+                    $this->log( message: "INFO - auth_code : " . json_encode( value: $response ) );
 
                     $return = [
                         "error"   => false,
@@ -98,12 +105,12 @@ class Triibo_Auth_Ajax
                         ]
                     ];
 
-                    echo json_encode( $return );
+                    echo json_encode( value: $return );
                     die();
                 }
                 else
                 {
-                    $this->log( "ERROR - auth_code : " . json_encode( $response ) );
+                    $this->log( message: "ERROR - auth_code : " . json_encode( value: $response ) );
 
                     $err   = $response[ "data" ][ "error" ];
                     $code  = ( $err == "Usuário excedeu o limite de requisições" ) ? 429 : 400;
@@ -117,7 +124,7 @@ class Triibo_Auth_Ajax
             }
             else
             {
-                $this->log( "ERROR - auth : " . json_encode( $response ) );
+                $this->log( message: "ERROR - auth : " . json_encode( value: $response ) );
 
                 $error = [
                     "success" => false,
@@ -129,7 +136,7 @@ class Triibo_Auth_Ajax
         }
         else
         {
-            $this->log( "ERROR - auth_security : " . json_encode( $response ) );
+            $this->log( message: "ERROR - auth_security : " . json_encode( value: $response ) );
 
             $error = [
                 "success" => false,
@@ -139,19 +146,20 @@ class Triibo_Auth_Ajax
             ];
         }
 
-        echo json_encode( $error );
+        echo json_encode( value: $error );
         die();
     }
 
     /**
      * Validates code sent by sms
      *
-     * @since   2.2.0 Change validation to Node API
-     * @since   1.0.1 Log improvement
-     * @since   1.0.0
-     * @return  void
+     * @since 2.2.0     Change validation to Node API
+     * @since 1.0.1     Log improvement
+     * @since 1.0.0
+     *
+     * @return never
      */
-    public function validate_sms()
+    public function validate_sms() : never
     {
         $data     = [
             "code"      => $_POST[ "code"          ],
@@ -159,7 +167,7 @@ class Triibo_Auth_Ajax
             "cellphone" => $_POST[ "cellphone"     ],
         ];
 
-        $response = $this->node->validate_sms( $data );
+        $response = $this->node->validate_sms( data: $data );
 
         if ( $response[ "success" ] )
         {
@@ -171,16 +179,16 @@ class Triibo_Auth_Ajax
                 "error"   => null,
             ];
 
-            echo json_encode( $success );
+            echo json_encode( value: $success );
             exit();
         }
 
-        $this->log( "ERROR - validate_sms : " . json_encode( $response ) );
+        $this->log( message: "ERROR - validate_sms : " . json_encode( value: $response ) );
 
         $error = [
             "success" => false,
             "error"   => [
-                "errorCode" => $this->get_error_code( $response[ "data" ][ "error" ] ),
+                "errorCode" => $this->get_error_code( error: $response[ "data" ][ "error" ] ),
                 "message"   => $response[ "data" ][ "error" ],
             ],
             "data"    => [
@@ -188,24 +196,25 @@ class Triibo_Auth_Ajax
             ]
         ];
 
-        echo json_encode( $error );
+        echo json_encode( value: $error );
         exit();
     }
 
     /**
      * Get user info triibo
      *
-     * @since   1.1.0 New flow
-     * @since   1.0.1 Log improvement
-     * @since   1.0.0
-     * @return  void
+     * @since 1.1.0     New flow
+     * @since 1.0.1     Log improvement
+     * @since 1.0.0
+     *
+     * @return never
      */
-    public function user_info()
+    public function user_info() : never
     {
         $error     = true;
         $cellphone = $_POST[ "cellphone" ];
 
-        $response  = $this->gate->user_info( $cellphone );
+        $response  = $this->gate->user_info( data: $cellphone );
 
         if ( !$response[ "success" ] || ( isset( $response[ "data" ] ) && !$response[ "data" ][ "success" ] ) )
         {
@@ -214,14 +223,14 @@ class Triibo_Auth_Ajax
                 "cellphone" => $cellphone
             ];
 
-            $this->log( json_encode( $response ) );
+            $this->log( message: json_encode( value: $response ) );
         }
 
         $data      = $response[ "data" ];
 
         if ( empty( $data[ "error" ] ) && empty( $data[ "success" ][ "userInfo" ] ) )
         {
-            $alert  = reset( $data[ "alert" ] );
+            $alert  = reset( array: $data[ "alert" ] );
             $result = [
                 "success" => false,
                 "error"   => [
@@ -243,9 +252,9 @@ class Triibo_Auth_Ajax
         else
         {
             $uid       = $response[ "data" ][ "success" ][ "userInfo" ][ "uId" ];
-            $cellphone = "+" . preg_replace( "/\D/", "", $cellphone );
+            $cellphone = "+" . preg_replace( pattern: "/\D/", replacement: "", subject: $cellphone );
 
-            $user      = get_users( [
+            $user      = get_users( args: [
                 "meta_key"   => "_triibo_id",
                 "meta_value" => $uid
             ] );
@@ -253,17 +262,17 @@ class Triibo_Auth_Ajax
             // achou usuario com _triibo_id == uid
             if ( !empty( $user ) )
             {
-                $user     = reset( $user );
+                $user     = reset( array: $user );
                 $email    = $user->user_email;
 
-                delete_user_meta( $user->ID, "triiboId_phone", $cellphone );
-                update_user_meta( $user->ID, "_triibo_phone",  $cellphone );
+                delete_user_meta( user_id: $user->ID, meta_key: "triiboId_phone", meta_value: $cellphone );
+                update_user_meta( user_id: $user->ID, meta_key: "_triibo_phone",  meta_value: $cellphone );
 
-                $result   = $this->login_by_triibo( "id", $user->ID );
+                $result   = $this->login_by_triibo( field: "id", value: $user->ID );
             }
             else
             {
-                $user = get_users( [
+                $user = get_users( args: [
                     "meta_key"   => "triiboId_phone",
                     "meta_value" => $cellphone
                 ] );
@@ -271,10 +280,10 @@ class Triibo_Auth_Ajax
                 // achou usuario com triiboId_phone
                 if ( !empty( $user ) )
                 {
-                    $user     = reset( $user );
+                    $user     = reset( array: $user );
                     $email    = $user->user_email;
 
-                    $response = $this->create_or_update_user_triibo( $cellphone, $email, $user->first_name, $user->nickname );
+                    $response = $this->create_or_update_user_triibo( cellphone: $cellphone, email: $email, name: $user->first_name, nick: $user->nickname );
 
                     if ( !$response[ "success" ] || ( isset( $response[ "data" ] ) && !$response[ "data" ][ "success" ] ) )
                     {
@@ -284,16 +293,16 @@ class Triibo_Auth_Ajax
                             "email"     => $email,
                         ];
 
-                        $this->log( json_encode( $response ) );
+                        $this->log( message: json_encode( value: $response ) );
                     }
 
                     $uid      = ( $uid == $response[ "data" ][ "success" ][ "newUserInfo" ][ "uId" ] ) ? $uid : $response[ "data" ][ "success" ][ "userInfo" ][ "uId" ];
 
-                    delete_user_meta( $user->ID, "triiboId_phone", $cellphone );
-                    update_user_meta( $user->ID, "_triibo_phone",  $cellphone );
-                    update_user_meta( $user->ID, "_triibo_id",     $uid       );
+                    delete_user_meta( user_id: $user->ID, meta_key: "triiboId_phone", meta_value: $cellphone );
+                    update_user_meta( user_id: $user->ID, meta_key: "_triibo_phone",  meta_value: $cellphone );
+                    update_user_meta( user_id: $user->ID, meta_key: "_triibo_id",     meta_value: $uid       );
 
-                    $result   = $this->login_by_triibo( "id", $user->ID );
+                    $result   = $this->login_by_triibo( field: "id", value: $user->ID );
                 }
                 else
                 {
@@ -316,36 +325,36 @@ class Triibo_Auth_Ajax
                 "cellphone" => $cellphone
             ];
 
-            $this->log( json_encode( $log ) );
+            $this->log( message: json_encode( value: $log ) );
         }
 
-        echo json_encode( $result );
+        echo json_encode( value: $result );
         die();
     }
 
     /**
      * Create user triibo
      *
-     * @since   1.1.0 New flow. Non-existent user no longer validates email
-     * @since   1.0.1 Log improvement
-     * @since   1.0.0
-     * @return  void
+     * @since 1.1.0     New flow. Non-existent user no longer validates email
+     * @since 1.0.1     Log improvement
+     * @since 1.0.0
+     *
+     * @return never
      */
-    public function find_user()
+    public function find_user() : never
     {
         $cellphone = $_POST[ "cellphone" ];
         $email     = $_POST[ "email"     ];
         $passw     = $_POST[ "password"  ];
         $terms     = $_POST[ "terms"     ];
 
-        $user      = get_user_by( "email", $email );
+        $user      = get_user_by( field: "email", value: $email );
 
         if ( !empty( $user ) )
         {
-
-            if ( $user && wp_check_password( $passw, $user->data->user_pass, $user->ID ) )
+            if ( $user && wp_check_password( password: $passw, hash: $user->data->user_pass, user_id: $user->ID ) )
             {
-                $response  = $this->create_or_update_user_triibo( $cellphone, $email, $user->first_name, $user->nickname, $terms );
+                $response  = $this->create_or_update_user_triibo( cellphone: $cellphone, email: $email, name: $user->first_name, nick: $user->nickname, terms: $terms );
 
                 if ( !$response[ "success" ] || ( isset( $response[ "data" ] ) && !$response[ "data" ][ "success" ] ) )
                 {
@@ -355,17 +364,18 @@ class Triibo_Auth_Ajax
                         "email"     => $email,
                     ];
 
-                    $this->log( json_encode( $response ) );
+                    $this->log( message: json_encode( value: $response ) );
                 }
 
-                $cellphone = "+" . preg_replace( "/\D/", "", $cellphone );
+                $cellphone = "+" . preg_replace( pattern: "/\D/", replacement: "", subject: $cellphone );
 
-                delete_user_meta( $user->ID, "triiboId_phone", $cellphone );
-                update_user_meta( $user->ID, "_triibo_phone",  $cellphone );
+                delete_user_meta( user_id: $user->ID, meta_key: "triiboId_phone", meta_value: $cellphone );
+                update_user_meta( user_id: $user->ID, meta_key: "_triibo_phone",  meta_value: $cellphone );
 
-                if ( isset( $response[ "uid" ] ) ) update_user_meta( $user->ID, "_triibo_id", $response[ "uid" ] );
+                if ( isset( $response[ "uid" ] ) )
+                    update_user_meta( user_id: $user->ID, meta_key: "_triibo_id", meta_value: $response[ "uid" ] );
 
-                $result    = $this->login_by_triibo( "id", $user->ID );
+                $result    = $this->login_by_triibo( field: "id", value: $user->ID );
             }
             else
             {
@@ -384,7 +394,7 @@ class Triibo_Auth_Ajax
              * @since 1.1.0
              * Create marketplace account directly
              */
-            $response = $this->create_or_update_user_triibo( $cellphone, $email, "", "", $terms );
+            $response = $this->create_or_update_user_triibo( cellphone: $cellphone, email: $email, name: "", nick: "", terms: $terms );
 
             if ( !$response[ "success" ] || ( isset( $response[ "data" ] ) && !$response[ "data" ][ "success" ] ) )
             {
@@ -394,30 +404,30 @@ class Triibo_Auth_Ajax
                     "email"     => $email,
                 ];
 
-                $this->log( json_encode( $response ) );
+                $this->log( message: json_encode( value: $response ) );
             }
 
             $uid      = isset( $response[ "uid" ] ) ? $response[ "uid" ] : null;
-            $result   = $this->create_user_marketplace( $uid, $cellphone, $email, $passw );
+            $result   = $this->create_user_marketplace( uid: $uid, cellphone: $cellphone, email: $email, passw: $passw );
         }
 
-        echo json_encode( $result );
+        echo json_encode( value: $result );
         die();
     }
 
     /**
      * Create user triibo
      *
-     * @since   1.0.1 Log improvement
-     * @since   1.0.0
-     * @return  void
+     * @since 1.0.1     Log improvement
+     * @since 1.0.0
+     * @return never
      */
-    public function add_triibo_id()
+    public function add_triibo_id() : never
     {
         $cellphone = $_POST[ "cellphone" ];
         $user      = wp_get_current_user();
 
-        $response  = $this->create_or_update_user_triibo( $cellphone, $user->user_email, $user->first_name, $user->nickname );
+        $response  = $this->create_or_update_user_triibo( cellphone: $cellphone, email: $user->user_email, name: $user->first_name, nick: $user->nickname );
 
         if ( !$response[ "success" ] || ( isset( $response[ "data" ] ) && !$response[ "data" ][ "success" ] ) )
         {
@@ -426,65 +436,71 @@ class Triibo_Auth_Ajax
                 "cellphone" => $cellphone
             ];
 
-            $this->log( json_encode( $response ) );
+            $this->log( message: json_encode( value: $response ) );
         }
 
-        $cellphone = "+" . preg_replace( "/\D/", "", $cellphone );
+        $cellphone = "+" . preg_replace( pattern: "/\D/", replacement: "", subject: $cellphone );
 
-        delete_user_meta( $user->ID, "triiboId_phone", $cellphone );
-        update_user_meta( $user->ID, "_triibo_phone",  $cellphone );
+        delete_user_meta( user_id: $user->ID, meta_key: "triiboId_phone", meta_value: $cellphone );
+        update_user_meta( user_id: $user->ID, meta_key: "_triibo_phone",  meta_value: $cellphone );
 
-        if ( isset( $response[ "uid" ] ) ) update_user_meta( $user->ID, "_triibo_id", $response[ "uid" ] );
+        if ( isset( $response[ "uid" ] ) )
+            update_user_meta( user_id: $user->ID, meta_key: "_triibo_id", meta_value: $response[ "uid" ] );
 
-        echo json_encode( [ "success"  => true ] );
+        echo json_encode( value: [ "success"  => true ] );
         die();
     }
 
     /**
      * Create or update user triibo
      *
-     * @since   2.2.0   Add get_user(Node) after change of update_user_mkt (Gateway)
-     * @since   1.1.0   Change 'Null Coalescing Operator' to 'Elvis Operator'
-     * @since   1.0.0
-     * @param   string  $cellphone
-     * @param   string  $email
-     * @param   string  $name
-     * @param   string  $nick
-     * @param   bool    $terms
-     * @return  string
+     * @since 2.2.0     Add get_user(Node) after change of update_user_mkt (Gateway)
+     * @since 1.1.0     Change 'Null Coalescing Operator' to 'Elvis Operator'
+     * @since 1.0.0
+     *
+     * @param string    $cellphone
+     * @param string    $email
+     * @param string    $name
+     * @param string    $nick
+     * @param null|bool $terms
+     *
+     * @return array
      */
-    private function create_or_update_user_triibo( string $cellphone, string $email, string $name = "", string $nick = "", bool $terms = null )
+    private function create_or_update_user_triibo( string $cellphone, string $email, string $name = "", string $nick = "", ?bool $terms = null ) : array
     {
-        $name     = $name ?: reset( explode( "@", $email ) );
+        $name     = $name ?: reset( array: explode( separator: "@", string: $email ) );
         $nick     = $nick ?: $name;
 
-        $response = $this->node->get_user( $cellphone );
+        $response = $this->node->get_user( cellphone: $cellphone );
 
-        if ( !$response[ "success" ] ) return $response;
+        if ( !$response[ "success" ] )
+            return $response;
 
         $user     = $response[ "data" ][ "userInfo" ][ "user" ];
 
-        return $this->gate->update_user_mkt( $user, $email, "UPDATE", $name, $nick, $terms );
+        return $this->gate->update_user_mkt( user: $user, email: $email, action: "UPDATE", name: $name, nick: $nick, terms: $terms );
     }
 
     /**
      * Create marketplace user
      *
-     * @since   1.0.0
-     * @param   string|null $uid
-     * @param   string      $cellphone
-     * @param   string      $email
-     * @param   string      $passw
-     * @return  void
+     * @since 1.0.0
+     *
+     * @param string|null   $uid
+     * @param string        $cellphone
+     * @param string        $email
+     * @param string        $passw
+     *
+     * @return array
      */
-    private function create_user_marketplace( string $uid, string $cellphone, string $email, string $passw )
+    private function create_user_marketplace( string $uid, string $cellphone, string $email, string $passw ) : array
     {
-        $cellphone = "+" . preg_replace( "/\D/", "", $cellphone );
-        $name      = reset( explode( "@", $email ) );
+        $cellphone = "+" . preg_replace( pattern: "/\D/", replacement: "", subject: $cellphone );
+        $name      = reset( array: explode( separator: "@", string: $email ) );
 
         $user_id   = wp_insert_user( [
             "user_login"    => $uid ?? $email,
-            "user_pass"     => wp_hash_password( "Triibo@" . date( "Y" ) . "!" ),
+            "user_pass"     => wp_hash_password( password: "Triibo@" . date( format: "Y" ) . "!" ),
             "user_nicename" => $name,
             "user_email"    => $email,
             "display_name"  => $name,
@@ -493,45 +509,50 @@ class Triibo_Auth_Ajax
             "last_name"     => "",
         ] );
 
-        if ( !is_wp_error( $user_id ) )
+        if ( !is_wp_error( thing: $user_id ) )
         {
-            wp_set_password( $passw, $user_id );
+            wp_set_password( password: $passw, user_id: $user_id );
 
             // add_user_meta( $user_id, "triiboId_phone", $cellphone );
-            add_user_meta( $user_id, "_triibo_phone", $cellphone );
+            add_user_meta( user_id: $user_id, meta_key: "_triibo_phone", meta_value: $cellphone );
 
-            if ( $uid ) add_user_meta( $user_id, "_triibo_id", $uid );
+            if ( $uid )
+                add_user_meta( user_id: $user_id, meta_key: "_triibo_id", meta_value: $uid );
 
-            $user = get_user_by( "id", $user_id );
+            $user = get_user_by( field: "id", value: $user_id );
 
-            $user->set_role( "subscriber" );
-            if ( class_exists( "WooCommerce" ) ) $user->set_role( "customer" );
+            $user->set_role( role: "subscriber" );
+
+            if ( class_exists( class: "WooCommerce" ) )
+                $user->set_role( role: "customer" );
         }
 
-        return $this->login_by_triibo( "id", $user_id );
+        return $this->login_by_triibo( field: "id", value: $user_id );
     }
 
     /**
      * Log in to Mkt, according to $field passed
      *
-     * @since   1.0.0
-     * @param   string      $field
-     * @param   string|int  $value
-     * @return  array
+     * @since 1.0.0
+     *
+     * @param string        $field
+     * @param string|int    $value
+     *
+     * @return array
      */
-    private function login_by_triibo( string $field, string $value )
+    private function login_by_triibo( string $field, string|int $value ) : array
     {
-        $user = get_user_by( $field, $value );
+        $user = get_user_by( field: $field, value: $value );
 
-        if ( !is_wp_error( $user ) )
+        if ( !is_wp_error( thing: $user ) )
         {
             wp_clear_auth_cookie();
-            wp_set_current_user( $user->ID );
-            wp_set_auth_cookie( $user->ID, true );
+            wp_set_current_user( id: $user->ID );
+            wp_set_auth_cookie( user_id: $user->ID, remember: true );
 
             $result = [
                 "success"  => true,
-                "redirect" => home_url( "/my-account" ),
+                "redirect" => home_url( path: "/my-account" ),
             ];
         }
         else
@@ -551,51 +572,47 @@ class Triibo_Auth_Ajax
     /**
      * Register log
      *
-     * @since   1.0.0
-     * @param   string $message
-     * @return  void
+     * @since 1.0.0
+     *
+     * @param string    $message
+     *
+     * @return void
      */
-    private function log( string $message )
+    private function log( string $message ) : void
     {
-        $this->log->add( $this->id, $message );
+        $this->log->add( handle: $this->id, message: $message );
     }
 
     /**
      * Get erro code by message
      *
-     * @since   2.2.0
-     * @param   int     $error
-     * @return  string
+     * @since 2.2.0
+     *
+     * @param string  $error
+     *
+     * @return int
      */
-    private function get_error_code( string $error )
+    private function get_error_code( string $error ) : int
     {
-        switch ( $error )
+        return match ( $error )
         {
-            case "Invalid code!":
-                return 1006;
-            break;
-
-            case "Code expired! - errorCode: 1007":
-                return 1007;
-            break;
-
-            case "Invalid cellphone! - errorCode: 1009":
-                return 1009;
-            break;
-
-            default:
-                return 5000;
-        }
+            "Invalid code!"                        => 1006,
+            "Code expired! - errorCode: 1007"      => 1007,
+            "Invalid cellphone! - errorCode: 1009" => 1009,
+            default                                => 5000,
+        };
     }
 
     /**
      * Set the id
      *
-     * @since   2.2.1
-     * @param   string  $id
-     * @return  void
+     * @since 2.2.1
+     *
+     * @param string    $id
+     *
+     * @return void
      */
-    public function set_id( string $id = TRIIBO_AUTH_ID )
+    public function set_id( string $id = TRIIBO_AUTH_ID ) : void
     {
         $this->id = $id;
     }

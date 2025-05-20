@@ -1,5 +1,9 @@
 == Changelog ==
 
+= 2.3.0 - 2025/05/16 =
+
+- Ajuste de requerimentos
+
 = 2.2.1 - 2024/06/19 =
 
 - Ajuste no enqueue do script/style do admin

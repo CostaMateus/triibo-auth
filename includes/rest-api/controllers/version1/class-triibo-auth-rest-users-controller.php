@@ -1,6 +1,5 @@
 <?php
 
-use phpseclib3\File\ASN1\Maps\PrivateDomainName;
 /**
  * REST API Users controller
  * Handles requests to the /users endpoint.
@@ -110,7 +109,7 @@ class Triibo_Auth_Rest_Users_Controller extends WP_REST_Controller
      * @since 1.0.1 	Log improvement
 	 * @since 1.0.0
 	 *
-	 * @param WP_REST_Request $request
+	 * @param WP_REST_Request 	$request
 	 *
 	 * @return void
 	 */
