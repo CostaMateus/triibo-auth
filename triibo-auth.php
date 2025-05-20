@@ -7,6 +7,7 @@
  * Author URI: 				https://costamateus.com.br/
  * Version: 				2.3.0
  * Text Domain: 			triibo-auth
+ * Requires Plugins:        triibo-api-services, woocommerce
  * Requires at least: 		6.6
  * Requires PHP: 			8.0
  * WC requires at least: 	8.7.1
@@ -25,7 +26,7 @@ define( constant_name: "TRIIBO_AUTH_ID",           value: "triibo-auth"         
 define( constant_name: "TRIIBO_AUTH_APP",          value: "triibo-auth-app"      );
 define( constant_name: "TRIIBO_AUTH_CHECKOUT",     value: "triibo-auth-checkout" );
 define( constant_name: "TRIIBO_AUTH_LOGIN",        value: "triibo-auth-login"    );
-define( constant_name: "TRIIBO_AUTH_DOMAIN",       value: "triibo_auth"          );
+define( constant_name: "TRIIBO_AUTH_DOMAIN",       value: "triibo-auth"          );
 define( constant_name: "TRIIBO_AUTH_VERSION",      value: "2.3.0"                );
 define( constant_name: "TRIIBO_AUTH_PLUGIN_FILE",  value: __FILE__               );
 
