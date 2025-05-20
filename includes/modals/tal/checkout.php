@@ -1,7 +1,17 @@
+<?php
+/**
+ * @author Mateus Costa <mateus@costamateus.com.br>
+ *
+ * @since 1.0.0
+ * @version 1.0.0
+ */
+?>
+<!-- @author Mateus Costa <mateus@costamateus.com.br> -->
+<!-- @since 1.0.0 -->
 
 <div id="tal-modal-form-auth-ckt" class="woocommerce ta-bg-modal-ckt <?php echo ( Triibo_Auth_Checkout::has_query_param() ) ? "" : "ta-d-none"; ?>" >
     <div class="ta-bg-modal-login-child" >
-        <img id="tal-logo" style="width:40%;vertical-align:middle;" alt="" loading="lazy" class="ta-mx-auto" src="<?php echo apply_filters( "martfury_site_logo", martfury_get_option( "logo" )); ?>" >
+        <img id="tal-logo" style="width:40%;vertical-align:middle;" alt="" loading="lazy" class="ta-mx-auto" src="<?php echo apply_filters( hook_name: "martfury_site_logo", value: martfury_get_option( name: "logo" )); ?>" >
         <div class="ta-modal-header" >
             <h5 style="font-weight:400 !important; font-size: 15px !important;" >
                 <?php echo Triibo_Auth_Checkout::get_disclaimer(); ?>

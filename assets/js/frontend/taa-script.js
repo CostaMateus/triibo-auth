@@ -1,4 +1,10 @@
-( function ( $ ) {
+( function ( $ )
+{
+    /**
+     * @author Mateus Costa <mateus@costamateus.com.br>
+     *
+     * @since 1.0.0
+     */
 
     "use strict";
 

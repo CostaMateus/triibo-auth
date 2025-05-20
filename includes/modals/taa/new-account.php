@@ -1,7 +1,17 @@
+<?php
+/**
+ * @author Mateus Costa <mateus@costamateus.com.br>
+ *
+ * @since 1.0.0
+ * @version 1.0.0
+ */
+?>
+    <!-- @author Mateus Costa <mateus@costamateus.com.br> -->
+    <!-- @since 1.0.0 -->
 
-    <div id="taa-modal-new-account" class="woocommerce ta-bg-modal ta-d-none">
-        <div class="ta-bg-modal-child">
-            <div class="ta-modal-header">
+    <div id="taa-modal-new-account" class="woocommerce ta-bg-modal ta-d-none" >
+        <div class="ta-bg-modal-child" >
+            <div class="ta-modal-header" >
                 <h2>Entre com sua conta</h2>
                 <span id="taa-close-new-account" aria-hidden="true" onclick="taaCloseModal(this)" >&times;</span>
             </div>
@@ -41,10 +51,10 @@
 
                 <p class="woocommerce-form-row woocommerce-form-row--wide form-row form-row-wide ta-my-0" >
                     <a id="taa-new-lost-pass"   class="ta-bg-transp ta-float-right ta-pointer ta-pb-20 ta-mb-0" onclick="closeModal()"
-                        href="<?= esc_url( home_url( "/minha-conta/lost-password/" ) ); ?>" target="_blank" >Esqueceu a senha?</a>
+                        href="<?= esc_url( url: home_url( path: "/minha-conta/lost-password/" ) ); ?>" target="_blank" >Esqueceu a senha?</a>
                 </p>
 
-                <button id="taa-btn-form-new-account" type="submit" class="woocommerce-Button button ta-button ta-set-spin" >Entrar <div class="ta-d-none ta-spin-load"></div></button>
+                <button id="taa-btn-form-new-account" type="submit" class="woocommerce-Button button ta-button ta-set-spin" >Entrar <div class="ta-d-none ta-spin-load" ></div></button>
             </form>
         </div>
     </div>
