@@ -119,6 +119,7 @@ class Triibo_Auth_Rest_Users_Controller extends WP_REST_Controller
 
 		$this->log(
 			is_error: true,
+			level   : "info",
 			message : "Request to process_login",
 			context : [ "params" => $request->get_params(), ]
 		);
@@ -127,7 +128,12 @@ class Triibo_Auth_Rest_Users_Controller extends WP_REST_Controller
 		{
 			wp_clear_auth_cookie();
 
-			$this->log( message: "Redirecting only, disabled auth-app module.", is_error: true );
+			$this->log(
+				is_error: true,
+				level   : "info",
+				message : "Redirecting only, disabled auth-app module.",
+				context : []
+			);
 
 			$this->redirect( url: $url );
 			return;
