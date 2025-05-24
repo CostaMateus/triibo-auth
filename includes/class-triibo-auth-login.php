@@ -26,22 +26,17 @@ class Triibo_Auth_Login extends Triibo_Auth_Ajax
 
         $this->set_id( id: TRIIBO_AUTH_LOGIN );
 
-        add_filter( hook_name: "gettext",                                callback: [ $this, "change_text_form_login" ], priority: 20 );
-        add_action( hook_name: "woocommerce_login_form_start",           callback: [ $this, "add_text_form_login"    ] );
-        add_action( hook_name: "woocommerce_login_form_end",             callback: [ $this, "add_form_login"         ] );
-
-        add_action( hook_name: "wp_ajax_tal_auth_sms",                   callback: [ $this, "auth_sms"     ] );
-        add_action( hook_name: "wp_ajax_nopriv_tal_auth_sms",            callback: [ $this, "auth_sms"     ] );
-        add_action( hook_name: "wp_ajax_tal_validate_sms",               callback: [ $this, "validate_sms" ] );
-        add_action( hook_name: "wp_ajax_nopriv_tal_validate_sms",        callback: [ $this, "validate_sms" ] );
-        // add_action( "wp_ajax_tal_validate_code_email",        callback: [ $this, "validate_code_email"    ]        );
-        // add_action( "wp_ajax_nopriv_tal_validate_code_email", callback: [ $this, "validate_code_email"    ]        );
-        add_action( hook_name: "wp_ajax_tal_user_info",                  callback: [ $this, "user_info" ] );
-        add_action( hook_name: "wp_ajax_nopriv_tal_user_info",           callback: [ $this, "user_info" ] );
-        // add_action( "wp_ajax_tal_resend_email_code",          callback: [ $this, "resend_email_code"      ]        );
-        // add_action( "wp_ajax_nopriv_tal_resend_email_code",   callback: [ $this, "resend_email_code"      ]        );
-        add_action( hook_name: "wp_ajax_tal_find_user",                  callback: [ $this, "find_user" ] );
-        add_action( hook_name: "wp_ajax_nopriv_tal_find_user",           callback: [ $this, "find_user" ] );
+        add_filter( hook_name: "gettext",                         callback: [ $this, "change_text_form_login" ], priority: 20 );
+        add_action( hook_name: "woocommerce_login_form_start",    callback: [ $this, "add_text_form_login"    ] );
+        add_action( hook_name: "woocommerce_login_form_end",      callback: [ $this, "add_form_login"         ] );
+        add_action( hook_name: "wp_ajax_tal_auth_sms",            callback: [ $this, "auth_sms"               ] );
+        add_action( hook_name: "wp_ajax_nopriv_tal_auth_sms",     callback: [ $this, "auth_sms"               ] );
+        add_action( hook_name: "wp_ajax_tal_validate_sms",        callback: [ $this, "validate_sms"           ] );
+        add_action( hook_name: "wp_ajax_nopriv_tal_validate_sms", callback: [ $this, "validate_sms"           ] );
+        add_action( hook_name: "wp_ajax_tal_user_info",           callback: [ $this, "user_info"              ] );
+        add_action( hook_name: "wp_ajax_nopriv_tal_user_info",    callback: [ $this, "user_info"              ] );
+        add_action( hook_name: "wp_ajax_tal_find_user",           callback: [ $this, "find_user"              ] );
+        add_action( hook_name: "wp_ajax_nopriv_tal_find_user",    callback: [ $this, "find_user"              ] );
     }
 
     /**

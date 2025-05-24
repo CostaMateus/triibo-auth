@@ -259,7 +259,6 @@ class Triibo_Auth_Ajax
                 "meta_value" => $uid
             ] );
 
-            // achou usuario com _triibo_id == uid
             if ( !empty( $user ) )
             {
                 $user     = reset( array: $user );
@@ -277,7 +276,6 @@ class Triibo_Auth_Ajax
                     "meta_value" => $cellphone
                 ] );
 
-                // achou usuario com triiboId_phone
                 if ( !empty( $user ) )
                 {
                     $user     = reset( array: $user );
@@ -513,7 +511,6 @@ class Triibo_Auth_Ajax
         {
             wp_set_password( password: $passw, user_id: $user_id );
 
-            // add_user_meta( $user_id, "triiboId_phone", $cellphone );
             add_user_meta( user_id: $user_id, meta_key: "_triibo_phone", meta_value: $cellphone );
 
             if ( $uid )

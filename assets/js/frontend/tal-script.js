@@ -198,7 +198,6 @@
             },
             success: function( data ) {
                 let result = JSON.parse( data );
-                // console.log( result );
 
                 talEnableBtns();
 
@@ -290,7 +289,6 @@
             },
             success: function( data ) {
                 let result = JSON.parse( data );
-                // console.log( result );
 
                 if ( !result.success )
                 {
@@ -359,7 +357,6 @@
             },
             success: function( data ) {
                 let result = JSON.parse( data );
-                // console.log( result );
 
                 if ( !result.success )
                 {
@@ -433,15 +430,12 @@
             },
             success: function( data ) {
                 let result = JSON.parse( data );
-                // console.log( result );
 
                 if ( !result.success )
                 {
                     talEnableBtns();
 
                     $( "#tal-modal-form-load" ).addClass( "ta-d-none" );
-
-                    console.log( result );
                 }
                 else
                 {
@@ -514,7 +508,6 @@
             },
             success: function( data ) {
                 let result = JSON.parse( data );
-                // console.log( result );
 
                 talEnableBtns();
 

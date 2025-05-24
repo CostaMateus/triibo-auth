@@ -59,17 +59,12 @@ class Triibo_Auth_App
 		$this->gate = new Triibo_Api_Gateway();
 		$this->node = new Triibo_Api_Node();
 
-		add_action( hook_name: "wp_footer",                            callback: [ $this, "add_modals"        ] );
-		add_action( hook_name: "wp_footer",                            callback: [ $this, "add_script"        ] );
-
-        // add_action( "wp_ajax_taa_validate_code",            [ $this, "validate_code"     ] );
-        // add_action( "wp_ajax_nopriv_taa_validate_code",     [ $this, "validate_code"     ] );
-        add_action( hook_name: "wp_ajax_taa_new_account",              callback: [ $this, "new_account"       ] );
-        add_action( hook_name: "wp_ajax_nopriv_taa_new_account",       callback: [ $this, "new_account"       ] );
-        add_action( hook_name: "wp_ajax_taa_validate_account",         callback: [ $this, "validate_account"  ] );
-        add_action( hook_name: "wp_ajax_nopriv_taa_validate_account",  callback: [ $this, "validate_account"  ] );
-        // add_action( "wp_ajax_taa_resend_email_code",        [ $this, "resend_email_code" ] );
-        // add_action( "wp_ajax_nopriv_taa_resend_email_code", [ $this, "resend_email_code" ] );
+		add_action( hook_name: "wp_footer",                           callback: [ $this, "add_modals"       ] );
+		add_action( hook_name: "wp_footer",                           callback: [ $this, "add_script"       ] );
+        add_action( hook_name: "wp_ajax_taa_new_account",             callback: [ $this, "new_account"      ] );
+        add_action( hook_name: "wp_ajax_nopriv_taa_new_account",      callback: [ $this, "new_account"      ] );
+        add_action( hook_name: "wp_ajax_taa_validate_account",        callback: [ $this, "validate_account" ] );
+        add_action( hook_name: "wp_ajax_nopriv_taa_validate_account", callback: [ $this, "validate_account" ] );
     }
 
     /**
@@ -143,12 +138,10 @@ class Triibo_Auth_App
         $cellphone = get_transient( transient: "_taa_triibo_cellphone" );
         $user      = get_user_by( field: "email", value: $email );
 
-        // valida se conta existe e se a senha está correta
         if ( $user )
         {
             if ( wp_check_password( password: $pass, hash: $user->data->user_pass, user_id: $user->ID ) )
             {
-                // add_user_meta( $user->ID, "triiboId_phone", "+$cellphone" );
                 add_user_meta( user_id: $user->ID, meta_key: "_triibo_phone", meta_value: "+$cellphone" );
 
                 $response = $this->node->get_user( cellphone: $cellphone );
@@ -224,7 +217,6 @@ class Triibo_Auth_App
             {
                 wp_set_password( password: $pass, user_id: $user_id );
 
-                // add_user_meta( $user_id, "triiboId_phone", "+$cellphone" );
                 add_user_meta( user_id: $user_id, meta_key: "_triibo_phone", meta_value: "+$cellphone" );
 
                 $user = get_user_by( field: "id", value: $user_id );

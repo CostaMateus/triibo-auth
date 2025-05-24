@@ -175,8 +175,6 @@ class Triibo_Auth_Rest_Users_Controller extends WP_REST_Controller
         $cellphone = "+" . preg_replace( pattern: "/\D/", replacement: "", subject: $cellphone );
 		$cellphone = $cellphone === "+" ? null : $cellphone;
 
-		// uid, cellphone, email ausentes na request
-		// redireciona para $url ou para "/", caso $url == null
 		if ( ! $uid  && ! $cellphone && ! $data )
 		{
 			$this->redirect( url: $url );
@@ -194,7 +192,6 @@ class Triibo_Auth_Rest_Users_Controller extends WP_REST_Controller
 				]
 			);
 
-            // achou usuario com _triibo_id == uid
 			if ( ! empty( $user ) )
 			{
 				$user = reset( array: $user );
@@ -223,7 +220,6 @@ class Triibo_Auth_Rest_Users_Controller extends WP_REST_Controller
 				]
 			);
 
-			// achou usuario com triiboId_phone
 			if ( ! empty( $user ) )
 			{
 				$user = reset( array: $user );
@@ -243,7 +239,6 @@ class Triibo_Auth_Rest_Users_Controller extends WP_REST_Controller
 			$email   = $arr[ 1 ];
 			$user_id = email_exists( email: $email );
 
-			// achou usuario pelo email
 			if ( $user_id )
 			{
 				$this->redirect( url: $url, params: "taac=acc&email={$email}" );

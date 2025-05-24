@@ -85,7 +85,6 @@ class Triibo_Auth
 	 */
 	public static function get_instance() : self
     {
-		// If the single instance hasn't been set, set it now.
 		if ( null === self::$instance )
 			self::$instance = new self;
 
@@ -225,7 +224,6 @@ class Triibo_Auth
 	{
         require_once( dirname( path: TRIIBO_AUTH_PLUGIN_FILE ) . "/includes/modals/tal/checkout.php"        );
         require_once( dirname( path: TRIIBO_AUTH_PLUGIN_FILE ) . "/includes/modals/tal/has_query_param.php" );
-        // require_once( dirname( TRIIBO_AUTH_PLUGIN_FILE ) . "/includes/modals/tal/has_ckt_param.php"   );
 	}
 
     /**
@@ -593,7 +591,6 @@ class Triibo_Auth
 
 					if ( isset( $args[ "disabled" ] ) )
 					{
-						// hide the actual input bc if it was just a disabled input the info saved in the database would be wrong - bc it would pass empty values and wipe the actual information
 						echo $prependStart . "
 							<input type='{$args[ "subtype" ]}' id='{$args[ "id" ]}_disabled' {$step} {$max} {$min} name='{$args[ "name" ]}_disabled' disabled value='" . esc_attr( text: $value ) . "' />
 							<input type='hidden' id='{$args[ "id" ]}' {$step} {$max} {$min} name='{$args[ "name" ]}' value='" . esc_attr( text: $value ) . "' />" . $prependEnd;
